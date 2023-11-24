@@ -4,6 +4,7 @@
 .vs/
 .vscode/
 .idea/
+build*/
 cmake-*/
 obj/
 out/
