@@ -1,10 +1,5 @@
 name: Build
-on:
-  push:
-    branches: [ master ]
-    tags: [ 'v*' ]
-  pull_request:
-    branches: [ master ]
+on: push
 jobs:
   build:
     strategy:
@@ -87,7 +82,7 @@ jobs:
         keychain-password: ${{ secrets.MACOS_KEYCHAIN_PASSWORD }}
     - name: Checkout source code
       uses: actions/checkout@v2
-    - name: "macOS: recover cache"
+    - name: "macOS: recover MoltenVK cache"
       if: runner.os == 'macOS'
       uses: actions/cache@v3
       env:
@@ -95,12 +90,23 @@ jobs:
       with:
           path: thirdparty/MoltenVK/MoltenVK
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('thirdparty/MoltenVK/HEAD') }}
+    - name: "macOS: recover SDL cache"
+      if: runner.os == 'macOS'
+      uses: actions/cache@v3
+      env:
+          cache-name: sdl
+      with:
+          path: thirdparty/SDL/SDL
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('thirdparty/SDL/HEAD') }}
     - name: Install macOS Dependencies
       if: runner.os == 'macOS'
       run: |
-        brew install make ninja sdl2
+        brew install make ninja cmake
         pip install --no-input setuptools
         echo "MAKE=gmake" >> $GITHUB_ENV
+        pushd thirdparty/SDL
+        ./build-SDL.sh
+        popd
         pushd thirdparty/MoltenVK
         ./build-moltenvk.sh
         popd
@@ -129,7 +135,7 @@ jobs:
         certificatesha1: '${{ secrets.WIN_CERTHASH }}'
         certificatename: '${{ secrets.WIN_CERTNAME }}'
         folder: 'desktop-ui/out'
-        timestampUrl: 'http://timestamp.digicert.com' 
+        timestampUrl: 'http://timestamp.digicert.com'
     - name: "macOS: notarize"
       if: runner.os == 'macOS' && github.event_name != 'pull_request'
       continue-on-error: ${{ github.repository != 'ares-emulator/ares' }}
@@ -275,7 +281,7 @@ jobs:
     - name: Upload ares-windows-msvc-arm64
       uses: actions/upload-release-asset@v1
       env: { GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}' }
-      with: { upload_url: '${{ env.UPLOAD_URL }}', asset_path: 'ares-windows-msvc-arm64.zip', asset_name: 'ares-windows-msvc-arm64.zip', asset_content_type: 'application/zip' }      
+      with: { upload_url: '${{ env.UPLOAD_URL }}', asset_path: 'ares-windows-msvc-arm64.zip', asset_name: 'ares-windows-msvc-arm64.zip', asset_content_type: 'application/zip' }
     - name: Upload ares-macos
       uses: actions/upload-release-asset@v1
       env: { GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}' }

@@ -3,6 +3,7 @@ build := optimized
 threaded := true
 openmp := false
 vulkan := true
+sdl2 := true
 local := true
 lto := true
 flags += -I. -I.. -I../ares -I../thirdparty -DMIA_LIBRARY
@@ -19,6 +20,10 @@ ifneq ($(filter $(arch),x86 amd64),)
       flags += -march=x86-64-v2
     endif
   endif
+endif
+
+ifeq ($(platform),macos)
+  ares.dylibs :=
 endif
 
 libco.path := ../libco
