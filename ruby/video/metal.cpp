@@ -80,6 +80,7 @@ struct VideoMetal : VideoDriver, Metal {
   }
 
   auto acquire(u32*& data, u32& pitch, u32 width, u32 height) -> bool override {
+    return true;
   }
 
   auto release() -> void override {
@@ -129,8 +130,8 @@ private:
     auto context = self.fullScreen ? [window contentView] : (__bridge NSView*)(void *)self.context;
     auto size = [context frame].size;
     
-    auto metalDevice = MTLCreateSystemDefaultDevice();
-    auto metalCommandQueue = [metalDevice newCommandQueue];
+    id<MTLDevice> metalDevice = MTLCreateSystemDefaultDevice();
+    id<MTLCommandQueue> metalCommandQueue = [metalDevice newCommandQueue];
 
     auto frame = NSMakeRect(0, 0, size.width, size.height);
     view = [[RubyVideoMetal alloc] initWithFrame:frame device:metalDevice];
