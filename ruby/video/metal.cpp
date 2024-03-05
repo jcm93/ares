@@ -7,9 +7,6 @@
 
 #include "metal/metal.hpp"
 
-#include "librashader.h"
-#include "librashader_ld.h"
-
 static const size_t kAlignedUniformsSize = (sizeof(Uniforms) & ~0xFF) + 0x100;
 static const NSUInteger kMaxBuffersInFlight = 3;
 
@@ -203,8 +200,6 @@ private:
     s32 blocking = self.blocking;
 
     [view unlockFocus];
-    
-    //libra_mtl_filter_chain_create(&_preset, _commandQueue, nil, &_filterChain);
 
     clear();
     return _ready = true;

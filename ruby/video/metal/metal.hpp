@@ -11,7 +11,6 @@
 #include <Metal/MTLDevice.h>
 #include <ModelIO/ModelIO.h>
 
-#include "librashader.h"
 #include "librashader_ld.h"
 #include "ShaderTypes.h"
 

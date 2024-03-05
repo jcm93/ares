@@ -25,6 +25,10 @@ auto Metal::initialize(const string& shader) -> bool {
     print("Metal: Failed to load librashader: shaders will be disabled\n");
   }
   
+  if(_libra.mtl_filter_chain_create(&_preset, _commandQueue, nil, &_filterChain) != NULL) {
+    print("Metal: Failed to initialize librashader context: shaders will be disabled\n");
+  };
+  
   return initialized = true;
 }
 
