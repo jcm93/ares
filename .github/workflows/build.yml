@@ -127,15 +127,15 @@ jobs:
         rustup target add x86_64-apple-darwin
         rustup target add aarch64-apple-darwin
         echo "MAKE=gmake" >> $GITHUB_ENV
-        pushd thirdparty/SDL
-        ./build-SDL.sh
-        popd
-        pushd thirdparty/MoltenVK
-        ./build-moltenvk.sh
-        popd
-        pushd thirdparty/librashader
-        ./build-librashader.sh
-        popd
+        #pushd thirdparty/SDL
+        #./build-SDL.sh
+        #popd
+        #pushd thirdparty/MoltenVK
+        #./build-moltenvk.sh
+        #popd
+        #pushd thirdparty/librashader
+        #./build-librashader.sh
+        #popd
     - name: Set up MSVC environment
       if: matrix.platform.msvc-arch != ''
       uses: ilammy/msvc-dev-cmd@v1
@@ -146,7 +146,7 @@ jobs:
       run: ${MAKE:-make} -j4 -C desktop-ui build=optimized local=false compiler="${{ matrix.platform.compiler }}" windres="${{ matrix.platform.windres }}"
     - name: "macOS: Make universal app"
       if: runner.os == 'macOS'
-      run: scripts/macos-make-universal.sh build=optimized local=false
+      run: scripts/macos-make-universal.sh build=optimized local=false sdl2=false vulkan=false librashader=false
       env:
         MAKEFLAGS: -j3
         MACOS_CERTIFICATE_NAME: ${{ secrets.MACOS_CERTIFICATE_NAME }}
