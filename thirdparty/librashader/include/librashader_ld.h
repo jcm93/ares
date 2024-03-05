@@ -37,9 +37,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define LIBRA_RUNTIME_D3D12
 #endif
 
-// #if (defined(__APPLE__) && defined(__OBJC__))
-// #define LIBRA_RUNTIME_METAL
-// #endif
+#if (defined(__APPLE__) && defined(__OBJC__))
+#define LIBRA_RUNTIME_METAL
+#endif
 
 #if defined(_WIN32)
 #include <windows.h>
@@ -419,7 +419,7 @@ libra_error_t __librashader__noop_mtl_filter_chain_frame(
     return NULL;
 }
 
-libra_error_t __librashader__mtl_filter_chain_free(
+libra_error_t __librashader__noop_mtl_filter_chain_free(
     libra_mtl_filter_chain_t *chain) {
     return NULL;
 }

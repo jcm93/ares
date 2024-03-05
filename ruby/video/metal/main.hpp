@@ -19,7 +19,13 @@ auto Metal::output() -> void {
 }
 
 auto Metal::initialize(const string& shader) -> bool {
-  return true;
+
+  _libra = librashader_load_instance();
+  if(!_libra.instance_loaded) {
+    print("Metal: Failed to load librashader: shaders will be disabled\n");
+  }
+  
+  return initialized = true;
 }
 
 auto Metal::terminate() -> void {
