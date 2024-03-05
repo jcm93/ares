@@ -223,6 +223,10 @@ auto Video::hasDrivers() -> vector<string> {
   #if defined(VIDEO_XSHM)
   "XShm",
   #endif
+    
+  #if defined(VIDEO_METAL)
+    "Metal",
+  #endif
 
   "None"};
 }
@@ -242,6 +246,8 @@ auto Video::optimalDriver() -> string {
   return "XVideo";
   #elif defined(VIDEO_XSHM)
   return "XShm";
+  #elif defined(VIDEO_Metal)
+  return "Metal";
   #else
   return "None";
   #endif
@@ -262,6 +268,8 @@ auto Video::safestDriver() -> string {
   return "XVideo";
   #elif defined(VIDEO_GLX)
   return "OpenGL 3.2";
+  #elif defined(VIDEO_Metal)
+  return "Metal";
   #else
   return "None";
   #endif

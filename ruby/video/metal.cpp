@@ -13,7 +13,7 @@ struct VideoMetal;
 @public
   VideoMetal* video;
 }
--(id) initWith:(VideoMetal*)video pixelFormat:(MTLPixelFormat*)pixelFormat;
+-(id) initWith:(VideoMetal*)video device:(id<MTLDevice>)metalDevice;
 -(void) reshape;
 -(BOOL) acceptsFirstResponder;
 @end
@@ -120,19 +120,20 @@ private:
     terminate();
     if(!self.fullScreen && !self.context) return false;
 
-    if(self.fullScreen) {
+    /*if(self.fullScreen) {
       window = [[RubyWindowMetal alloc] initWith:this];
       [window setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
       [window toggleFullScreen:nil];
-    }
+    }*/
 
     auto context = self.fullScreen ? [window contentView] : (__bridge NSView*)(void *)self.context;
     auto size = [context frame].size;
+    
+    auto metalDevice = MTLCreateSystemDefaultDevice();
+    auto metalCommandQueue = [metalDevice newCommandQueue];
 
-    view = [[RubyVideoMetal alloc] initWith:this pixelFormat:format];
-    [view setFrame:NSMakeRect(0, 0, size.width, size.height)];
-    [view setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
-    [view setWantsBestResolutionOpenGLSurface:YES];
+    auto frame = NSMakeRect(0, 0, size.width, size.height);
+    view = [[RubyVideoMetal alloc] initWithFrame:frame device:metalDevice];
     [context addSubview:view];
     [[view window] makeFirstResponder:view];
     [view lockFocus];
@@ -175,15 +176,14 @@ private:
 
 @implementation RubyVideoMetal : MTKView
 
--(id) initWith:(VideoMetla*)videoPointer pixelFormat:(MTLPixelFormat*)pixelFormat {
-  if(self = [super initWithFrame:NSMakeRect(0, 0, 0, 0) pixelFormat:pixelFormat]) {
+-(id) initWith:(VideoMetal*)videoPointer device:(id<MTLDevice>)metalDevice {
+  if(self = [super initWithFrame:NSMakeRect(0, 0, 0, 0) device:metalDevice]) {
     video = videoPointer;
   }
   return self;
 }
 
 -(void) reshape {
-  [super reshape];
   video->output(0, 0);
 }
 
