@@ -26,6 +26,10 @@
   #include <ruby/video/xvideo.cpp>
 #endif
 
+#if defined(VIDEO_METAL)
+  #include <ruby/video/metal.cpp>
+#endif
+
 namespace ruby {
 
 auto Video::setFullScreen(bool fullScreen) -> bool {
@@ -178,6 +182,10 @@ auto Video::create(string driver) -> bool {
 
   #if defined(VIDEO_XVIDEO)
   if(driver == "XVideo") self.instance = new VideoXVideo(*this);
+  #endif
+  
+  #if defined(VIDEO_METAL)
+  if(driver == "Metal") self.instance = new VideoMetal(*this);
   #endif
 
   if(!self.instance) self.instance = new VideoDriver(*this);
