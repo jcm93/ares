@@ -83,6 +83,7 @@ endif
 ruby.options :=
 
 ruby.options += $(if $(findstring video.cgl,$(ruby)),-framework OpenGL)
+#ruby.options += $(if $(findstring video.metal,$(ruby)),-framework Metal)
 ruby.options += $(if $(findstring video.direct3d9,$(ruby)),$(call lib,d3d9))
 ruby.options += $(if $(findstring video.glx,$(ruby)),-lGL)
 ruby.options += $(if $(findstring video.wgl,$(ruby)),$(call lib,opengl32 dwmapi))
@@ -118,6 +119,8 @@ ifeq ($(platform),windows)
 endif
 
 ifeq ($(platform),macos)
+	ruby.options += -framework Metal
+	ruby.options += -framework MetalKit
   ruby.options += -framework IOKit
   ruby.options += $(if $(findstring audio.openal,$(ruby)),-framework OpenAL)
   ruby.options += -L../thirdparty/SDL/ -lSDL2-2.0.0
