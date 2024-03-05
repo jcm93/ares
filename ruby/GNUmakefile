@@ -120,8 +120,8 @@ ifeq ($(platform),windows)
 endif
 
 ifeq ($(platform),macos)
-	ruby.options += -framework Metal
-	ruby.options += -framework MetalKit
+  ruby.options += -framework Metal
+  ruby.options += -framework MetalKit
   ruby.options += -framework IOKit
   ruby.options += $(if $(findstring audio.openal,$(ruby)),-framework OpenAL)
   ifeq ($(sdl2),true)
