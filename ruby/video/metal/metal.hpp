@@ -5,9 +5,7 @@
 //  Created by jcm on 3/4/24.
 //
 
-#ifndef metal_hpp
-#define metal_hpp
-
-#include <stdio.h>
-
-#endif /* metal_hpp */
+#include <Foundation/Foundation.h>
+#include <Metal/Metal.h>
+#include <QuartzCore/QuartzCore.h>
+#include <MetalKit/MTKView.h>

@@ -20,6 +20,7 @@ ifeq ($(ruby),)
     ruby += video.cgl
     ruby += audio.openal
     ruby += input.quartz #input.carbon
+    ruby += video.metal
     ifeq ($(sdl2),true)
       macsdl = ../thirdparty/SDL/libSDL2-2.0.0.dylib
       ares.dylibs += $(macsdl)
