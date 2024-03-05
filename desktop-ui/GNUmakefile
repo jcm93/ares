@@ -5,7 +5,7 @@ openmp := false
 vulkan := true
 sdl2 := true
 local := true
-lto := true
+lto := false
 librashader	:= true
 flags += -I. -I.. -I../ares -I../thirdparty -I../thirdparty/librashader/include -DMIA_LIBRARY
 
