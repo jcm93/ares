@@ -7,6 +7,12 @@
 
 #include "metal/metal.hpp"
 
+#include "librashader.h"
+#include "librashader_ld.h"
+
+static const size_t kAlignedUniformsSize = (sizeof(Uniforms) & ~0xFF) + 0x100;
+static const NSUInteger kMaxBuffersInFlight = 3;
+
 struct VideoMetal;
 
 @interface RubyVideoMetal : MTKView {
@@ -121,29 +127,84 @@ private:
     terminate();
     if(!self.fullScreen && !self.context) return false;
 
-    /*if(self.fullScreen) {
-      window = [[RubyWindowMetal alloc] initWith:this];
-      [window setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
-      [window toggleFullScreen:nil];
-    }*/
-
     auto context = self.fullScreen ? [window contentView] : (__bridge NSView*)(void *)self.context;
     auto size = [context frame].size;
     
-    id<MTLDevice> metalDevice = MTLCreateSystemDefaultDevice();
-    id<MTLCommandQueue> metalCommandQueue = [metalDevice newCommandQueue];
-
+    _device = MTLCreateSystemDefaultDevice();
+    _commandQueue = [_device newCommandQueue];
+    
     auto frame = NSMakeRect(0, 0, size.width, size.height);
-    view = [[RubyVideoMetal alloc] initWithFrame:frame device:metalDevice];
+    view = [[RubyVideoMetal alloc] initWithFrame:frame device:_device];
     [context addSubview:view];
     [[view window] makeFirstResponder:view];
     [view lockFocus];
+    
+    view.depthStencilPixelFormat = MTLPixelFormatDepth32Float_Stencil8;
+    view.colorPixelFormat = MTLPixelFormatBGRA8Unorm_sRGB;
+    view.sampleCount = 1;
+
+    _mtlVertexDescriptor = [[MTLVertexDescriptor alloc] init];
+
+    _mtlVertexDescriptor.attributes[VertexAttributePosition].format = MTLVertexFormatFloat3;
+    _mtlVertexDescriptor.attributes[VertexAttributePosition].offset = 0;
+    _mtlVertexDescriptor.attributes[VertexAttributePosition].bufferIndex = BufferIndexMeshPositions;
+
+    _mtlVertexDescriptor.attributes[VertexAttributeTexcoord].format = MTLVertexFormatFloat2;
+    _mtlVertexDescriptor.attributes[VertexAttributeTexcoord].offset = 0;
+    _mtlVertexDescriptor.attributes[VertexAttributeTexcoord].bufferIndex = BufferIndexMeshGenerics;
+
+    _mtlVertexDescriptor.layouts[BufferIndexMeshPositions].stride = 12;
+    _mtlVertexDescriptor.layouts[BufferIndexMeshPositions].stepRate = 1;
+    _mtlVertexDescriptor.layouts[BufferIndexMeshPositions].stepFunction = MTLVertexStepFunctionPerVertex;
+
+    _mtlVertexDescriptor.layouts[BufferIndexMeshGenerics].stride = 8;
+    _mtlVertexDescriptor.layouts[BufferIndexMeshGenerics].stepRate = 1;
+    _mtlVertexDescriptor.layouts[BufferIndexMeshGenerics].stepFunction = MTLVertexStepFunctionPerVertex;
+
+    id<MTLLibrary> defaultLibrary = [_device newDefaultLibrary];
+
+    id<MTLFunction> vertexFunction = [defaultLibrary newFunctionWithName:@"vertexShader"];
+
+    id<MTLFunction> fragmentFunction = [defaultLibrary newFunctionWithName:@"fragmentShader"];
+
+    MTLRenderPipelineDescriptor *pipelineStateDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
+    pipelineStateDescriptor.label = @"MyPipeline";
+    pipelineStateDescriptor.rasterSampleCount = view.sampleCount;
+    pipelineStateDescriptor.vertexFunction = vertexFunction;
+    pipelineStateDescriptor.fragmentFunction = fragmentFunction;
+    pipelineStateDescriptor.vertexDescriptor = _mtlVertexDescriptor;
+    pipelineStateDescriptor.colorAttachments[0].pixelFormat = view.colorPixelFormat;
+    pipelineStateDescriptor.depthAttachmentPixelFormat = view.depthStencilPixelFormat;
+    pipelineStateDescriptor.stencilAttachmentPixelFormat = view.depthStencilPixelFormat;
+
+    NSError *error = NULL;
+    _pipelineState = [_device newRenderPipelineStateWithDescriptor:pipelineStateDescriptor error:&error];
+    if (!_pipelineState)
+    {
+        NSLog(@"Failed to created pipeline state, error %@", error);
+    }
+
+    MTLDepthStencilDescriptor *depthStateDesc = [[MTLDepthStencilDescriptor alloc] init];
+    depthStateDesc.depthCompareFunction = MTLCompareFunctionLess;
+    depthStateDesc.depthWriteEnabled = YES;
+    _depthState = [_device newDepthStencilStateWithDescriptor:depthStateDesc];
+
+    NSUInteger uniformBufferSize = kAlignedUniformsSize * kMaxBuffersInFlight;
+
+    _dynamicUniformBuffer = [_device newBufferWithLength:uniformBufferSize
+                                                 options:MTLResourceStorageModeShared];
+
+    _dynamicUniformBuffer.label = @"UniformBuffer";
+
+    _commandQueue = [_device newCommandQueue];
 
     Metal::initialize(self.shader);
 
     s32 blocking = self.blocking;
 
     [view unlockFocus];
+    
+    //libra_mtl_filter_chain_create(&_preset, _commandQueue, nil, &_filterChain);
 
     clear();
     return _ready = true;
