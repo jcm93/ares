@@ -90,25 +90,23 @@ struct VideoMetal : VideoDriver, Metal {
   }
 
   auto output(u32 width, u32 height) -> void override {
-    /*lock_guard<recursive_mutex> lock(mutex);
-    acquireContext();
-    u32 windowWidth, windowHeight;
-    size(windowWidth, windowHeight);
-
-    if([view lockFocusIfCanDraw]) {
-      OpenGL::absoluteWidth = width;
-      OpenGL::absoluteHeight = height;
-      OpenGL::outputX = 0;
-      OpenGL::outputY = 0;
-      OpenGL::outputWidth = windowWidth;
-      OpenGL::outputHeight = windowHeight;
-      OpenGL::output();
-
-      [[view openGLContext] flushBuffer];
-      if(self.flush) glFinish();
-      [view unlockFocus];
+    id<MTLCommandBuffer> commandBuffer = [_commandQueue commandBuffer];
+    
+    if(commandBuffer != nil) {
+      MTLRenderPassDescriptor *renderPassDescriptor = [view currentRenderPassDescriptor];
+      if(renderPassDescriptor != nil) {
+        id<MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
+        if(renderEncoder!= nil) {
+          MTLPixelFormat pixelFormat = MTLPixelFormatBGRA8Unorm;
+          MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat: pixelFormat
+                                                    width:width
+                                                    height:height
+                                                    mipmapped:NO];
+          
+        }
+      }
     }
-    releaseContext();*/
+    
   }
 
 private:
@@ -135,63 +133,6 @@ private:
     [context addSubview:view];
     [[view window] makeFirstResponder:view];
     [view lockFocus];
-    
-    view.depthStencilPixelFormat = MTLPixelFormatDepth32Float_Stencil8;
-    view.colorPixelFormat = MTLPixelFormatBGRA8Unorm_sRGB;
-    view.sampleCount = 1;
-
-    _mtlVertexDescriptor = [[MTLVertexDescriptor alloc] init];
-
-    _mtlVertexDescriptor.attributes[VertexAttributePosition].format = MTLVertexFormatFloat3;
-    _mtlVertexDescriptor.attributes[VertexAttributePosition].offset = 0;
-    _mtlVertexDescriptor.attributes[VertexAttributePosition].bufferIndex = BufferIndexMeshPositions;
-
-    _mtlVertexDescriptor.attributes[VertexAttributeTexcoord].format = MTLVertexFormatFloat2;
-    _mtlVertexDescriptor.attributes[VertexAttributeTexcoord].offset = 0;
-    _mtlVertexDescriptor.attributes[VertexAttributeTexcoord].bufferIndex = BufferIndexMeshGenerics;
-
-    _mtlVertexDescriptor.layouts[BufferIndexMeshPositions].stride = 12;
-    _mtlVertexDescriptor.layouts[BufferIndexMeshPositions].stepRate = 1;
-    _mtlVertexDescriptor.layouts[BufferIndexMeshPositions].stepFunction = MTLVertexStepFunctionPerVertex;
-
-    _mtlVertexDescriptor.layouts[BufferIndexMeshGenerics].stride = 8;
-    _mtlVertexDescriptor.layouts[BufferIndexMeshGenerics].stepRate = 1;
-    _mtlVertexDescriptor.layouts[BufferIndexMeshGenerics].stepFunction = MTLVertexStepFunctionPerVertex;
-
-    id<MTLLibrary> defaultLibrary = [_device newDefaultLibrary];
-
-    id<MTLFunction> vertexFunction = [defaultLibrary newFunctionWithName:@"vertexShader"];
-
-    id<MTLFunction> fragmentFunction = [defaultLibrary newFunctionWithName:@"fragmentShader"];
-
-    MTLRenderPipelineDescriptor *pipelineStateDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
-    pipelineStateDescriptor.label = @"MyPipeline";
-    pipelineStateDescriptor.rasterSampleCount = view.sampleCount;
-    pipelineStateDescriptor.vertexFunction = vertexFunction;
-    pipelineStateDescriptor.fragmentFunction = fragmentFunction;
-    pipelineStateDescriptor.vertexDescriptor = _mtlVertexDescriptor;
-    pipelineStateDescriptor.colorAttachments[0].pixelFormat = view.colorPixelFormat;
-    pipelineStateDescriptor.depthAttachmentPixelFormat = view.depthStencilPixelFormat;
-    pipelineStateDescriptor.stencilAttachmentPixelFormat = view.depthStencilPixelFormat;
-
-    NSError *error = NULL;
-    _pipelineState = [_device newRenderPipelineStateWithDescriptor:pipelineStateDescriptor error:&error];
-    if (!_pipelineState)
-    {
-        NSLog(@"Failed to created pipeline state, error %@", error);
-    }
-
-    MTLDepthStencilDescriptor *depthStateDesc = [[MTLDepthStencilDescriptor alloc] init];
-    depthStateDesc.depthCompareFunction = MTLCompareFunctionLess;
-    depthStateDesc.depthWriteEnabled = YES;
-    _depthState = [_device newDepthStencilStateWithDescriptor:depthStateDesc];
-
-    NSUInteger uniformBufferSize = kAlignedUniformsSize * kMaxBuffersInFlight;
-
-    _dynamicUniformBuffer = [_device newBufferWithLength:uniformBufferSize
-                                                 options:MTLResourceStorageModeShared];
-
-    _dynamicUniformBuffer.label = @"UniformBuffer";
 
     _commandQueue = [_device newCommandQueue];
 

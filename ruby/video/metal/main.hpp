@@ -3,7 +3,9 @@
 #endif
 
 auto Metal::setShader(const string& pathname) -> void {
-
+  if(_libra.mtl_filter_chain_create(&_preset, _commandQueue, nil, &_filterChain) != NULL) {
+    print(string{"Metal: Failed to create filter chain for: ", pathname, "\n"});
+  };
 }
 
 auto Metal::clear() -> void {
@@ -15,7 +17,7 @@ auto Metal::lock(u32*& data, u32& pitch) -> bool {
 }
 
 auto Metal::output() -> void {
-
+  
 }
 
 auto Metal::initialize(const string& shader) -> bool {
@@ -25,9 +27,7 @@ auto Metal::initialize(const string& shader) -> bool {
     print("Metal: Failed to load librashader: shaders will be disabled\n");
   }
   
-  if(_libra.mtl_filter_chain_create(&_preset, _commandQueue, nil, &_filterChain) != NULL) {
-    print("Metal: Failed to initialize librashader context: shaders will be disabled\n");
-  };
+  setShader(shader);
   
   return initialized = true;
 }
