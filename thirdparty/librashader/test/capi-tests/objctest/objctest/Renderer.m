@@ -54,7 +54,7 @@ static const size_t kAlignedUniformsSize = (sizeof(Uniforms) & ~0xFF) + 0x100;
         NSBundle* mainBundle;
         mainBundle = [NSBundle mainBundle];
 
-        NSString* shaderPreset = [mainBundle pathForResource:@"crt-royale" ofType:@"slangp" inDirectory: @"shaders_slang/crt/"];
+        NSString* shaderPreset = [mainBundle pathForResource:@"crt-mattias" ofType:@"slangp" inDirectory: @"shaders_slang/crt/"];
                 
         libra_preset_create(shaderPreset.UTF8String, &_preset);
                 view.framebufferOnly = false;

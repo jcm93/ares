@@ -24,6 +24,17 @@ struct Metal {
   auto initialize(const string& shader) -> bool;
   auto terminate() -> void;
   
+  auto getFormat() const -> GLuint;
+  auto getType() const -> GLuint;
+  
+  auto size(u32 width, u32 height) -> void;
+  auto release() -> void;
+  auto render(u32 sourceWidth, u32 sourceHeight, u32 targetX, u32 targetY, u32 targetWidth, u32 targetHeight) -> void;
+  
+  u32* buffer = nullptr;
+
+  u32 frameCount = 0;
+  
   id<MTLDevice> _device;
   id<MTLCommandQueue> _commandQueue;
   
