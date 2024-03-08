@@ -1,41 +1,25 @@
-//
-//  Header containing types and enum constants shared between Metal shaders and Swift/ObjC source
-//
-#ifndef ShaderTypes_h
-#define ShaderTypes_h
+/*
+See LICENSE folder for this sample’s licensing information.
 
-#ifdef __METAL_VERSION__
-#define NS_ENUM(_type, _name) enum _name : _type _name; enum _name : _type
-typedef metal::int32_t EnumBackingType;
-#else
-#import <Foundation/Foundation.h>
-typedef NSInteger EnumBackingType;
-#endif
-
+Abstract:
+Header containing types and enum constants shared between Metal shaders and C/ObjC source
+*/
 #include <simd/simd.h>
 
-typedef NS_ENUM(EnumBackingType, BufferIndex)
+// Buffer index values shared between shader and C code to ensure Metal shader buffer inputs
+// match Metal API buffer set calls.
+typedef enum AAPLVertexInputIndex
 {
-    BufferIndexMeshPositions = 0,
-    BufferIndexMeshGenerics  = 1,
-    BufferIndexUniforms      = 2
-};
+    AAPLVertexInputIndexVertices     = 0,
+    AAPLVertexInputIndexViewportSize = 1,
+} AAPLVertexInputIndex;
 
-typedef NS_ENUM(EnumBackingType, VertexAttribute)
-{
-    VertexAttributePosition  = 0,
-    VertexAttributeTexcoord  = 1,
-};
-
-typedef NS_ENUM(EnumBackingType, TextureIndex)
-{
-    TextureIndexColor    = 0,
-};
-
+//  This structure defines the layout of vertices sent to the vertex
+//  shader. This header is shared between the .metal shader and C code, to guarantee that
+//  the layout of the vertex array in the C code matches the layout that the .metal
+//  vertex shader expects.
 typedef struct
 {
-    matrix_float4x4 projectionMatrix;
-    matrix_float4x4 modelViewMatrix;
-} Uniforms;
-
-#endif /* ShaderTypes_h */
+    vector_float2 position;
+    vector_float4 color;
+} AAPLVertex;
