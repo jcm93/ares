@@ -128,6 +128,7 @@ endif
 	mv $(output.path)/$(name) $(output.path)/$(name).app/Contents/MacOS/$(name)
 	cp resource/$(name).plist $(output.path)/$(name).app/Contents/Info.plist
 	$(call mkdir,$(output.path)/$(name).app/Contents/Resources/Shaders/)
+	cp resource/shaders.metallib $(output.path)/$(name).app/Contents/Resources/Shaders/shaders.metallib
 	$(call mkdir,$(output.path)/$(name).app/Contents/Resources/Database/)
 	$(call rcopy,$(thirdparty.path)/slang-shaders/*,$(output.path)/$(name).app/Contents/Resources/Shaders/)
 	$(call rcopy,$(mia.path)/Database/*,$(output.path)/$(name).app/Contents/Resources/Database/)

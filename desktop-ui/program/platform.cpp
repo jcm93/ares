@@ -119,6 +119,7 @@ auto Program::video(ares::Node::Video::Screen node, const u32* data, u32 pitch, 
     ruby::video.release();
     ruby::video.output(outputWidth, outputHeight);
   }
+  ruby::video.output(outputWidth, outputHeight);
   ruby::video.unlock();
 
   static u64 vblankCounter = 0, previous, current;

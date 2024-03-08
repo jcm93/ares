@@ -10,6 +10,7 @@
 #include <MetalKit/MetalKit.h>
 #include <Metal/MTLDevice.h>
 #include <ModelIO/ModelIO.h>
+#include <CoreImage/CoreImage.h>
 
 #include "librashader_ld.h"
 #include "ShaderTypes.h"
@@ -34,9 +35,14 @@ struct Metal {
   u32* buffer = nullptr;
 
   u32 frameCount = 0;
+  u32 width = 0;
+  u32 height = 0;
   
   id<MTLDevice> _device;
   id<MTLCommandQueue> _commandQueue;
+  id<MTLLibrary> _library;
+  
+  vector_uint2 _viewportSize;
   
   id<MTLBuffer> _dynamicUniformBuffer;
   id<MTLRenderPipelineState> _pipelineState;

@@ -6,8 +6,8 @@
 //
 
 #include "metal/metal.hpp"
+#include <iostream>
 
-static const size_t kAlignedUniformsSize = (sizeof(Uniforms) & ~0xFF) + 0x100;
 static const NSUInteger kMaxBuffersInFlight = 3;
 
 struct VideoMetal;
@@ -78,12 +78,20 @@ struct VideoMetal : VideoDriver, Metal {
 
   auto size(u32& width, u32& height) -> void override {
     auto area = [view convertRectToBacking:[view bounds]];
+    std::cout << area.size.width << "\n";
+    std::cout << area.size.height << "\n";
     width = area.size.width;
     height = area.size.height;
+    _viewportSize.x = width;
+    _viewportSize.y = height;
   }
 
   auto acquire(u32*& data, u32& pitch, u32 width, u32 height) -> bool override {
-    return true;
+    Metal::size(width, height);
+    bool result = Metal::lock(data, pitch);
+    _viewportSize.x = width;
+    _viewportSize.y = height;
+    return result;
   }
 
   auto release() -> void override {
@@ -92,21 +100,76 @@ struct VideoMetal : VideoDriver, Metal {
   auto output(u32 width, u32 height) -> void override {
     id<MTLCommandBuffer> commandBuffer = [_commandQueue commandBuffer];
     
-    if(commandBuffer != nil) {
+    static const AAPLVertex vertices[] =
+    {
+        // 2D positions,    RGBA colors
+        { {  250,  -250 }, { 1, 0, 0, 1 } },
+        { { -250,  -250 }, { 0, 1, 0, 1 } },
+        { {    0,   250 }, { 0, 0, 1, 1 } },
+    };
+        
+    id<MTLBuffer> vertexBuffer = [_device newBufferWithBytes:vertices length:sizeof(vertices) options:MTLResourceStorageModeShared];
+    
+    if (commandBuffer != nil) {
       MTLRenderPassDescriptor *renderPassDescriptor = [view currentRenderPassDescriptor];
-      if(renderPassDescriptor != nil) {
+      if (renderPassDescriptor != nil) {
         id<MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
-        if(renderEncoder!= nil) {
-          MTLPixelFormat pixelFormat = MTLPixelFormatBGRA8Unorm;
-          MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat: pixelFormat
-                                                    width:width
-                                                    height:height
-                                                    mipmapped:NO];
+        if (renderEncoder!= nil) {
           
+          id<CAMetalDrawable> drawable = view.currentDrawable;
+          if (drawable != nil) {
+            MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor new];
+            textureDescriptor.pixelFormat = MTLPixelFormatBGRA8Unorm;
+            textureDescriptor.width = width;
+            textureDescriptor.height = height;
+              
+            //std::cout << width << "\n";
+            //std::cout << height << "\n";
+            
+            auto length = width * height;
+            
+            auto mtlBuffer = [_device newBufferWithBytes:buffer
+                                                  length:9216000
+                                                 options:MTLResourceStorageModeManaged];
+                
+            auto metalTexture = [mtlBuffer newTextureWithDescriptor:textureDescriptor
+            offset:0
+            bytesPerRow:width*4];
+            
+            
+            
+            renderPassDescriptor.colorAttachments[0].texture = metalTexture;
+            renderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionClear;
+            renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0.0,0.0,0.0,1.0);
+            
+            [renderEncoder setRenderPipelineState:_pipelineState];
+            
+            [renderEncoder setViewport:(MTLViewport){0.0, 0.0, static_cast<double>(_viewportSize.x), static_cast<double>(_viewportSize.y), 0.0, 1.0 }];
+            
+            [renderEncoder setVertexBuffer:vertexBuffer
+                              offset:0
+                               atIndex:0];
+            
+            [renderEncoder setVertexBytes:&_viewportSize
+                                   length:sizeof(_viewportSize)
+                                  atIndex:AAPLVertexInputIndexViewportSize];
+            
+            [renderEncoder setFragmentTexture:metalTexture atIndex:0];
+            
+            [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:3];
+            
+            [renderEncoder endEncoding];
+            
+            [commandBuffer presentDrawable:drawable];
+            
+            [commandBuffer commit];
+            
+            [commandBuffer waitUntilCompleted];
+            
+          }
         }
       }
     }
-    
   }
 
 private:
@@ -120,19 +183,46 @@ private:
 
   auto initialize() -> bool {
     terminate();
-    if(!self.fullScreen && !self.context) return false;
+    if (!self.fullScreen && !self.context) return false;
 
     auto context = self.fullScreen ? [window contentView] : (__bridge NSView*)(void *)self.context;
     auto size = [context frame].size;
     
+    NSError *error = nil;
+    
     _device = MTLCreateSystemDefaultDevice();
     _commandQueue = [_device newCommandQueue];
+    
+    NSURL *shaderLibURL = [NSURL fileURLWithPath:@"ares.app/Contents/Resources/Shaders/shaders.metallib"];
+    _library = [_device newLibraryWithURL: shaderLibURL error:&error];
+    
+    MTLRenderPipelineDescriptor *pipelineDescriptor = [MTLRenderPipelineDescriptor new];
+    pipelineDescriptor.label = @"ares Pipeline";
+    pipelineDescriptor.vertexFunction = [_library newFunctionWithName:@"vertexShader"];
+    
+    pipelineDescriptor.colorAttachments[0].pixelFormat = MTLPixelFormatBGRA8Unorm;
+    pipelineDescriptor.fragmentFunction = [_library newFunctionWithName:@"fragmentShader"];
+    
+    
+    _pipelineState = [_device newRenderPipelineStateWithDescriptor:pipelineDescriptor error:&error];
+    
+    if (_pipelineState == nil) {
+      NSLog(@"%@",error);
+    }
+    
+    //NSDictionary* options = @{kCIContextCacheIntermediates:@NO, kCIContextUseSoftwareRenderer:@NO};
+    //_ciContext = [CIContext contextWithMTLCommandQueue:_commandQueue
+                                               //options:options];
     
     auto frame = NSMakeRect(0, 0, size.width, size.height);
     view = [[RubyVideoMetal alloc] initWithFrame:frame device:_device];
     [context addSubview:view];
     [[view window] makeFirstResponder:view];
     [view lockFocus];
+    
+    pipelineDescriptor.colorAttachments[0].pixelFormat = view.colorPixelFormat;
+    pipelineDescriptor.depthAttachmentPixelFormat = view.depthStencilPixelFormat;
+    pipelineDescriptor.stencilAttachmentPixelFormat = view.depthStencilPixelFormat;
 
     _commandQueue = [_device newCommandQueue];
 
@@ -151,12 +241,12 @@ private:
     _ready = false;
     Metal::terminate();
 
-    if(view) {
+    if (view) {
       [view removeFromSuperview];
       view = nil;
     }
 
-    if(window) {
+    if (window) {
     //[NSApp setPresentationOptions:NSApplicationPresentationDefault];
       [window toggleFullScreen:nil];
       [window setCollectionBehavior:NSWindowCollectionBehaviorDefault];
@@ -201,7 +291,7 @@ private:
 
 -(id) initWith:(VideoMetal*)videoPointer {
   auto primaryRect = [[[NSScreen screens] objectAtIndex:0] frame];
-  if(self = [super initWithContentRect:primaryRect styleMask:0 backing:NSBackingStoreBuffered defer:YES]) {
+  if (self = [super initWithContentRect:primaryRect styleMask:0 backing:NSBackingStoreBuffered defer:YES]) {
     video = videoPointer;
     [self setDelegate:self];
     [self setReleasedWhenClosed:NO];
