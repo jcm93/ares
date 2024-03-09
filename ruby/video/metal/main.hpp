@@ -5,7 +5,6 @@
 #include <iostream>
 
 auto Metal::size(u32 w, u32 h) -> void {
-  if(width == w && height == h) return;
   width = w, height = h;
   buffer = new u32[w * h]();
 }
@@ -22,8 +21,7 @@ auto Metal::clear() -> void {
 
 auto Metal::lock(u32*& data, u32& pitch) -> bool {
   pitch = width * sizeof(u32);
-  data = buffer;
-  return true;
+  return data = buffer;
 }
 
 auto Metal::output() -> void {

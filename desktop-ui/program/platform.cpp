@@ -1,3 +1,5 @@
+#include <iostream>
+
 auto Program::attach(ares::Node::Object node) -> void {
   if(auto screen = node->cast<ares::Node::Video::Screen>()) {
     screens = emulator->root->find<ares::Node::Video::Screen>();
@@ -109,6 +111,8 @@ auto Program::video(ares::Node::Video::Screen node, const u32* data, u32 pitch, 
     outputWidth = viewportWidth;
     outputHeight = viewportHeight;
   }
+  
+  //std::cout << "width: " << width << "height: " << height << "videoWidth: " << videoWidth << "videoHeight: " << videoHeight << "outputWidth: " << outputWidth << "outputHeight: " << outputHeight;
 
   pitch >>= 2;
   if(auto [output, length] = ruby::video.acquire(width, height); output) {
@@ -119,7 +123,6 @@ auto Program::video(ares::Node::Video::Screen node, const u32* data, u32 pitch, 
     ruby::video.release();
     ruby::video.output(outputWidth, outputHeight);
   }
-  ruby::video.output(outputWidth, outputHeight);
   ruby::video.unlock();
 
   static u64 vblankCounter = 0, previous, current;

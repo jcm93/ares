@@ -23,7 +23,7 @@ struct RasterizerData
     // interpolates its value with the values of the other triangle vertices
     // and then passes the interpolated value to the fragment shader for each
     // fragment in the triangle.
-    float4 color;
+    float2 textureCoordinate;
 };
 
 vertex RasterizerData
@@ -48,13 +48,21 @@ vertexShader(uint vertexID [[vertex_id]],
     out.position.xy = pixelSpacePosition / (viewportSize / 2.0);
 
     // Pass the input color directly to the rasterizer.
-    out.color = vertices[vertexID].color;
+    out.textureCoordinate = vertices[vertexID].textureCoordinate;
 
     return out;
 }
 
-fragment float4 fragmentShader(RasterizerData in [[stage_in]])
+fragment float4
+samplingShader(RasterizerData in [[stage_in]],
+               texture2d<half> colorTexture [[ texture(AAPLTextureIndexBaseColor) ]])
 {
-    // Return the interpolated color.
-    return in.color;
+    constexpr sampler textureSampler (mag_filter::nearest,
+                                      min_filter::nearest);
+
+    // Sample the texture to obtain a color
+    const half4 colorSample = colorTexture.sample(textureSampler, in.textureCoordinate);
+
+    // return the color of the texture
+    return float4(colorSample);
 }
