@@ -35,8 +35,8 @@ struct Metal {
   u32* buffer = nullptr;
 
   u32 frameCount = 0;
-  u32 width = 0;
-  u32 height = 0;
+  u32 framebufferWidth = 0;
+  u32 framebufferHeight = 0;
   
   id<MTLDevice> _device;
   id<MTLCommandQueue> _commandQueue;

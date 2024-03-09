@@ -5,7 +5,7 @@
 #include <iostream>
 
 auto Metal::size(u32 w, u32 h) -> void {
-  width = w, height = h;
+  framebufferWidth = w, framebufferHeight = h;
   buffer = new u32[w * h]();
 }
 
@@ -20,7 +20,7 @@ auto Metal::clear() -> void {
 }
 
 auto Metal::lock(u32*& data, u32& pitch) -> bool {
-  pitch = width * sizeof(u32);
+  pitch = framebufferWidth * sizeof(u32);
   return data = buffer;
 }
 
