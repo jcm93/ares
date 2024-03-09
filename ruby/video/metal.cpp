@@ -78,8 +78,6 @@ struct VideoMetal : VideoDriver, Metal {
 
   auto size(u32& width, u32& height) -> void override {
     auto area = [view convertRectToBacking:[view bounds]];
-    std::cout << area.size.width << "\n";
-    std::cout << area.size.height << "\n";
     width = area.size.width;
     height = area.size.height;
     _viewportSize.x = width;
@@ -89,8 +87,6 @@ struct VideoMetal : VideoDriver, Metal {
   auto acquire(u32*& data, u32& pitch, u32 width, u32 height) -> bool override {
     Metal::size(width, height);
     bool result = Metal::lock(data, pitch);
-    _viewportSize.x = width;
-    _viewportSize.y = height;
     return result;
   }
 
@@ -98,74 +94,90 @@ struct VideoMetal : VideoDriver, Metal {
   }
 
   auto output(u32 width, u32 height) -> void override {
-    id<MTLCommandBuffer> commandBuffer = [_commandQueue commandBuffer];
+    
+    float widthfloat = (float)width;
+    float heightfloat = (float)height;
     
     static const AAPLVertex vertices[] =
     {
-        // 2D positions,    RGBA colors
-        { {  250,  -250 }, { 1, 0, 0, 1 } },
-        { { -250,  -250 }, { 0, 1, 0, 1 } },
-        { {    0,   250 }, { 0, 0, 1, 1 } },
+        // Pixel positions, Texture coordinates
+        { {  widthfloat / 2,  -heightfloat / 2 },  { 1.f, 1.f } },
+        { { -widthfloat / 2,  -heightfloat / 2 },  { 0.f, 1.f } },
+        { { -widthfloat / 2,   heightfloat / 2 },  { 0.f, 0.f } },
+
+        { {  widthfloat / 2,  -heightfloat / 2 },  { 1.f, 1.f } },
+        { { -widthfloat / 2,   heightfloat / 2 },  { 0.f, 0.f } },
+        { {  widthfloat / 2,   heightfloat / 2 },  { 1.f, 0.f } },
     };
-        
-    id<MTLBuffer> vertexBuffer = [_device newBufferWithBytes:vertices length:sizeof(vertices) options:MTLResourceStorageModeShared];
     
-    if (commandBuffer != nil) {
-      MTLRenderPassDescriptor *renderPassDescriptor = [view currentRenderPassDescriptor];
-      if (renderPassDescriptor != nil) {
-        id<MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
-        if (renderEncoder!= nil) {
+    @autoreleasepool {
+      
+      id<MTLCommandBuffer> commandBuffer = [_commandQueue commandBuffer];
           
-          id<CAMetalDrawable> drawable = view.currentDrawable;
-          if (drawable != nil) {
-            MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor new];
-            textureDescriptor.pixelFormat = MTLPixelFormatBGRA8Unorm;
-            textureDescriptor.width = width;
-            textureDescriptor.height = height;
+      id<MTLBuffer> vertexBuffer = [_device newBufferWithBytes:vertices length:sizeof(vertices) options:MTLResourceStorageModeShared];
+      
+      if (commandBuffer != nil) {
+        MTLRenderPassDescriptor *renderPassDescriptor = [view currentRenderPassDescriptor];
+        if (renderPassDescriptor != nil) {
+          id<MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
+          if (renderEncoder!= nil) {
+            
+            id<CAMetalDrawable> drawable = view.currentDrawable;
+            if (drawable != nil) {
+              MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor new];
+              textureDescriptor.pixelFormat = MTLPixelFormatBGRA8Unorm;
+              textureDescriptor.width = 160;
+              textureDescriptor.height = 144;
               
-            //std::cout << width << "\n";
-            //std::cout << height << "\n";
-            
-            auto length = width * height;
-            
-            auto mtlBuffer = [_device newBufferWithBytes:buffer
-                                                  length:9216000
-                                                 options:MTLResourceStorageModeManaged];
-                
-            auto metalTexture = [mtlBuffer newTextureWithDescriptor:textureDescriptor
-            offset:0
-            bytesPerRow:width*4];
-            
-            
-            
-            renderPassDescriptor.colorAttachments[0].texture = metalTexture;
-            renderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionClear;
-            renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0.0,0.0,0.0,1.0);
-            
-            [renderEncoder setRenderPipelineState:_pipelineState];
-            
-            [renderEncoder setViewport:(MTLViewport){0.0, 0.0, static_cast<double>(_viewportSize.x), static_cast<double>(_viewportSize.y), 0.0, 1.0 }];
-            
-            [renderEncoder setVertexBuffer:vertexBuffer
-                              offset:0
-                               atIndex:0];
-            
-            [renderEncoder setVertexBytes:&_viewportSize
-                                   length:sizeof(_viewportSize)
-                                  atIndex:AAPLVertexInputIndexViewportSize];
-            
-            [renderEncoder setFragmentTexture:metalTexture atIndex:0];
-            
-            [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:3];
-            
-            [renderEncoder endEncoding];
-            
-            [commandBuffer presentDrawable:drawable];
-            
-            [commandBuffer commit];
-            
-            [commandBuffer waitUntilCompleted];
-            
+              //std::cout << width << "\n";
+              //std::cout << height << "\n";
+              
+              auto length = width * height * 4;
+              
+              auto mtlBuffer = [_device newBufferWithBytes:buffer
+                                                    length:160*144*4
+                                                   options:MTLResourceStorageModeManaged];
+              
+              auto metalTexture = [mtlBuffer newTextureWithDescriptor:textureDescriptor
+                                                               offset:0
+                                                          bytesPerRow:160*4];
+              
+              //[metalTexture replaceRegion:MTLRegionMake2D(0, 0, 160, 144) mipmapLevel:0 withBytes:buffer bytesPerRow:160 * 4];
+              
+              MTLRegion region = {
+                { 0, 0, 0 },                   // MTLOrigin
+                {width, height, 1} // MTLSize
+              };
+              
+              [renderEncoder setRenderPipelineState:_pipelineState];
+              
+              [renderEncoder setViewport:(MTLViewport){0.0, 0.0, (double)width, (double)height, -1.0, 1.0 }];
+              
+              [renderEncoder setVertexBuffer:vertexBuffer
+                                      offset:0
+                                     atIndex:0];
+              
+              [renderEncoder setVertexBytes:&_viewportSize
+                                     length:sizeof(_viewportSize)
+                                    atIndex:AAPLVertexInputIndexViewportSize];
+              
+              [renderEncoder setFragmentTexture:metalTexture atIndex:0];
+              
+              [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:0 vertexCount:6];
+              
+              renderPassDescriptor.colorAttachments[0].texture = metalTexture;
+              renderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionClear;
+              renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0.0,0.0,0.0,1.0);
+              
+              [renderEncoder endEncoding];
+              
+              [commandBuffer presentDrawable:drawable];
+              
+              [commandBuffer commit];
+              
+              [commandBuffer waitUntilCompleted];
+              
+            }
           }
         }
       }
@@ -201,7 +213,7 @@ private:
     pipelineDescriptor.vertexFunction = [_library newFunctionWithName:@"vertexShader"];
     
     pipelineDescriptor.colorAttachments[0].pixelFormat = MTLPixelFormatBGRA8Unorm;
-    pipelineDescriptor.fragmentFunction = [_library newFunctionWithName:@"fragmentShader"];
+    pipelineDescriptor.fragmentFunction = [_library newFunctionWithName:@"samplingShader"];
     
     
     _pipelineState = [_device newRenderPipelineStateWithDescriptor:pipelineDescriptor error:&error];
