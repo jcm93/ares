@@ -126,8 +126,8 @@ struct VideoMetal : VideoDriver, Metal {
             if (drawable != nil) {
               MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor new];
               textureDescriptor.pixelFormat = MTLPixelFormatBGRA8Unorm;
-              textureDescriptor.width = 160;
-              textureDescriptor.height = 144;
+              textureDescriptor.width = framebufferWidth;
+              textureDescriptor.height = framebufferHeight;
               
               //std::cout << width << "\n";
               //std::cout << height << "\n";
@@ -135,19 +135,12 @@ struct VideoMetal : VideoDriver, Metal {
               auto length = width * height * 4;
               
               auto mtlBuffer = [_device newBufferWithBytes:buffer
-                                                    length:160*144*4
+                                                    length:framebufferWidth*framebufferHeight*4
                                                    options:MTLResourceStorageModeManaged];
               
               auto metalTexture = [mtlBuffer newTextureWithDescriptor:textureDescriptor
                                                                offset:0
-                                                          bytesPerRow:160*4];
-              
-              //[metalTexture replaceRegion:MTLRegionMake2D(0, 0, 160, 144) mipmapLevel:0 withBytes:buffer bytesPerRow:160 * 4];
-              
-              MTLRegion region = {
-                { 0, 0, 0 },                   // MTLOrigin
-                {width, height, 1} // MTLSize
-              };
+                                                          bytesPerRow:framebufferWidth*4];
               
               [renderEncoder setRenderPipelineState:_pipelineState];
               
