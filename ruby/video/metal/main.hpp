@@ -5,8 +5,19 @@
 #include <iostream>
 
 auto Metal::size(u32 w, u32 h) -> void {
+  if (framebufferWidth == w && framebufferHeight == h) return;
+  
   framebufferWidth = w, framebufferHeight = h;
+  
+  if (buffer) {
+    delete[] buffer;
+    buffer = nullptr;
+  }
+  
   buffer = new u32[w * h]();
+  _mtlBuffer = [_device newBufferWithBytes:buffer
+                                    length:framebufferWidth*framebufferHeight*4
+                                   options:MTLResourceStorageModeManaged];
 }
 
 auto Metal::setShader(const string& pathname) -> void {

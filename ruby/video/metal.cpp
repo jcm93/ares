@@ -95,25 +95,25 @@ struct VideoMetal : VideoDriver, Metal {
 
   auto output(u32 width, u32 height) -> void override {
     
-    float widthfloat = (float)width;
-    float heightfloat = (float)height;
-    
-    static const AAPLVertex vertices[] =
-    {
+    @autoreleasepool {
+      
+      float widthfloat = (float)width;
+      float heightfloat = (float)height;
+      
+      static const AAPLVertex vertices[] =
+      {
         // Pixel positions, Texture coordinates
         { {  widthfloat / 2,  -heightfloat / 2 },  { 1.f, 1.f } },
         { { -widthfloat / 2,  -heightfloat / 2 },  { 0.f, 1.f } },
         { { -widthfloat / 2,   heightfloat / 2 },  { 0.f, 0.f } },
-
+        
         { {  widthfloat / 2,  -heightfloat / 2 },  { 1.f, 1.f } },
         { { -widthfloat / 2,   heightfloat / 2 },  { 0.f, 0.f } },
         { {  widthfloat / 2,   heightfloat / 2 },  { 1.f, 0.f } },
-    };
-    
-    @autoreleasepool {
+      };
       
       id<MTLCommandBuffer> commandBuffer = [_commandQueue commandBuffer];
-          
+      
       id<MTLBuffer> vertexBuffer = [_device newBufferWithBytes:vertices length:sizeof(vertices) options:MTLResourceStorageModeShared];
       
       if (commandBuffer != nil) {
@@ -129,18 +129,13 @@ struct VideoMetal : VideoDriver, Metal {
               textureDescriptor.width = framebufferWidth;
               textureDescriptor.height = framebufferHeight;
               
-              //std::cout << width << "\n";
-              //std::cout << height << "\n";
-              
               auto length = width * height * 4;
               
-              auto mtlBuffer = [_device newBufferWithBytes:buffer
-                                                    length:framebufferWidth*framebufferHeight*4
-                                                   options:MTLResourceStorageModeManaged];
+              id<MTLTexture> metalTexture = [_mtlBuffer newTextureWithDescriptor:textureDescriptor
+                                                                          offset:0
+                                                                     bytesPerRow:framebufferWidth*4];
               
-              auto metalTexture = [mtlBuffer newTextureWithDescriptor:textureDescriptor
-                                                               offset:0
-                                                          bytesPerRow:framebufferWidth*4];
+              [metalTexture replaceRegion:MTLRegionMake2D(0, 0, framebufferWidth, framebufferHeight) mipmapLevel:0 withBytes:buffer bytesPerRow:framebufferWidth * 4];
               
               [renderEncoder setRenderPipelineState:_pipelineState];
               
@@ -164,11 +159,9 @@ struct VideoMetal : VideoDriver, Metal {
               
               [renderEncoder endEncoding];
               
-              [commandBuffer presentDrawable:drawable];
-              
               [commandBuffer commit];
               
-              [commandBuffer waitUntilCompleted];
+              [drawable present];
               
             }
           }
@@ -231,7 +224,7 @@ private:
 
     _commandQueue = [_device newCommandQueue];
 
-    Metal::initialize(self.shader);
+    Metal::initialize("");
 
     s32 blocking = self.blocking;
 

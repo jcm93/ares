@@ -111,8 +111,6 @@ auto Program::video(ares::Node::Video::Screen node, const u32* data, u32 pitch, 
     outputWidth = viewportWidth;
     outputHeight = viewportHeight;
   }
-  
-  //std::cout << "width: " << width << "height: " << height << "videoWidth: " << videoWidth << "videoHeight: " << videoHeight << "outputWidth: " << outputWidth << "outputHeight: " << outputHeight;
 
   pitch >>= 2;
   if(auto [output, length] = ruby::video.acquire(width, height); output) {

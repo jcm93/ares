@@ -48,6 +48,7 @@ struct Metal {
   id<MTLRenderPipelineState> _pipelineState;
   id<MTLDepthStencilState> _depthState;
   id<MTLTexture> _colorMap;
+  id<MTLBuffer> _mtlBuffer;
   MTLVertexDescriptor *_mtlVertexDescriptor;
   
   libra_instance_t _libra;
