@@ -12,13 +12,14 @@ static const NSUInteger kMaxBuffersInFlight = 3;
 
 struct VideoMetal;
 
-@interface RubyVideoMetal : MTKView {
+@interface RubyVideoMetal : MTKView <MTKViewDelegate> {
 @public
   VideoMetal* video;
 }
--(id) initWith:(VideoMetal*)video device:(id<MTLDevice>)metalDevice;
+-(id) initWith:(VideoMetal*)video frame:(NSRect)frame device:(id<MTLDevice>)metalDevice;
 -(void) reshape;
 -(BOOL) acceptsFirstResponder;
+-(void) drawInMTKView:(MTKView *)view;
 @end
 
 @interface RubyWindowMetal : NSWindow <NSWindowDelegate> {
@@ -92,10 +93,11 @@ struct VideoMetal : VideoDriver, Metal {
 
   auto release() -> void override {
   }
-
-  auto output(u32 width, u32 height) -> void override {
-    
-    @autoreleasepool {
+  
+  auto draw_test() -> void override {
+      
+      auto width = _viewportSize.x;
+      auto height = _viewportSize.y;
       
       float widthfloat = (float)width;
       float heightfloat = (float)height;
@@ -167,7 +169,85 @@ struct VideoMetal : VideoDriver, Metal {
           }
         }
       }
-    }
+  }
+
+  auto output(u32 width, u32 height) -> void override {
+    /*@autoreleasepool {
+      
+      //auto width = _viewportSize.x;
+      //auto height = _viewportSize.y;
+      
+      float widthfloat = (float)width;
+      float heightfloat = (float)height;
+      
+      static const AAPLVertex vertices[] =
+      {
+        // Pixel positions, Texture coordinates
+        { {  widthfloat / 2,  -heightfloat / 2 },  { 1.f, 1.f } },
+        { { -widthfloat / 2,  -heightfloat / 2 },  { 0.f, 1.f } },
+        { { -widthfloat / 2,   heightfloat / 2 },  { 0.f, 0.f } },
+        
+        { {  widthfloat / 2,  -heightfloat / 2 },  { 1.f, 1.f } },
+        { { -widthfloat / 2,   heightfloat / 2 },  { 0.f, 0.f } },
+        { {  widthfloat / 2,   heightfloat / 2 },  { 1.f, 0.f } },
+      };
+      
+      id<MTLCommandBuffer> commandBuffer = [_commandQueue commandBuffer];
+      
+      id<MTLBuffer> vertexBuffer = [_device newBufferWithBytes:vertices length:sizeof(vertices) options:MTLResourceStorageModeShared];
+      
+      if (commandBuffer != nil) {
+        MTLRenderPassDescriptor *renderPassDescriptor = [view currentRenderPassDescriptor];
+        if (renderPassDescriptor != nil) {
+          id<MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
+          if (renderEncoder!= nil) {
+            
+            id<CAMetalDrawable> drawable = view.currentDrawable;
+            if (drawable != nil) {
+              MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor new];
+              textureDescriptor.pixelFormat = MTLPixelFormatBGRA8Unorm;
+              textureDescriptor.width = framebufferWidth;
+              textureDescriptor.height = framebufferHeight;
+              
+              auto length = width * height * 4;
+              
+              id<MTLTexture> metalTexture = [_mtlBuffer newTextureWithDescriptor:textureDescriptor
+                                                                          offset:0
+                                                                     bytesPerRow:framebufferWidth*4];
+              
+              [metalTexture replaceRegion:MTLRegionMake2D(0, 0, framebufferWidth, framebufferHeight) mipmapLevel:0 withBytes:buffer bytesPerRow:framebufferWidth * 4];
+              
+              [renderEncoder setRenderPipelineState:_pipelineState];
+              
+              [renderEncoder setViewport:(MTLViewport){0.0, 0.0, (double)width, (double)height, -1.0, 1.0 }];
+              
+              [renderEncoder setVertexBuffer:vertexBuffer
+                                      offset:0
+                                     atIndex:0];
+              
+              [renderEncoder setVertexBytes:&_viewportSize
+                                     length:sizeof(_viewportSize)
+                                    atIndex:AAPLVertexInputIndexViewportSize];
+              
+              [renderEncoder setFragmentTexture:metalTexture atIndex:0];
+              
+              [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:0 vertexCount:6];
+              
+              renderPassDescriptor.colorAttachments[0].texture = metalTexture;
+              renderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionClear;
+              renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0.0,0.0,0.0,1.0);
+              
+              [renderEncoder endEncoding];
+              
+              [commandBuffer commit];
+              
+              [drawable present];
+              
+            }
+          }
+        }
+      }
+    }*/
   }
 
 private:
@@ -213,10 +293,11 @@ private:
                                                //options:options];
     
     auto frame = NSMakeRect(0, 0, size.width, size.height);
-    view = [[RubyVideoMetal alloc] initWithFrame:frame device:_device];
+    view = [[RubyVideoMetal alloc] initWith:this frame:frame device:_device];
     [context addSubview:view];
     [[view window] makeFirstResponder:view];
     [view lockFocus];
+    viewTest = view;
     
     pipelineDescriptor.colorAttachments[0].pixelFormat = view.colorPixelFormat;
     pipelineDescriptor.depthAttachmentPixelFormat = view.depthStencilPixelFormat;
@@ -262,11 +343,19 @@ private:
 
 @implementation RubyVideoMetal : MTKView
 
--(id) initWith:(VideoMetal*)videoPointer device:(id<MTLDevice>)metalDevice {
-  if(self = [super initWithFrame:NSMakeRect(0, 0, 0, 0) device:metalDevice]) {
+-(id) initWith:(VideoMetal*)videoPointer frame:(NSRect)frame device:(id<MTLDevice>)metalDevice {
+  if(self = [super initWithFrame:frame device:metalDevice]) {
     video = videoPointer;
   }
+  self.enableSetNeedsDisplay = YES;
+  self.paused = YES;
+  [self setDelegate:self];
   return self;
+}
+
+-(void) drawInMTKView:(MTKView *)view {
+  video->draw_test();
+  [view setNeedsDisplay:YES];
 }
 
 -(void) reshape {

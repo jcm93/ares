@@ -132,6 +132,10 @@ auto Video::output(u32 width, u32 height) -> void {
   return instance->output(width, height);
 }
 
+auto Video::draw_test() -> void {
+  lock_guard<recursive_mutex> lock(mutex);
+}
+
 auto Video::poll() -> void {
   lock_guard<recursive_mutex> lock(mutex);
   return instance->poll();

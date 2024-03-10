@@ -24,6 +24,7 @@ struct Metal {
   auto output() -> void;
   auto initialize(const string& shader) -> bool;
   auto terminate() -> void;
+  auto draw_test() -> void;
   
   auto getFormat() const -> GLuint;
   auto getType() const -> GLuint;
@@ -43,6 +44,7 @@ struct Metal {
   id<MTLLibrary> _library;
   
   vector_uint2 _viewportSize;
+  MTKView *viewTest;
   
   id<MTLBuffer> _dynamicUniformBuffer;
   id<MTLRenderPipelineState> _pipelineState;
