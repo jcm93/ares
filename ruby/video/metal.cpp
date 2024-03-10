@@ -66,7 +66,7 @@ struct VideoMetal : VideoDriver, Metal {
   }
 
   auto setShader(string shader) -> bool override {
-    return true;
+    Metal::setShader(shader);
   }
 
   auto focused() -> bool override {
@@ -102,9 +102,6 @@ struct VideoMetal : VideoDriver, Metal {
     @autoreleasepool {
       
       dispatch_semaphore_wait(_semaphore, DISPATCH_TIME_FOREVER);
-      
-      //auto width = _viewportSize.x;
-      //auto height = _viewportSize.y;
       
       float widthfloat = (float)width;
       float heightfloat = (float)height;
@@ -173,9 +170,17 @@ struct VideoMetal : VideoDriver, Metal {
             
             [renderEncoder endEncoding];
             
-            [commandBuffer commit];
+            id<MTLTexture> renderTexture = [renderPassDescriptor.colorAttachments[0] texture];
+            
+            libra_viewport_t viewport;
+            viewport.width = (uint32_t) width;
+            viewport.height = (uint32_t) height;
+            viewport.x = 0;
+            viewport.y = 0;
             
             id<CAMetalDrawable> drawable = view.currentDrawable;
+            
+            _libra.mtl_filter_chain_frame(&_filterChain, commandBuffer, 1, metalTexture, viewport, drawable.texture, nil, nil);
             
             if (drawable != nil) {
               
@@ -184,6 +189,9 @@ struct VideoMetal : VideoDriver, Metal {
               [view draw];
               
             }
+            
+            [commandBuffer commit];
+            
           }
         }
       }
@@ -250,7 +258,7 @@ private:
 
     _commandQueue = [_device newCommandQueue];
 
-    Metal::initialize("");
+    Metal::initialize(self.shader);
 
     s32 blocking = self.blocking;
 

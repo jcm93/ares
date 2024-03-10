@@ -592,7 +592,7 @@ auto Presentation::loadShaders() -> void {
 
   auto location = locate("Shaders/");
 
-  if(ruby::video.driver() == "OpenGL 3.2") {
+  if(ruby::video.driver() == "OpenGL 3.2" || ruby::video.driver() == "Metal") {
     auto files = directory::files(location, "*.slangp");
     for(auto dir : directory::folders(location)) {
       for(auto file : directory::files({location, "/", dir}, "*.slangp")) {
