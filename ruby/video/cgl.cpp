@@ -1,5 +1,6 @@
 #define GL_ALPHA_TEST 0x0bc0
 #include "opengl/opengl.hpp"
+#include <iostream>
 
 struct VideoCGL;
 
