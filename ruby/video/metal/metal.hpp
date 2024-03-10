@@ -42,6 +42,7 @@ struct Metal {
   id<MTLDevice> _device;
   id<MTLCommandQueue> _commandQueue;
   id<MTLLibrary> _library;
+  dispatch_semaphore_t _semaphore;
   
   vector_uint2 _viewportSize;
   MTKView *viewTest;

@@ -96,11 +96,13 @@ struct VideoMetal : VideoDriver, Metal {
   
   auto draw_test() -> void override {
       
-      auto width = _viewportSize.x;
+      /*auto width = _viewportSize.x;
       auto height = _viewportSize.y;
       
       float widthfloat = (float)width;
       float heightfloat = (float)height;
+    
+      //view.clearColor = MTLClearColorMake(0.0,1.0,0.0,1.0);
       
       static const AAPLVertex vertices[] =
       {
@@ -168,11 +170,13 @@ struct VideoMetal : VideoDriver, Metal {
             }
           }
         }
-      }
+      }*/
   }
 
   auto output(u32 width, u32 height) -> void override {
-    /*@autoreleasepool {
+    @autoreleasepool {
+      
+      dispatch_semaphore_wait(_semaphore, DISPATCH_TIME_FOREVER);
       
       //auto width = _viewportSize.x;
       //auto height = _viewportSize.y;
@@ -194,60 +198,71 @@ struct VideoMetal : VideoDriver, Metal {
       
       id<MTLCommandBuffer> commandBuffer = [_commandQueue commandBuffer];
       
-      id<MTLBuffer> vertexBuffer = [_device newBufferWithBytes:vertices length:sizeof(vertices) options:MTLResourceStorageModeShared];
-      
       if (commandBuffer != nil) {
+        __block dispatch_semaphore_t block_sema = _semaphore;
+        
+        [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> buffer) {
+         dispatch_semaphore_signal(block_sema);
+        }];
+        
         MTLRenderPassDescriptor *renderPassDescriptor = [view currentRenderPassDescriptor];
+        
+        id<MTLBuffer> vertexBuffer = [_device newBufferWithBytes:vertices length:sizeof(vertices) options:MTLResourceStorageModeShared];
+        
         if (renderPassDescriptor != nil) {
+          
           id<MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
+          
           if (renderEncoder!= nil) {
             
+            MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor new];
+            textureDescriptor.pixelFormat = MTLPixelFormatBGRA8Unorm;
+            textureDescriptor.width = framebufferWidth;
+            textureDescriptor.height = framebufferHeight;
+            textureDescriptor.usage = MTLTextureUsageRenderTarget|MTLTextureUsageShaderRead;
+            
+            id<MTLTexture> metalTexture = [_mtlBuffer newTextureWithDescriptor:textureDescriptor
+                                                                        offset:0
+                                                                   bytesPerRow:framebufferWidth*4];
+            
+            [metalTexture replaceRegion:MTLRegionMake2D(0, 0, framebufferWidth, framebufferHeight) mipmapLevel:0 withBytes:buffer bytesPerRow:framebufferWidth * 4];
+            renderPassDescriptor.colorAttachments[0].texture = metalTexture;
+            
+            auto length = width * height * 4;
+            
+            [renderEncoder setRenderPipelineState:_pipelineState];
+            
+            [renderEncoder setViewport:(MTLViewport){0.0, 0.0, (double)width, (double)height, -1.0, 1.0 }];
+            
+            [renderEncoder setVertexBuffer:vertexBuffer
+                                    offset:0
+                                   atIndex:0];
+            
+            [renderEncoder setVertexBytes:&_viewportSize
+                                   length:sizeof(_viewportSize)
+                                  atIndex:AAPLVertexInputIndexViewportSize];
+            
+            [renderEncoder setFragmentTexture:metalTexture atIndex:0];
+            
+            [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:0 vertexCount:6];
+            
+            [renderEncoder endEncoding];
+            
+            [commandBuffer commit];
+            
             id<CAMetalDrawable> drawable = view.currentDrawable;
+            
             if (drawable != nil) {
-              MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor new];
-              textureDescriptor.pixelFormat = MTLPixelFormatBGRA8Unorm;
-              textureDescriptor.width = framebufferWidth;
-              textureDescriptor.height = framebufferHeight;
-              
-              auto length = width * height * 4;
-              
-              id<MTLTexture> metalTexture = [_mtlBuffer newTextureWithDescriptor:textureDescriptor
-                                                                          offset:0
-                                                                     bytesPerRow:framebufferWidth*4];
-              
-              [metalTexture replaceRegion:MTLRegionMake2D(0, 0, framebufferWidth, framebufferHeight) mipmapLevel:0 withBytes:buffer bytesPerRow:framebufferWidth * 4];
-              
-              [renderEncoder setRenderPipelineState:_pipelineState];
-              
-              [renderEncoder setViewport:(MTLViewport){0.0, 0.0, (double)width, (double)height, -1.0, 1.0 }];
-              
-              [renderEncoder setVertexBuffer:vertexBuffer
-                                      offset:0
-                                     atIndex:0];
-              
-              [renderEncoder setVertexBytes:&_viewportSize
-                                     length:sizeof(_viewportSize)
-                                    atIndex:AAPLVertexInputIndexViewportSize];
-              
-              [renderEncoder setFragmentTexture:metalTexture atIndex:0];
-              
-              [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:0 vertexCount:6];
-              
-              renderPassDescriptor.colorAttachments[0].texture = metalTexture;
-              renderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionClear;
-              renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0.0,0.0,0.0,1.0);
-              
-              [renderEncoder endEncoding];
-              
-              [commandBuffer commit];
               
               [drawable present];
+              
+              [view draw];
               
             }
           }
         }
       }
-    }*/
+    }
   }
 
 private:
@@ -270,6 +285,8 @@ private:
     
     _device = MTLCreateSystemDefaultDevice();
     _commandQueue = [_device newCommandQueue];
+    
+    _semaphore = dispatch_semaphore_create(kMaxBuffersInFlight);
     
     NSURL *shaderLibURL = [NSURL fileURLWithPath:@"ares.app/Contents/Resources/Shaders/shaders.metallib"];
     _library = [_device newLibraryWithURL: shaderLibURL error:&error];
@@ -348,6 +365,7 @@ private:
     video = videoPointer;
   }
   self.enableSetNeedsDisplay = YES;
+  self.autoResizeDrawable = YES;
   self.paused = YES;
   [self setDelegate:self];
   return self;
