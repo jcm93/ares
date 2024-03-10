@@ -21,7 +21,14 @@ auto Metal::size(u32 w, u32 h) -> void {
 }
 
 auto Metal::setShader(const string& pathname) -> void {
-  if(_libra.mtl_filter_chain_create(&_preset, _commandQueue, nil, &_filterChain) != NULL) {
+  if (pathname == "Blur") return;
+  
+  if(_libra.preset_create(pathname.data(), &_preset) != NULL) {
+    print(string{"Metal: Failed to load shader: ", pathname, "\n"});
+    return;
+  }
+  
+  if (_libra.mtl_filter_chain_create(&_preset, _commandQueue, nil, &_filterChain) != NULL) {
     print(string{"Metal: Failed to create filter chain for: ", pathname, "\n"});
   };
 }
