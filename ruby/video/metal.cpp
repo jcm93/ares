@@ -143,11 +143,14 @@ struct VideoMetal : VideoDriver, Metal {
             textureDescriptor.height = framebufferHeight;
             textureDescriptor.usage = MTLTextureUsageRenderTarget|MTLTextureUsageShaderRead;
             
+            auto bytesPerRow = framebufferWidth * 4;
+            if (bytesPerRow < 16) bytesPerRow = 16;
+            
             id<MTLTexture> metalTexture = [_mtlBuffer newTextureWithDescriptor:textureDescriptor
                                                                         offset:0
-                                                                   bytesPerRow:framebufferWidth*4];
+                                                                   bytesPerRow:bytesPerRow];
             
-            [metalTexture replaceRegion:MTLRegionMake2D(0, 0, framebufferWidth, framebufferHeight) mipmapLevel:0 withBytes:buffer bytesPerRow:framebufferWidth * 4];
+            [metalTexture replaceRegion:MTLRegionMake2D(0, 0, framebufferWidth, framebufferHeight) mipmapLevel:0 withBytes:buffer bytesPerRow:bytesPerRow];
             renderPassDescriptor.colorAttachments[0].texture = metalTexture;
             
             auto length = width * height * 4;
