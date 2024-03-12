@@ -65,8 +65,19 @@ struct VideoMetal : VideoDriver, Metal {
     return true;
   }
 
-  auto setShader(string shader) -> bool override {
-    Metal::setShader(shader);
+  auto setShader(string pathname) -> bool override {
+    if (pathname == "Blur") return true;
+    
+    if(_libra.preset_create(pathname.data(), &_preset) != NULL) {
+      print(string{"Metal: Failed to load shader: ", pathname, "\n"});
+      return false;
+    }
+    
+    if (_libra.mtl_filter_chain_create(&_preset, _commandQueue, nil, &_filterChain) != NULL) {
+      print(string{"Metal: Failed to create filter chain for: ", pathname, "\n"});
+      return false;
+    };
+    return true;
   }
 
   auto focused() -> bool override {
@@ -74,7 +85,7 @@ struct VideoMetal : VideoDriver, Metal {
   }
 
   auto clear() -> void override {
-    Metal::clear();
+    
   }
 
   auto size(u32& width, u32& height) -> void override {
@@ -86,9 +97,27 @@ struct VideoMetal : VideoDriver, Metal {
   }
 
   auto acquire(u32*& data, u32& pitch, u32 width, u32 height) -> bool override {
-    Metal::size(width, height);
-    bool result = Metal::lock(data, pitch);
+    if (framebufferWidth != width || framebufferHeight != height) {
+      
+      framebufferWidth = width, framebufferHeight = height;
+      
+      if (buffer) {
+        delete[] buffer;
+        buffer = nullptr;
+      }
+      
+      buffer = new u32[width * height]();
+      _mtlBuffer = [_device newBufferWithBytes:buffer
+                                        length:framebufferWidth*framebufferHeight*4
+                                       options:MTLResourceStorageModeManaged];
+    }
+    bool result = lock(data, pitch);
     return result;
+  }
+  
+  auto lock(u32*& data, u32& pitch) -> bool {
+    pitch = framebufferWidth * sizeof(u32);
+    return data = buffer;
   }
 
   auto release() -> void override {
@@ -183,7 +212,7 @@ struct VideoMetal : VideoDriver, Metal {
             
             id<CAMetalDrawable> drawable = view.currentDrawable;
             
-            _libra.mtl_filter_chain_frame(&_filterChain, commandBuffer, 1, metalTexture, viewport, drawable.texture, nil, nil);
+            _libra.mtl_filter_chain_frame(&_filterChain, commandBuffer, frameCount++, metalTexture, viewport, drawable.texture, nil, nil);
             
             if (drawable != nil) {
               
@@ -261,20 +290,25 @@ private:
 
     _commandQueue = [_device newCommandQueue];
 
-    Metal::initialize(self.shader);
+    _libra = librashader_load_instance();
+    if(!_libra.instance_loaded) {
+      print("Metal: Failed to load librashader: shaders will be disabled\n");
+    }
+    
+    setShader(self.shader);
 
     s32 blocking = self.blocking;
 
     [view unlockFocus];
 
     clear();
+    initialized = true;
     return _ready = true;
   }
 
   auto terminate() -> void {
     acquireContext();
     _ready = false;
-    Metal::terminate();
 
     if (view) {
       [view removeFromSuperview];

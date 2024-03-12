@@ -5,12 +5,8 @@
 //  Created by jcm on 3/4/24.
 //
 
-#include <Foundation/Foundation.h>
 #include <Metal/Metal.h>
 #include <MetalKit/MetalKit.h>
-#include <Metal/MTLDevice.h>
-#include <ModelIO/ModelIO.h>
-#include <CoreImage/CoreImage.h>
 
 #include "librashader_ld.h"
 #include "ShaderTypes.h"
@@ -59,5 +55,3 @@ struct Metal {
   libra_mtl_filter_chain_t _filterChain;
   bool initialized = false;
 };
-
-#include "main.hpp"
