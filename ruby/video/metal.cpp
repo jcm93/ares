@@ -8,8 +8,6 @@
 #include "metal/metal.hpp"
 #include <iostream>
 
-static const NSUInteger kMaxBuffersInFlight = 3;
-
 struct VideoMetal;
 
 @interface RubyVideoMetal : MTKView <MTKViewDelegate> {
@@ -107,9 +105,11 @@ struct VideoMetal : VideoDriver, Metal {
       }
       
       buffer = new u32[width * height]();
-      _mtlBuffer = [_device newBufferWithBytes:buffer
-                                        length:framebufferWidth*framebufferHeight*4
-                                       options:MTLResourceStorageModeManaged];
+      for (int i=0; i<kMaxBuffersInFlight;i++) {
+        _pixelBuffers[i] = [_device newBufferWithBytes:buffer
+                                                length:framebufferWidth*framebufferHeight*4
+                                               options:MTLResourceStorageModeShared];
+      }
     }
     bool result = lock(data, pitch);
     return result;
@@ -123,12 +123,11 @@ struct VideoMetal : VideoDriver, Metal {
   auto release() -> void override {
   }
   
-  auto draw_test() -> void override {
-
-  }
-
-  auto output(u32 width, u32 height) -> void override {
+  auto draw_test() -> void {
     @autoreleasepool {
+      
+      auto width = _viewportSize.x;
+      auto height = _viewportSize.y;
       
       dispatch_semaphore_wait(_semaphore, DISPATCH_TIME_FOREVER);
       
@@ -175,11 +174,13 @@ struct VideoMetal : VideoDriver, Metal {
             auto bytesPerRow = framebufferWidth * 4;
             if (bytesPerRow < 16) bytesPerRow = 16;
             
-            id<MTLTexture> metalTexture = [_mtlBuffer newTextureWithDescriptor:textureDescriptor
+            auto bufferIndex = frameCount % kMaxBuffersInFlight;
+            
+            id<MTLTexture> metalTexture = [_pixelBuffers[bufferIndex] newTextureWithDescriptor:textureDescriptor
                                                                         offset:0
                                                                    bytesPerRow:bytesPerRow];
             
-            [metalTexture replaceRegion:MTLRegionMake2D(0, 0, framebufferWidth, framebufferHeight) mipmapLevel:0 withBytes:buffer bytesPerRow:bytesPerRow];
+            //[metalTexture replaceRegion:MTLRegionMake2D(0, 0, framebufferWidth, framebufferHeight) mipmapLevel:0 withBytes:buffer bytesPerRow:bytesPerRow];
             renderPassDescriptor.colorAttachments[0].texture = metalTexture;
             
             auto length = width * height * 4;
@@ -218,7 +219,7 @@ struct VideoMetal : VideoDriver, Metal {
               
               [drawable present];
               
-              [view draw];
+              //[view draw];
               
             }
             
@@ -228,6 +229,13 @@ struct VideoMetal : VideoDriver, Metal {
         }
       }
     }
+  }
+
+  auto output(u32 width, u32 height) -> void override {
+    auto index = cpuFrameCount % kMaxBuffersInFlight;
+    id<MTLBuffer> nextBuffer = _pixelBuffers[index];
+    memcpy(nextBuffer.contents, buffer, framebufferWidth * framebufferHeight * 4);
+    cpuFrameCount++;
   }
 
 private:
@@ -339,8 +347,9 @@ private:
   }
   self.enableSetNeedsDisplay = YES;
   self.autoResizeDrawable = YES;
-  self.paused = YES;
-  //[self setDelegate:self];
+  self.paused = NO;
+  [self setPreferredFramesPerSecond:60];
+  [self setDelegate:self];
   return self;
 }
 
