@@ -13,6 +13,8 @@
 
 struct Metal;
 
+static const NSUInteger kMaxBuffersInFlight = 3;
+
 struct Metal {
   auto setShader(const string& pathname) -> void;
   auto clear() -> void;
@@ -29,9 +31,10 @@ struct Metal {
   auto release() -> void;
   auto render(u32 sourceWidth, u32 sourceHeight, u32 targetX, u32 targetY, u32 targetWidth, u32 targetHeight) -> void;
   
-  u32* buffer = nullptr;
+  u32 *buffer = nullptr;
 
   u32 frameCount = 0;
+  u32 cpuFrameCount = 0;
   u32 framebufferWidth = 0;
   u32 framebufferHeight = 0;
   
@@ -43,11 +46,10 @@ struct Metal {
   vector_uint2 _viewportSize;
   MTKView *viewTest;
   
-  id<MTLBuffer> _dynamicUniformBuffer;
+  id<MTLBuffer> _pixelBuffers[kMaxBuffersInFlight];
   id<MTLRenderPipelineState> _pipelineState;
   id<MTLDepthStencilState> _depthState;
   id<MTLTexture> _colorMap;
-  id<MTLBuffer> _mtlBuffer;
   MTLVertexDescriptor *_mtlVertexDescriptor;
   
   libra_instance_t _libra;
