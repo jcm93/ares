@@ -38,6 +38,14 @@ struct Metal {
   u32 framebufferWidth = 0;
   u32 framebufferHeight = 0;
   
+  u32 dumbCount = 0;
+  u32 otherDumbCount = 0;
+  
+  u32 cpuDumbCount = 0;
+  u32 otherCPUDumbCount = 0;
+  
+  NSDate *then;
+  
   id<MTLDevice> _device;
   id<MTLCommandQueue> _commandQueue;
   id<MTLLibrary> _library;
