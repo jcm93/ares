@@ -29,7 +29,7 @@ struct VideoMetal;
 -(BOOL) canBecomeMainWindow;
 @end
 
-@interface MetalLayerDelegate: NSObject<CALayerDelegate, NSViewLayerContentScaleDelegate>
+/*@interface MetalLayerDelegate: NSObject<CALayerDelegate, NSViewLayerContentScaleDelegate>
 @end
 
 @implementation MetalLayerDelegate
@@ -38,7 +38,7 @@ struct VideoMetal;
   return YES;
 }
 
-@end
+@end*/
 
 struct VideoMetal : VideoDriver, Metal {
   VideoMetal& self = *this;
@@ -101,8 +101,10 @@ struct VideoMetal : VideoDriver, Metal {
     auto area = [view convertRectToBacking:[view bounds]];
     width = area.size.width;
     height = area.size.height;
-    _viewportSize.x = width;
-    _viewportSize.y = height;
+    auto newSize = CGSize();
+    newSize.width = width;
+    newSize.height = height;
+    view.drawableSize = newSize;
   }
 
   auto acquire(u32*& data, u32& pitch, u32 width, u32 height) -> bool override {
@@ -122,16 +124,12 @@ struct VideoMetal : VideoDriver, Metal {
                                                options:MTLResourceStorageModeShared];
       }
     }
-    bool result = lock(data, pitch);
-    return result;
-  }
-  
-  auto lock(u32*& data, u32& pitch) -> bool {
     pitch = framebufferWidth * sizeof(u32);
     return data = buffer;
   }
 
   auto release() -> void override {
+    
   }
   
   auto draw_test() -> void {
@@ -256,6 +254,9 @@ struct VideoMetal : VideoDriver, Metal {
   }
 
   auto output(u32 width, u32 height) -> void override {
+    
+    //outputWidth = windowWidth;
+    //outputHeight = windowHeight;
     /*auto index = cpuFrameCount % kMaxBuffersInFlight;
     id<MTLBuffer> nextBuffer = _pixelBuffers[index];
     memcpy(nextBuffer.contents, buffer, framebufferWidth * framebufferHeight * 4);
@@ -275,11 +276,11 @@ struct VideoMetal : VideoDriver, Metal {
       float widthfloat = (float)width;
       float heightfloat = (float)height;
       
-      auto now = [NSDate new];
+      /*auto now = [NSDate new];
       auto interval = now.timeIntervalSince1970 - then.timeIntervalSince1970;
       then = now;
       
-      std::cout << interval << "\n";
+      std::cout << interval << "\n";*/
       
       static const AAPLVertex vertices[] =
       {
@@ -308,6 +309,9 @@ struct VideoMetal : VideoDriver, Metal {
         
         if (renderPassDescriptor != nil) {
           
+          renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0.0, 0.0, 0.0, 1.0);
+          renderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionClear;
+          
           id<MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
           
           if (renderEncoder!= nil) {
@@ -330,11 +334,17 @@ struct VideoMetal : VideoDriver, Metal {
             [metalTexture replaceRegion:MTLRegionMake2D(0, 0, framebufferWidth, framebufferHeight) mipmapLevel:0 withBytes:buffer bytesPerRow:bytesPerRow];
             renderPassDescriptor.colorAttachments[0].texture = metalTexture;
             
-            auto length = width * height * 4;
+            //auto length = width * height * 4;
             
             [renderEncoder setRenderPipelineState:_pipelineState];
             
-            [renderEncoder setViewport:(MTLViewport){0.0, 0.0, (double)width, (double)height, -1.0, 1.0 }];
+            auto outputX = ((double)(view.frame.size.width * 2 - width) / 2);
+            auto outputY = ((double)(view.frame.size.height * 2 - height) / 2);
+            
+            _viewportSize.x = width;
+            _viewportSize.y = height;
+            
+            [renderEncoder setViewport:(MTLViewport){(double)outputX, (double)outputY, (double)width, (double)height, -1.0, 1.0}];
             
             [renderEncoder setVertexBuffer:vertexBuffer
                                     offset:0
@@ -350,17 +360,17 @@ struct VideoMetal : VideoDriver, Metal {
             
             [renderEncoder endEncoding];
             
-            id<MTLTexture> renderTexture = [renderPassDescriptor.colorAttachments[0] texture];
+            //id<MTLTexture> renderTexture = [renderPassDescriptor.colorAttachments[0] texture];
             
             libra_viewport_t viewport;
             viewport.width = (uint32_t) width;
             viewport.height = (uint32_t) height;
-            viewport.x = 0;
-            viewport.y = 0;
+            viewport.x = outputX;
+            viewport.y = outputY;
             
             id<CAMetalDrawable> drawable = view.currentDrawable;
             
-            _libra.mtl_filter_chain_frame(&_filterChain, commandBuffer, frameCount++, metalTexture, viewport, drawable.texture, nil, nil);
+            //_libra.mtl_filter_chain_frame(&_filterChain, commandBuffer, frameCount++, metalTexture, viewport, drawable.texture, nil, nil);
             
             if (drawable != nil) {
               
@@ -430,9 +440,9 @@ private:
     [[view window] makeFirstResponder:view];
     [view lockFocus];
     viewTest = view;
+    context.autoresizesSubviews = true;
     view.colorspace = CGColorSpaceCreateWithName(kCGColorSpaceDisplayP3);
-    //_metalLayer = (CAMetalLayer *)view.layer;
-    //_metalLayer.delegate = self;
+    view.autoresizingMask = NSViewWidthSizable|NSViewHeightSizable;
     
     pipelineDescriptor.colorAttachments[0].pixelFormat = view.colorPixelFormat;
     pipelineDescriptor.depthAttachmentPixelFormat = view.depthStencilPixelFormat;
@@ -488,7 +498,8 @@ private:
     video = videoPointer;
   }
   self.enableSetNeedsDisplay = NO;
-  self.autoResizeDrawable = YES;
+  //self.autoResizeDrawable = YES;
+  //[self setAutoresizesSubviews:YES];
   self.paused = YES;
   //[self setPreferredFramesPerSecond:60];
   //[self setDelegate:self];

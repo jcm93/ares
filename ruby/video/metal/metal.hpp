@@ -18,7 +18,6 @@ static const NSUInteger kMaxBuffersInFlight = 3;
 struct Metal {
   auto setShader(const string& pathname) -> void;
   auto clear() -> void;
-  auto lock(u32*& data, u32& pitch) -> bool;
   auto output() -> void;
   auto initialize(const string& shader) -> bool;
   auto terminate() -> void;
