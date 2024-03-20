@@ -282,7 +282,7 @@ struct VideoMetal : VideoDriver, Metal {
       
       std::cout << interval << "\n";*/
       
-      static const AAPLVertex vertices[] =
+      AAPLVertex vertices[] =
       {
         // Pixel positions, Texture coordinates
         { {  widthfloat / 2,  -heightfloat / 2 },  { 1.f, 1.f } },
@@ -370,7 +370,7 @@ struct VideoMetal : VideoDriver, Metal {
             
             id<CAMetalDrawable> drawable = view.currentDrawable;
             
-            //_libra.mtl_filter_chain_frame(&_filterChain, commandBuffer, frameCount++, metalTexture, viewport, drawable.texture, nil, nil);
+            _libra.mtl_filter_chain_frame(&_filterChain, commandBuffer, frameCount++, metalTexture, viewport, drawable.texture, nil, nil);
             
             if (drawable != nil) {
               
