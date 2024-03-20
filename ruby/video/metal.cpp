@@ -327,14 +327,13 @@ struct VideoMetal : VideoDriver, Metal {
             
             auto bufferIndex = frameCount % kMaxBuffersInFlight;
             
+            //buffer index does not actually change; placeholder from triple buffer
             id<MTLTexture> metalTexture = [_pixelBuffers[bufferIndex] newTextureWithDescriptor:textureDescriptor
                                                                         offset:0
                                                                    bytesPerRow:bytesPerRow];
             
+            //just copy into this texture for now
             [metalTexture replaceRegion:MTLRegionMake2D(0, 0, framebufferWidth, framebufferHeight) mipmapLevel:0 withBytes:buffer bytesPerRow:bytesPerRow];
-            renderPassDescriptor.colorAttachments[0].texture = metalTexture;
-            
-            //auto length = width * height * 4;
             
             [renderEncoder setRenderPipelineState:_pipelineState];
             
@@ -360,17 +359,19 @@ struct VideoMetal : VideoDriver, Metal {
             
             [renderEncoder endEncoding];
             
-            //id<MTLTexture> renderTexture = [renderPassDescriptor.colorAttachments[0] texture];
+            id<MTLTexture> renderTexture = [renderPassDescriptor.colorAttachments[0] texture];
             
             libra_viewport_t viewport;
-            viewport.width = (uint32_t) width;
-            viewport.height = (uint32_t) height;
+            viewport.width = (uint32_t) renderTexture.width;
+            viewport.height = (uint32_t) renderTexture.height;
             viewport.x = outputX;
             viewport.y = outputY;
             
-            id<CAMetalDrawable> drawable = view.currentDrawable;
+            std::cout << renderTexture.width << " " << renderTexture.height << "\n";
             
-            _libra.mtl_filter_chain_frame(&_filterChain, commandBuffer, frameCount++, metalTexture, viewport, drawable.texture, nil, nil);
+            _libra.mtl_filter_chain_frame(&_filterChain, commandBuffer, frameCount++, metalTexture, viewport, renderTexture, nil, nil);
+            
+            id<CAMetalDrawable> drawable = view.currentDrawable;
             
             if (drawable != nil) {
               
