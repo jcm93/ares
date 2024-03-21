@@ -34,14 +34,17 @@ struct Metal {
 
   u32 frameCount = 0;
   u32 cpuFrameCount = 0;
-  u32 framebufferWidth = 0;
-  u32 framebufferHeight = 0;
+  u32 sourceWidth = 0;
+  u32 sourceHeight = 0;
+  u32 bytesPerRow = 0;
   
-  u32 dumbCount = 0;
-  u32 otherDumbCount = 0;
+  u32 outputWidth = 0;
+  u32 outputHeight = 0;
+  double _outputX = 0;
+  double _outputY = 0;
   
-  u32 cpuDumbCount = 0;
-  u32 otherCPUDumbCount = 0;
+  CGFloat _viewWidth = 0;
+  CGFloat _viewHeight = 0;
   
   NSDate *then;
   
@@ -54,7 +57,9 @@ struct Metal {
   MTKView *viewTest;
   
   id<MTLBuffer> _pixelBuffers[kMaxBuffersInFlight];
+  id<MTLBuffer> _vertexBuffer;
   id<MTLDepthStencilState> _depthState;
+  id<MTLTexture> _sourceTexture;
   id<MTLTexture> _colorMap;
   MTLVertexDescriptor *_mtlVertexDescriptor;
   
@@ -67,5 +72,6 @@ struct Metal {
   libra_instance_t _libra;
   libra_shader_preset_t _preset;
   libra_mtl_filter_chain_t _filterChain;
+  libra_viewport_t _libraViewport;
   bool initialized = false;
 };

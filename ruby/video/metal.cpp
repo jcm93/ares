@@ -105,12 +105,18 @@ struct VideoMetal : VideoDriver, Metal {
     newSize.width = width;
     newSize.height = height;
     view.drawableSize = newSize;
+    
+    _viewWidth = width;
+    _viewHeight = height;
+    
+    _outputX = (width - outputWidth) / 2;
+    _outputY = (height - outputHeight) / 2;
   }
 
   auto acquire(u32*& data, u32& pitch, u32 width, u32 height) -> bool override {
-    if (framebufferWidth != width || framebufferHeight != height) {
+    if (sourceWidth != width || sourceHeight != height) {
       
-      framebufferWidth = width, framebufferHeight = height;
+      sourceWidth = width, sourceHeight = height;
       
       if (buffer) {
         delete[] buffer;
@@ -120,11 +126,23 @@ struct VideoMetal : VideoDriver, Metal {
       buffer = new u32[width * height]();
       for (int i=0; i<kMaxBuffersInFlight;i++) {
         _pixelBuffers[i] = [_device newBufferWithBytes:buffer
-                                                length:framebufferWidth*framebufferHeight*4
+                                                length:sourceWidth*sourceHeight*sizeof(u32)
                                                options:MTLResourceStorageModeManaged];
       }
+      
+      MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor new];
+      textureDescriptor.pixelFormat = MTLPixelFormatBGRA8Unorm;
+      textureDescriptor.width = sourceWidth;
+      textureDescriptor.height = sourceHeight;
+      textureDescriptor.usage = MTLTextureUsageRenderTarget|MTLTextureUsageShaderRead;
+      
+      _sourceTexture = [_device newTextureWithDescriptor:textureDescriptor];
+      
+      bytesPerRow = sourceWidth * sizeof(u32);
+      if (bytesPerRow < 16) bytesPerRow = 16;
+      
     }
-    pitch = framebufferWidth * sizeof(u32);
+    pitch = sourceWidth * sizeof(u32);
     return data = buffer;
   }
 
@@ -134,27 +152,60 @@ struct VideoMetal : VideoDriver, Metal {
   auto draw_test() -> void {
     
   }
+  
+  auto resizeOutputBuffers(u32 width, u32 height) {
+    outputWidth = width;
+    outputHeight = height;
+    
+    float widthfloat = (float)width;
+    float heightfloat = (float)height;
+    
+    AAPLVertex vertices[] =
+    {
+      // Pixel positions, Texture coordinates
+      { {  widthfloat / 2,  -heightfloat / 2 },  { 1.f, 1.f } },
+      { { -widthfloat / 2,  -heightfloat / 2 },  { 0.f, 1.f } },
+      { { -widthfloat / 2,   heightfloat / 2 },  { 0.f, 0.f } },
+      
+      { {  widthfloat / 2,  -heightfloat / 2 },  { 1.f, 1.f } },
+      { { -widthfloat / 2,   heightfloat / 2 },  { 0.f, 0.f } },
+      { {  widthfloat / 2,   heightfloat / 2 },  { 1.f, 0.f } },
+    };
+    
+    _vertexBuffer = [_device newBufferWithBytes:vertices length:sizeof(vertices) options:MTLResourceStorageModeShared];
+    
+    MTLTextureDescriptor *texDescriptor = [MTLTextureDescriptor new];
+    texDescriptor.textureType = MTLTextureType2D;
+    texDescriptor.width = width;
+    texDescriptor.height = height;
+    texDescriptor.pixelFormat = MTLPixelFormatBGRA8Unorm;
+    texDescriptor.usage = MTLTextureUsageRenderTarget |
+                          MTLTextureUsageShaderRead;
+    
+    _renderTargetTexture = [_device newTextureWithDescriptor:texDescriptor];
+    
+    _viewportSize.x = width;
+    _viewportSize.y = height;
+
+    _libraViewport.width = (uint32_t) width;
+    _libraViewport.height = (uint32_t) height;
+    _libraViewport.x = 0;
+    _libraViewport.y = 0;
+    
+    _outputX = (_viewWidth - width) / 2;
+    _outputY = (_viewHeight - height) / 2;
+  }
 
   auto output(u32 width, u32 height) -> void override {
+    
+    //todo: figure out how to do this outside of the output function
+    if (width != outputWidth || height != outputHeight) {
+      resizeOutputBuffers(width, height);
+    }
     
     @autoreleasepool {
       
       dispatch_semaphore_wait(_semaphore, DISPATCH_TIME_FOREVER);
-      
-      float widthfloat = (float)width;
-      float heightfloat = (float)height;
-      
-      AAPLVertex vertices[] =
-      {
-        // Pixel positions, Texture coordinates
-        { {  widthfloat / 2,  -heightfloat / 2 },  { 1.f, 1.f } },
-        { { -widthfloat / 2,  -heightfloat / 2 },  { 0.f, 1.f } },
-        { { -widthfloat / 2,   heightfloat / 2 },  { 0.f, 0.f } },
-        
-        { {  widthfloat / 2,  -heightfloat / 2 },  { 1.f, 1.f } },
-        { { -widthfloat / 2,   heightfloat / 2 },  { 0.f, 0.f } },
-        { {  widthfloat / 2,   heightfloat / 2 },  { 1.f, 0.f } },
-      };
       
       id<MTLCommandBuffer> commandBuffer = [_commandQueue commandBuffer];
       
@@ -165,53 +216,24 @@ struct VideoMetal : VideoDriver, Metal {
          dispatch_semaphore_signal(block_sema);
         }];
         
-        id<MTLBuffer> vertexBuffer = [_device newBufferWithBytes:vertices length:sizeof(vertices) options:MTLResourceStorageModeShared];
-        
-        MTLTextureDescriptor *texDescriptor = [MTLTextureDescriptor new];
-        texDescriptor.textureType = MTLTextureType2D;
-        texDescriptor.width = width;
-        texDescriptor.height = height;
-        texDescriptor.pixelFormat = MTLPixelFormatBGRA8Unorm;
-        texDescriptor.usage = MTLTextureUsageRenderTarget |
-                              MTLTextureUsageShaderRead;
-        
-        _renderTargetTexture = [_device newTextureWithDescriptor:texDescriptor];
-        
         _renderToTextureRenderPassDescriptor.colorAttachments[0].texture = _renderTargetTexture;
         
         if (_renderToTextureRenderPassDescriptor != nil) {
           
           id<MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:_renderToTextureRenderPassDescriptor];
           
-          MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor new];
-          textureDescriptor.pixelFormat = MTLPixelFormatBGRA8Unorm;
-          textureDescriptor.width = framebufferWidth;
-          textureDescriptor.height = framebufferHeight;
-          textureDescriptor.usage = MTLTextureUsageRenderTarget|MTLTextureUsageShaderRead;
-          
           _renderToTextureRenderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
           
-          auto bytesPerRow = framebufferWidth * 4;
-          if (bytesPerRow < 16) bytesPerRow = 16;
-          
-          auto bufferIndex = frameCount % kMaxBuffersInFlight;
-          
-          //buffer index does not actually change; placeholder from triple buffer
-          id<MTLTexture> metalTexture = [_pixelBuffers[bufferIndex] newTextureWithDescriptor:textureDescriptor
-                                                                                      offset:0
-                                                                                 bytesPerRow:bytesPerRow];
+          //auto bufferIndex = frameCount % kMaxBuffersInFlight;
           
           //just copy into this texture for now
-          [metalTexture replaceRegion:MTLRegionMake2D(0, 0, framebufferWidth, framebufferHeight) mipmapLevel:0 withBytes:buffer bytesPerRow:bytesPerRow];
+          [_sourceTexture replaceRegion:MTLRegionMake2D(0, 0, sourceWidth, sourceHeight) mipmapLevel:0 withBytes:buffer bytesPerRow:bytesPerRow];
           
           [renderEncoder setRenderPipelineState:_renderToTextureRenderPipeline];
           
-          _viewportSize.x = width;
-          _viewportSize.y = height;
-          
           [renderEncoder setViewport:(MTLViewport){0, 0, (double)width, (double)height, -1.0, 1.0}];
           
-          [renderEncoder setVertexBuffer:vertexBuffer
+          [renderEncoder setVertexBuffer:_vertexBuffer
                                   offset:0
                                  atIndex:0];
           
@@ -219,22 +241,13 @@ struct VideoMetal : VideoDriver, Metal {
                                  length:sizeof(_viewportSize)
                                 atIndex:AAPLVertexInputIndexViewportSize];
           
-          [renderEncoder setFragmentTexture:metalTexture atIndex:0];
+          [renderEncoder setFragmentTexture:_sourceTexture atIndex:0];
           
           [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:0 vertexCount:6];
           
           [renderEncoder endEncoding];
           
-          libra_viewport_t viewport;
-          viewport.width = (uint32_t) width;
-          viewport.height = (uint32_t) height;
-          viewport.x = 0;
-          viewport.y = 0;
-          
-          //std::cout << "w" << width << " " << "w" << height << "\n";
-          //std::cout << renderTexture.width << " " << renderTexture.height << "\n";
-          
-          _libra.mtl_filter_chain_frame(&_filterChain, commandBuffer, frameCount++, metalTexture, viewport, _renderTargetTexture, nil, nil);
+          _libra.mtl_filter_chain_frame(&_filterChain, commandBuffer, frameCount++, _sourceTexture, _libraViewport, _renderTargetTexture, nil, nil);
           
           MTLRenderPassDescriptor *drawableRenderPassDescriptor = view.currentRenderPassDescriptor;
           
@@ -246,15 +259,9 @@ struct VideoMetal : VideoDriver, Metal {
             
             [renderEncoder setRenderPipelineState:_drawableRenderPipeline];
             
-            auto outputX = ((double)(view.frame.size.width * 2 - width) / 2);
-            auto outputY = ((double)(view.frame.size.height * 2 - height) / 2);
+            [renderEncoder setViewport:(MTLViewport){_outputX, _outputY, (double)width, (double)height, -1.0, 1.0}];
             
-            _viewportSize.x = width;
-            _viewportSize.y = height;
-            
-            [renderEncoder setViewport:(MTLViewport){(double)outputX, (double)outputY, (double)width, (double)height, -1.0, 1.0}];
-            
-            [renderEncoder setVertexBuffer:vertexBuffer
+            [renderEncoder setVertexBuffer:_vertexBuffer
                                     offset:0
                                    atIndex:0];
             
@@ -355,7 +362,7 @@ private:
     pipelineStateDescriptor.label = @"Drawable Render Pipeline";
     pipelineStateDescriptor.sampleCount = 1;
     pipelineStateDescriptor.vertexFunction = [_library newFunctionWithName:@"vertexShader"];
-    pipelineStateDescriptor.fragmentFunction = [_library newFunctionWithName:@"samplingShader"];
+    pipelineStateDescriptor.fragmentFunction = [_library newFunctionWithName:@"drawableSamplingShader"];
     pipelineStateDescriptor.colorAttachments[0].pixelFormat = MTLPixelFormatBGRA8Unorm;
     //pipelineStateDescriptor.vertexBuffers[AAPLVertexInputIndexVertices].mutability = MTLMutabilityImmutable;
     _drawableRenderPipeline = [_device newRenderPipelineStateWithDescriptor:pipelineStateDescriptor error:&error];
@@ -432,7 +439,7 @@ private:
     video = videoPointer;
   }
   self.enableSetNeedsDisplay = NO;
-  self.autoResizeDrawable = YES;
+  //self.autoResizeDrawable = YES;
   //[self setAutoresizesSubviews:YES];
   self.paused = YES;
   //[self setPreferredFramesPerSecond:60];
