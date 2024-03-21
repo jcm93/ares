@@ -71,11 +71,6 @@ fragment float4
 drawableSamplingShader(RasterizerData in [[stage_in]],
                texture2d<half> colorTexture [[ texture(AAPLTextureIndexBaseColor) ]])
 {
-    // We use this shader to sample the intermediate texture onto the screen texture;
-    // both textures are identical in size. Despite that, if we use nearest neighbor
-    // filtering, we end up with significant interference patterns at some scales,
-    // probably due to float rounding lower down in the system, if I were to guess.
-    // Linear filtering solves this problem. We could also blit, probably.
     constexpr sampler textureSampler (mag_filter::linear,
                                       min_filter::linear);
 
