@@ -198,7 +198,14 @@ struct VideoMetal : VideoDriver, Metal {
 
   auto output(u32 width, u32 height) -> void override {
     
-    //todo: figure out how to do this outside of the output function
+    /// Uses two render passes (plus librashader's render passes). The first render pass samples the source texture,
+    /// consisting of the pixel buffer from the emulator, onto a texture the same size as our eventual output,
+    /// `_renderTargetTexture`. Then it calls into librashader, which performs postprocessing onto the same
+    /// output texture. Then for the second render pass here, we composite the output texture within ares's viewport.
+    /// We need this last pass because librashader expects the viewport to be the same size as the output texture,
+    /// which is not the case for ares.
+    
+    //todo: to do this outside of the output function
     if (width != outputWidth || height != outputHeight) {
       resizeOutputBuffers(width, height);
     }
@@ -318,19 +325,6 @@ private:
     std::cout << size.width << " " << size.height;
     
     _semaphore = dispatch_semaphore_create(kMaxBuffersInFlight);
-    
-    MTLTextureDescriptor *texDescriptor = [MTLTextureDescriptor new];
-    texDescriptor.textureType = MTLTextureType2D;
-    texDescriptor.width = 512;
-    texDescriptor.height = 512;
-    texDescriptor.pixelFormat = MTLPixelFormatBGRA8Unorm;
-    texDescriptor.usage = MTLTextureUsageRenderTarget |
-                          MTLTextureUsageShaderRead;
-
-    _renderTargetTexture = [_device newTextureWithDescriptor:texDescriptor];
-
-    // Set up a render pass descriptor for the render pass to render into
-    // _renderTargetTexture.
 
     _renderToTextureRenderPassDescriptor = [MTLRenderPassDescriptor new];
 
@@ -352,7 +346,7 @@ private:
     pipelineStateDescriptor.sampleCount = 1;
     pipelineStateDescriptor.vertexFunction = [_library newFunctionWithName:@"vertexShader"];
     pipelineStateDescriptor.fragmentFunction = [_library newFunctionWithName:@"samplingShader"];
-    pipelineStateDescriptor.colorAttachments[0].pixelFormat = _renderTargetTexture.pixelFormat;
+    pipelineStateDescriptor.colorAttachments[0].pixelFormat = MTLPixelFormatBGRA8Unorm;
     _renderToTextureRenderPipeline = [_device newRenderPipelineStateWithDescriptor:pipelineStateDescriptor error:&error];
     
     if (_renderToTextureRenderPipeline == nil) {
@@ -364,16 +358,11 @@ private:
     pipelineStateDescriptor.vertexFunction = [_library newFunctionWithName:@"vertexShader"];
     pipelineStateDescriptor.fragmentFunction = [_library newFunctionWithName:@"drawableSamplingShader"];
     pipelineStateDescriptor.colorAttachments[0].pixelFormat = MTLPixelFormatBGRA8Unorm;
-    //pipelineStateDescriptor.vertexBuffers[AAPLVertexInputIndexVertices].mutability = MTLMutabilityImmutable;
     _drawableRenderPipeline = [_device newRenderPipelineStateWithDescriptor:pipelineStateDescriptor error:&error];
     
     if (_drawableRenderPipeline == nil) {
       NSLog(@"%@",error);
     }
-    
-    //NSDictionary* options = @{kCIContextCacheIntermediates:@NO, kCIContextUseSoftwareRenderer:@NO};
-    //_ciContext = [CIContext contextWithMTLCommandQueue:_commandQueue
-                                               //options:options];
     
     auto frame = NSMakeRect(0, 0, size.width, size.height);
     view = [[RubyVideoMetal alloc] initWith:this frame:frame device:_device];
@@ -384,10 +373,6 @@ private:
     context.autoresizesSubviews = true;
     view.colorspace = CGColorSpaceCreateWithName(kCGColorSpaceDisplayP3);
     view.autoresizingMask = NSViewWidthSizable|NSViewHeightSizable;
-    
-    /*pipelineDescriptor.colorAttachments[0].pixelFormat = view.colorPixelFormat;
-    pipelineDescriptor.depthAttachmentPixelFormat = view.depthStencilPixelFormat;
-    pipelineDescriptor.stencilAttachmentPixelFormat = view.depthStencilPixelFormat;*/
 
     _commandQueue = [_device newCommandQueue];
 
@@ -410,6 +395,24 @@ private:
   auto terminate() -> void {
     acquireContext();
     _ready = false;
+    
+    _commandQueue = nullptr;
+    _library = nullptr;
+
+    _vertexBuffer = nullptr;
+    _sourceTexture = nullptr;
+    _mtlVertexDescriptor = nullptr;
+    
+    _renderToTextureRenderPassDescriptor = nullptr;
+    _renderTargetTexture = nullptr;
+    _renderToTextureRenderPipeline = nullptr;
+    
+    _drawableRenderPipeline = nullptr;
+    
+    if (_filterChain) {
+      _libra.mtl_filter_chain_free(&_filterChain);
+    }
+    _device = nullptr;
 
     if (view) {
       [view removeFromSuperview];
