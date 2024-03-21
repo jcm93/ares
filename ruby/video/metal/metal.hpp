@@ -54,10 +54,15 @@ struct Metal {
   MTKView *viewTest;
   
   id<MTLBuffer> _pixelBuffers[kMaxBuffersInFlight];
-  id<MTLRenderPipelineState> _pipelineState;
   id<MTLDepthStencilState> _depthState;
   id<MTLTexture> _colorMap;
   MTLVertexDescriptor *_mtlVertexDescriptor;
+  
+  MTLRenderPassDescriptor *_renderToTextureRenderPassDescriptor;
+  id<MTLTexture> _renderTargetTexture;
+  id<MTLRenderPipelineState> _renderToTextureRenderPipeline;
+  
+  id<MTLRenderPipelineState> _drawableRenderPipeline;
   
   libra_instance_t _libra;
   libra_shader_preset_t _preset;
