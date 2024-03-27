@@ -7,6 +7,7 @@
 
 #include <Metal/Metal.h>
 #include <MetalKit/MetalKit.h>
+#import <QuartzCore/QuartzCore.h>
 
 #include "librashader_ld.h"
 #include "ShaderTypes.h"
@@ -21,7 +22,7 @@ struct Metal {
   auto output() -> void;
   auto initialize(const string& shader) -> bool;
   auto terminate() -> void;
-  auto draw_test() -> void;
+  auto refreshRateHint(const string& systemName) -> void;
   
   auto getFormat() const -> GLuint;
   auto getType() const -> GLuint;
@@ -31,9 +32,7 @@ struct Metal {
   auto render(u32 sourceWidth, u32 sourceHeight, u32 targetX, u32 targetY, u32 targetWidth, u32 targetHeight) -> void;
   
   u32 *buffer = nullptr;
-
-  u32 frameCount = 0;
-  u32 cpuFrameCount = 0;
+  
   u32 sourceWidth = 0;
   u32 sourceHeight = 0;
   u32 bytesPerRow = 0;
@@ -46,7 +45,12 @@ struct Metal {
   CGFloat _viewWidth = 0;
   CGFloat _viewHeight = 0;
   
-  NSDate *then;
+  double _presentInterval = .016;
+  u32 frameCount = 0;
+  double _refreshRateHint = 60;
+  
+  bool _blocking = false;
+  bool _flush = false;
   
   id<MTLDevice> _device;
   id<MTLCommandQueue> _commandQueue;
@@ -58,9 +62,7 @@ struct Metal {
   
   id<MTLBuffer> _pixelBuffers[kMaxBuffersInFlight];
   id<MTLBuffer> _vertexBuffer;
-  id<MTLDepthStencilState> _depthState;
   id<MTLTexture> _sourceTexture;
-  id<MTLTexture> _colorMap;
   MTLVertexDescriptor *_mtlVertexDescriptor;
   
   MTLRenderPassDescriptor *_renderToTextureRenderPassDescriptor;

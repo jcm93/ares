@@ -15,9 +15,7 @@ struct VideoMetal;
   VideoMetal* video;
 }
 -(id) initWith:(VideoMetal*)video frame:(NSRect)frame device:(id<MTLDevice>)metalDevice;
--(void) reshape;
 -(BOOL) acceptsFirstResponder;
--(void) drawInMTKView:(MTKView *)view;
 @end
 
 @interface RubyWindowMetal : NSWindow <NSWindowDelegate> {
@@ -28,17 +26,6 @@ struct VideoMetal;
 -(BOOL) canBecomeKeyWindow;
 -(BOOL) canBecomeMainWindow;
 @end
-
-/*@interface MetalLayerDelegate: NSObject<CALayerDelegate, NSViewLayerContentScaleDelegate>
-@end
-
-@implementation MetalLayerDelegate
-- (BOOL)layer:(CALayer *)layer shouldInheritContentsScale:(CGFloat)newScale fromWindow:(NSWindow *)window
-{
-  return YES;
-}
-
-@end*/
 
 struct VideoMetal : VideoDriver, Metal {
   VideoMetal& self = *this;
@@ -52,7 +39,7 @@ struct VideoMetal : VideoDriver, Metal {
   auto driver() -> string override { return "Metal"; }
   auto ready() -> bool override { return _ready; }
 
-  auto hasFullScreen() -> bool override { return true; }
+  auto hasFullScreen() -> bool override { return false; }
   auto hasContext() -> bool override { return true; }
   auto hasBlocking() -> bool override { return true; }
   auto hasFlush() -> bool override { return true; }
@@ -67,14 +54,49 @@ struct VideoMetal : VideoDriver, Metal {
   }
 
   auto setBlocking(bool blocking) -> bool override {
+    _blocking = blocking;
+    updatePresentInterval();
     return true;
   }
 
   auto setFlush(bool flush) -> bool override {
+    _flush = flush;
     return true;
+  }
+  
+  auto hintRefreshRate(double refreshRate) -> void {
+    _refreshRateHint = refreshRate;
+    updatePresentInterval();
+  }
+  
+  auto isVRRSupported() -> bool {
+    NSTimeInterval minInterval = view.window.screen.minimumRefreshInterval;
+    NSTimeInterval maxInterval = view.window.screen.maximumRefreshInterval;
+    return minInterval != maxInterval;
+  }
+  
+  auto updatePresentInterval() -> void {
+    CFTimeInterval minimumInterval = view.window.screen.minimumRefreshInterval;
+    if (!isVRRSupported()) {
+      _presentInterval = minimumInterval;
+    } else {
+      if (_refreshRateHint != 0) {
+        _presentInterval = (1.0 / _refreshRateHint) - .005;
+      } else {
+        _presentInterval = minimumInterval;
+      }
+    }
   }
 
   auto setShader(string pathname) -> bool override {
+    if (_filterChain != NULL) {
+      _libra.mtl_filter_chain_free(&_filterChain);
+    }
+
+    if (_preset != NULL) {
+      _libra.preset_free(&_preset);
+    }
+    
     if (pathname == "Blur") return true;
     
     if(_libra.preset_create(pathname.data(), &_preset) != NULL) {
@@ -93,11 +115,10 @@ struct VideoMetal : VideoDriver, Metal {
     return true;
   }
 
-  auto clear() -> void override {
-    
-  }
+  auto clear() -> void override {}
 
   auto size(u32& width, u32& height) -> void override {
+    if ((_viewWidth == width && _viewHeight == height) && (_viewWidth != 0 && _viewHeight != 0)) { return; }
     auto area = [view convertRectToBacking:[view bounds]];
     width = area.size.width;
     height = area.size.height;
@@ -146,12 +167,7 @@ struct VideoMetal : VideoDriver, Metal {
     return data = buffer;
   }
 
-  auto release() -> void override {
-    
-  }
-  auto draw_test() -> void {
-    
-  }
+  auto release() -> void override {}
   
   auto resizeOutputBuffers(u32 width, u32 height) {
     outputWidth = width;
@@ -179,8 +195,7 @@ struct VideoMetal : VideoDriver, Metal {
     texDescriptor.width = width;
     texDescriptor.height = height;
     texDescriptor.pixelFormat = MTLPixelFormatBGRA8Unorm;
-    texDescriptor.usage = MTLTextureUsageRenderTarget |
-                          MTLTextureUsageShaderRead;
+    texDescriptor.usage = MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead;
     
     _renderTargetTexture = [_device newTextureWithDescriptor:texDescriptor];
     
@@ -197,7 +212,6 @@ struct VideoMetal : VideoDriver, Metal {
   }
 
   auto output(u32 width, u32 height) -> void override {
-    
     /// Uses two render passes (plus librashader's render passes). The first render pass samples the source texture,
     /// consisting of the pixel buffer from the emulator, onto a texture the same size as our eventual output,
     /// `_renderTargetTexture`. Then it calls into librashader, which performs postprocessing onto the same
@@ -205,7 +219,7 @@ struct VideoMetal : VideoDriver, Metal {
     /// We need this last pass because librashader expects the viewport to be the same size as the output texture,
     /// which is not the case for ares.
     
-    //todo: to do this outside of the output function
+    //todo: do this outside of the output function
     if (width != outputWidth || height != outputHeight) {
       resizeOutputBuffers(width, height);
     }
@@ -231,9 +245,6 @@ struct VideoMetal : VideoDriver, Metal {
           
           _renderToTextureRenderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
           
-          //auto bufferIndex = frameCount % kMaxBuffersInFlight;
-          
-          //just copy into this texture for now
           [_sourceTexture replaceRegion:MTLRegionMake2D(0, 0, sourceWidth, sourceHeight) mipmapLevel:0 withBytes:buffer bytesPerRow:bytesPerRow];
           
           [renderEncoder setRenderPipelineState:_renderToTextureRenderPipeline];
@@ -254,7 +265,9 @@ struct VideoMetal : VideoDriver, Metal {
           
           [renderEncoder endEncoding];
           
-          _libra.mtl_filter_chain_frame(&_filterChain, commandBuffer, frameCount++, _sourceTexture, _libraViewport, _renderTargetTexture, nil, nil);
+          if (_filterChain) {
+            _libra.mtl_filter_chain_frame(&_filterChain, commandBuffer, frameCount++, _sourceTexture, _libraViewport, _renderTargetTexture, nil, nil);
+          }
           
           MTLRenderPassDescriptor *drawableRenderPassDescriptor = view.currentRenderPassDescriptor;
           
@@ -286,30 +299,32 @@ struct VideoMetal : VideoDriver, Metal {
             
             if (drawable != nil) {
               
-              [commandBuffer presentDrawable:view.currentDrawable];
+              if (_blocking) {
+                
+                [commandBuffer presentDrawable:drawable afterMinimumDuration:_presentInterval];
+                
+              } else {
+                
+                [commandBuffer presentDrawable:drawable];
+                
+              }
               
               [view draw];
               
             }
-            
           }
           
           [commandBuffer commit];
           
+          if (_flush) {
+            [commandBuffer waitUntilCompleted];
+          }
         }
       }
     }
   }
 
 private:
-  auto acquireContext() -> void {
-    
-  }
-
-  auto releaseContext() -> void {
-    
-  }
-
   auto initialize() -> bool {
     terminate();
     if (!self.fullScreen && !self.context) return false;
@@ -322,17 +337,13 @@ private:
     _device = MTLCreateSystemDefaultDevice();
     _commandQueue = [_device newCommandQueue];
     
-    std::cout << size.width << " " << size.height;
-    
     _semaphore = dispatch_semaphore_create(kMaxBuffersInFlight);
 
     _renderToTextureRenderPassDescriptor = [MTLRenderPassDescriptor new];
 
     _renderToTextureRenderPassDescriptor.colorAttachments[0].texture = _renderTargetTexture;
-
     _renderToTextureRenderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionClear;
-    _renderToTextureRenderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(1, 1, 1, 1);
-
+    _renderToTextureRenderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0, 0, 0, 1);
     _renderToTextureRenderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
     
     NSURL *shaderLibURL = [NSURL fileURLWithPath:@"ares.app/Contents/Resources/Shaders/shaders.metallib"];
@@ -368,7 +379,6 @@ private:
     view = [[RubyVideoMetal alloc] initWith:this frame:frame device:_device];
     [context addSubview:view];
     [[view window] makeFirstResponder:view];
-    [view lockFocus];
     viewTest = view;
     context.autoresizesSubviews = true;
     view.colorspace = CGColorSpaceCreateWithName(kCGColorSpaceDisplayP3);
@@ -385,15 +395,12 @@ private:
 
     s32 blocking = self.blocking;
 
-    [view unlockFocus];
-
     clear();
     initialized = true;
     return _ready = true;
   }
 
   auto terminate() -> void {
-    acquireContext();
     _ready = false;
     
     _commandQueue = nullptr;
@@ -442,21 +449,8 @@ private:
     video = videoPointer;
   }
   self.enableSetNeedsDisplay = NO;
-  //self.autoResizeDrawable = YES;
-  //[self setAutoresizesSubviews:YES];
   self.paused = YES;
-  //[self setPreferredFramesPerSecond:60];
-  //[self setDelegate:self];
   return self;
-}
-
--(void) drawInMTKView:(MTKView *)view {
-  video->draw_test();
-  //[view setNeedsDisplay:YES];
-}
-
--(void) reshape {
-  video->output(0, 0);
 }
 
 -(BOOL) acceptsFirstResponder {
