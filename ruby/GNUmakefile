@@ -28,6 +28,7 @@ ifeq ($(ruby),)
         $(error Tried to compile ruby for macOS with SDL2 linked, but no SDL2 library was found. Compile it with thirdparty/SDL/build-sdl.sh, or disable SDL by compiling ares with sdl2=false)
       endif
       flags += -DMACOS_COMPILED_SDL
+      ruby += audio.sdl
       ruby += input.sdl
     endif
   else ifeq ($(platform),linux)
@@ -122,6 +123,7 @@ ifeq ($(platform),macos)
   ruby.options += -framework Metal
   ruby.options += -framework MetalKit
   ruby.options += -framework IOKit
+  ruby.options += -framework QuartzCore
   ruby.options += $(if $(findstring audio.openal,$(ruby)),-framework OpenAL)
   ifeq ($(sdl2),true)
     ruby.options += -L../thirdparty/SDL/ -lSDL2-2.0.0
