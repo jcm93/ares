@@ -313,7 +313,7 @@ struct PathSettings : VerticalLayout {
 struct DriverSettings : VerticalLayout {
   auto construct() -> void;
   auto videoRefresh() -> void;
-  auto videoDriverUpdate() -> void;
+  auto videoDriverUpdate() -> bool;
   auto audioRefresh() -> void;
   auto audioDriverUpdate() -> void;
   auto inputRefresh() -> void;

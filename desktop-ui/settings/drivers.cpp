@@ -11,8 +11,9 @@ auto DriverSettings::construct() -> void {
   videoDriverLabel.setText("Driver:");
   videoDriverAssign.setText("Apply").setEnabled(false).onActivate([&] {
     settings.video.driver = videoDriverList.selected().text();
-    videoDriverUpdate();
-    videoDriverAssign.setEnabled(false);
+    if (videoDriverUpdate()) {
+      videoDriverAssign.setEnabled(false);
+    }
   });
   videoMonitorLabel.setText("Fullscreen monitor:");
   videoMonitorList.onChange([&] {
@@ -148,13 +149,14 @@ auto DriverSettings::videoRefresh() -> void {
   VerticalLayout::resize();
 }
 
-auto DriverSettings::videoDriverUpdate() -> void {
+auto DriverSettings::videoDriverUpdate() -> bool {
   if(emulator && settings.video.driver != "None" && MessageDialog(
     "Warning: incompatible drivers may cause this software to crash.\n"
     "Are you sure you want to change this driver while a game is loaded?"
-  ).setAlignment(settingsWindow).question() != "Yes") return;
+  ).setAlignment(settingsWindow).question() != "Yes") return false;
   program.videoDriverUpdate();
   videoRefresh();
+  return true;
 }
 
 auto DriverSettings::audioRefresh() -> void {

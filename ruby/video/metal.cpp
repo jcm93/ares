@@ -10,7 +10,7 @@
 
 struct VideoMetal;
 
-@interface RubyVideoMetal : MTKView <MTKViewDelegate> {
+@interface RubyVideoMetal : MTKView {
 @public
   VideoMetal* video;
 }
@@ -39,7 +39,7 @@ struct VideoMetal : VideoDriver, Metal {
   auto driver() -> string override { return "Metal"; }
   auto ready() -> bool override { return _ready; }
 
-  auto hasFullScreen() -> bool override { return false; }
+  auto hasFullScreen() -> bool override { return true; }
   auto hasContext() -> bool override { return true; }
   auto hasBlocking() -> bool override { return true; }
   auto hasFlush() -> bool override { return true; }
@@ -81,7 +81,7 @@ struct VideoMetal : VideoDriver, Metal {
       _presentInterval = minimumInterval;
     } else {
       if (_refreshRateHint != 0) {
-        _presentInterval = (1.0 / _refreshRateHint) - .005;
+        _presentInterval = (1.0 / _refreshRateHint);
       } else {
         _presentInterval = minimumInterval;
       }
@@ -219,7 +219,7 @@ struct VideoMetal : VideoDriver, Metal {
     /// We need this last pass because librashader expects the viewport to be the same size as the output texture,
     /// which is not the case for ares.
     
-    //todo: do this outside of the output function
+    //can we do this outside of the output function?
     if (width != outputWidth || height != outputHeight) {
       resizeOutputBuffers(width, height);
     }
@@ -450,8 +450,15 @@ private:
   }
   self.enableSetNeedsDisplay = NO;
   self.paused = YES;
+  //self.enableSetNeedsDisplay = YES;
+  //self.paused = NO;
+  //[self setDelegate:self];
   return self;
 }
+
+/*-(void) drawInMTKView:(MTKView *)view {
+  video->alternateDrawPath();
+}*/
 
 -(BOOL) acceptsFirstResponder {
   return YES;
