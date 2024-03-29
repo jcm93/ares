@@ -10,11 +10,16 @@
 
 struct VideoMetal;
 
-@interface RubyVideoMetal : MTKView {
+@interface RubyVideoMetal : MTKView <CAMetalDisplayLinkDelegate> {
 @public
   VideoMetal* video;
+  CAMetalDisplayLink *_displayLink;
+  CFTimeInterval _previousTargetPresentationTimestamp;
 }
 -(id) initWith:(VideoMetal*)video frame:(NSRect)frame device:(id<MTLDevice>)metalDevice;
+- (void) drawInMTKView:(MTKView *) view;
+- (void) mtkView:(MTKView *) view drawableSizeWillChange:(CGSize) size;
+- (void) metalDisplayLink:(CAMetalDisplayLink *)link needsUpdate:(CAMetalDisplayLinkUpdate *)update;
 -(BOOL) acceptsFirstResponder;
 @end
 
@@ -210,19 +215,15 @@ struct VideoMetal : VideoDriver, Metal {
     _outputX = (_viewWidth - width) / 2;
     _outputY = (_viewHeight - height) / 2;
   }
-
-  auto output(u32 width, u32 height) -> void override {
-    /// Uses two render passes (plus librashader's render passes). The first render pass samples the source texture,
-    /// consisting of the pixel buffer from the emulator, onto a texture the same size as our eventual output,
-    /// `_renderTargetTexture`. Then it calls into librashader, which performs postprocessing onto the same
-    /// output texture. Then for the second render pass here, we composite the output texture within ares's viewport.
-    /// We need this last pass because librashader expects the viewport to be the same size as the output texture,
-    /// which is not the case for ares.
+  
+  auto alternateDrawPath(CAMetalDisplayLinkUpdate *update) -> void {
     
-    //can we do this outside of the output function?
-    if (width != outputWidth || height != outputHeight) {
-      resizeOutputBuffers(width, height);
-    }
+    id<CAMetalDrawable> currentDrawable = update.drawable;
+    
+    _drawableRenderPassDescriptor.colorAttachments[0].texture = currentDrawable.texture;
+    
+    auto width = outputWidth;
+    auto height = outputHeight;
     
     @autoreleasepool {
       
@@ -236,6 +237,107 @@ struct VideoMetal : VideoDriver, Metal {
         [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> buffer) {
          dispatch_semaphore_signal(block_sema);
         }];
+        
+        _renderToTextureRenderPassDescriptor.colorAttachments[0].texture = _renderTargetTexture;
+        
+        if (_renderToTextureRenderPassDescriptor != nil) {
+          
+          id<MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:_renderToTextureRenderPassDescriptor];
+          
+          _renderToTextureRenderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
+          
+          [_sourceTexture replaceRegion:MTLRegionMake2D(0, 0, sourceWidth, sourceHeight) mipmapLevel:0 withBytes:buffer bytesPerRow:bytesPerRow];
+          
+          [renderEncoder setRenderPipelineState:_renderToTextureRenderPipeline];
+          
+          [renderEncoder setViewport:(MTLViewport){0, 0, (double)width, (double)height, -1.0, 1.0}];
+          
+          [renderEncoder setVertexBuffer:_vertexBuffer
+                                  offset:0
+                                 atIndex:0];
+          
+          [renderEncoder setVertexBytes:&_viewportSize
+                                 length:sizeof(_viewportSize)
+                                atIndex:AAPLVertexInputIndexViewportSize];
+          
+          [renderEncoder setFragmentTexture:_sourceTexture atIndex:0];
+          
+          [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:0 vertexCount:6];
+          
+          [renderEncoder endEncoding];
+          
+          if (_filterChain) {
+            _libra.mtl_filter_chain_frame(&_filterChain, commandBuffer, frameCount++, _sourceTexture, _libraViewport, _renderTargetTexture, nil, nil);
+          }
+          
+          /*MTLRenderPassDescriptor *drawableRenderPassDescriptor = _drawableRenderPassDescriptor;
+          
+          drawableRenderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionClear;
+          drawableRenderPassDescriptor.colorAttachments[0].texture = drawable.texture;*/
+          
+          if (_drawableRenderPassDescriptor != nil) {
+            
+            id<MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:_drawableRenderPassDescriptor];
+            
+            [renderEncoder setRenderPipelineState:_drawableRenderPipeline];
+            
+            [renderEncoder setViewport:(MTLViewport){_outputX, _outputY, (double)width, (double)height, -1.0, 1.0}];
+            
+            [renderEncoder setVertexBuffer:_vertexBuffer
+                                    offset:0
+                                   atIndex:0];
+            
+            [renderEncoder setVertexBytes:&_viewportSize
+                                   length:sizeof(_viewportSize)
+                                  atIndex:AAPLVertexInputIndexViewportSize];
+            
+            [renderEncoder setFragmentTexture:_renderTargetTexture atIndex:0];
+            
+            [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:0 vertexCount:6];
+            
+            [renderEncoder endEncoding];
+            
+            id<CAMetalDrawable> drawable = update.drawable;
+            
+            [commandBuffer presentDrawable:drawable];
+              
+          }
+          
+          [commandBuffer commit];
+          
+          if (_flush) {
+            [commandBuffer waitUntilCompleted];
+          }
+        }
+      }
+    }
+  }
+
+  auto output(u32 width, u32 height) -> void override {
+    /// Uses two render passes (plus librashader's render passes). The first render pass samples the source texture,
+    /// consisting of the pixel buffer from the emulator, onto a texture the same size as our eventual output,
+    /// `_renderTargetTexture`. Then it calls into librashader, which performs postprocessing onto the same
+    /// output texture. Then for the second render pass here, we composite the output texture within ares's viewport.
+    /// We need this last pass because librashader expects the viewport to be the same size as the output texture,
+    /// which is not the case for ares.
+    
+    //can we do this outside of the output function?
+    if (width != outputWidth || height != outputHeight) {
+      resizeOutputBuffers(width, height);
+    }
+      
+    /*@autoreleasepool {
+      
+      dispatch_semaphore_wait(_semaphore, DISPATCH_TIME_FOREVER);
+      
+      id<MTLCommandBuffer> commandBuffer = [_commandQueue commandBuffer];
+      
+      if (commandBuffer != nil) {
+        __block dispatch_semaphore_t block_sema = _semaphore;
+        
+        [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> buffer) {
+         dispatch_semaphore_signal(block_sema);
+         }];
         
         _renderToTextureRenderPassDescriptor.colorAttachments[0].texture = _renderTargetTexture;
         
@@ -321,7 +423,7 @@ struct VideoMetal : VideoDriver, Metal {
           }
         }
       }
-    }
+    }*/
   }
 
 private:
@@ -345,6 +447,11 @@ private:
     _renderToTextureRenderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionClear;
     _renderToTextureRenderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0, 0, 0, 1);
     _renderToTextureRenderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
+    
+    _drawableRenderPassDescriptor = [MTLRenderPassDescriptor new];
+    _drawableRenderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionClear;
+    _drawableRenderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
+    _drawableRenderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0, 1, 1, 1);
     
     NSURL *shaderLibURL = [NSURL fileURLWithPath:@"ares.app/Contents/Resources/Shaders/shaders.metallib"];
     _library = [_device newLibraryWithURL: shaderLibURL error:&error];
@@ -397,6 +504,7 @@ private:
 
     clear();
     initialized = true;
+    
     return _ready = true;
   }
 
@@ -427,7 +535,7 @@ private:
     }
 
     if (window) {
-    //[NSApp setPresentationOptions:NSApplicationPresentationDefault];
+      //[NSApp setPresentationOptions:NSApplicationPresentationDefault];
       [window toggleFullScreen:nil];
       [window setCollectionBehavior:NSWindowCollectionBehaviorDefault];
       [window close];
@@ -453,7 +561,30 @@ private:
   //self.enableSetNeedsDisplay = YES;
   //self.paused = NO;
   //[self setDelegate:self];
+  CAMetalLayer *layer = (CAMetalLayer *)self.layer;
+  _displayLink = [[CAMetalDisplayLink alloc] initWithMetalLayer:layer];
+  _displayLink.preferredFrameRateRange = CAFrameRateRangeMake(60.0, 60.0, 60.0);
+  _displayLink.preferredFrameLatency = 2;
+  _displayLink.paused = NO;
+  // Assign the delegate to receive the display update callback.
+  _displayLink.delegate = self;
+  
+  _previousTargetPresentationTimestamp = CACurrentMediaTime();
+  [_displayLink addToRunLoop:[NSRunLoop currentRunLoop]
+                     forMode:NSDefaultRunLoopMode];
   return self;
+}
+
+- (void)metalDisplayLink:(CAMetalDisplayLink *)link needsUpdate:(CAMetalDisplayLinkUpdate *)update {
+  video->alternateDrawPath(update);
+}
+
+- (void) drawInMTKView:(MTKView *) view {
+  //video->alternateDrawPath();
+}
+
+- (void) mtkView:(MTKView *) view drawableSizeWillChange:(CGSize) size {
+  
 }
 
 /*-(void) drawInMTKView:(MTKView *)view {

@@ -8,6 +8,8 @@
 #include <Metal/Metal.h>
 #include <MetalKit/MetalKit.h>
 #import <QuartzCore/QuartzCore.h>
+#import <QuartzCore/CAMetalLayer.h>
+#import <QuartzCore/CAMetalDisplayLink.h>
 
 #include "librashader_ld.h"
 #include "ShaderTypes.h"
@@ -52,6 +54,10 @@ struct Metal {
   bool _blocking = false;
   bool _flush = false;
   
+  bool drawing = false;
+  
+  CAMetalDisplayLink *_displayLink;
+  
   id<MTLDevice> _device;
   id<MTLCommandQueue> _commandQueue;
   id<MTLLibrary> _library;
@@ -66,6 +72,7 @@ struct Metal {
   MTLVertexDescriptor *_mtlVertexDescriptor;
   
   MTLRenderPassDescriptor *_renderToTextureRenderPassDescriptor;
+  MTLRenderPassDescriptor *_drawableRenderPassDescriptor;
   id<MTLTexture> _renderTargetTexture;
   id<MTLRenderPipelineState> _renderToTextureRenderPipeline;
   
