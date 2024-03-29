@@ -18,7 +18,7 @@
 -(void) run:(NSTimer*)timer {
   using hiro::Application;
   if(Application::state().onMain) Application::doMain();
-  [self performSelectorOnMainThread:@selector(run:) withObject: nil waitUntilDone:NO];
+  //[self performSelectorOnMainThread:@selector(run:) withObject: nil waitUntilDone:NO];
 }
 
 -(BOOL)application:(NSApplication*)sender openFile:(NSString*)filename {
@@ -47,8 +47,8 @@ auto pApplication::modal() -> bool {
 
 auto pApplication::run() -> void {
   if(Application::state().onMain) {
-    [cocoaDelegate performSelectorOnMainThread:@selector(run:) withObject: nil waitUntilDone:NO];
-    //applicationTimer = [NSTimer scheduledTimerWithTimeInterval:0.0 target:cocoaDelegate selector:@selector(run:) userInfo:nil repeats:YES];
+    //[cocoaDelegate performSelectorOnMainThread:@selector(run:) withObject: nil waitUntilDone:NO];
+    applicationTimer = [NSTimer scheduledTimerWithTimeInterval:0.001 target:cocoaDelegate selector:@selector(run:) userInfo:nil repeats:YES];
 
     //below line is needed to run application during window resize; however it has a large performance penalty on the resize smoothness
     //[[NSRunLoop currentRunLoop] addTimer:applicationTimer forMode:NSDefaultRunLoopMode];
