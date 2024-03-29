@@ -46,7 +46,7 @@ auto pApplication::modal() -> bool {
 
 auto pApplication::run() -> void {
   if(Application::state().onMain) {
-    applicationTimer = [NSTimer scheduledTimerWithTimeInterval:0.0 target:cocoaDelegate selector:@selector(run:) userInfo:nil repeats:YES];
+    applicationTimer = [NSTimer scheduledTimerWithTimeInterval:0.001 target:cocoaDelegate selector:@selector(run:) userInfo:nil repeats:YES];
 
     //below line is needed to run application during window resize; however it has a large performance penalty on the resize smoothness
     [[NSRunLoop currentRunLoop] addTimer:applicationTimer forMode:NSEventTrackingRunLoopMode];
