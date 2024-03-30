@@ -43,6 +43,7 @@ struct VideoMetal : VideoDriver, Metal {
   auto hasFullScreen() -> bool override { return false; }
   auto hasContext() -> bool override { return true; }
   auto hasBlocking() -> bool override { return !isVRRSupported(); }
+  auto hasForceSRGB() -> bool override { return true; }
   auto hasFlush() -> bool override { return true; }
   auto hasShader() -> bool override { return true; }
 
@@ -58,6 +59,14 @@ struct VideoMetal : VideoDriver, Metal {
     _blocking = blocking;
     updatePresentInterval();
     return true;
+  }
+  
+  auto setForceSRGB(bool forceSRGB) -> bool override {
+    if (forceSRGB) {
+      view.colorspace = CGColorSpaceCreateWithName(kCGColorSpaceSRGB);
+    } else {
+      view.colorspace = view.window.screen.colorSpace.CGColorSpace;
+    }
   }
 
   auto setFlush(bool flush) -> bool override {
@@ -504,7 +513,8 @@ private:
     [[view window] makeFirstResponder:view];
     viewTest = view;
     context.autoresizesSubviews = true;
-    view.colorspace = CGColorSpaceCreateWithName(kCGColorSpaceDisplayP3);
+    bool forceSRGB = self.forceSRGB;
+    self.setForceSRGB(forceSRGB);
     view.autoresizingMask = NSViewWidthSizable|NSViewHeightSizable;
 
     _commandQueue = [_device newCommandQueue];

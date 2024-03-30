@@ -72,6 +72,14 @@ auto Video::setBlocking(bool blocking) -> bool {
   return true;
 }
 
+auto Video::setForceSRGB(bool forceSRGB) -> bool {
+  lock_guard<recursive_mutex> lock(mutex);
+  if(instance->forceSRGB == forceSRGB) return true;
+  if(!instance->hasForceSRGB()) return false;
+  if(!instance->setForceSRGB(instance->forceSRGB = forceSRGB)) return false;
+  return true;
+}
+
 auto Video::setFlush(bool flush) -> bool {
   lock_guard<recursive_mutex> lock(mutex);
   if(instance->flush == flush) return true;

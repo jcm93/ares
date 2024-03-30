@@ -13,6 +13,7 @@ struct VideoDriver {
   virtual auto hasExclusive() -> bool { return false; }
   virtual auto hasContext() -> bool { return false; }
   virtual auto hasBlocking() -> bool { return false; }
+  virtual auto hasForceSRGB() -> bool { return false; }
   virtual auto hasFlush() -> bool { return false; }
   virtual auto hasFormats() -> vector<string> { return {"ARGB24"}; }
   virtual auto hasShader() -> bool { return false; }
@@ -24,6 +25,7 @@ struct VideoDriver {
   virtual auto setExclusive(bool exclusive) -> bool { return true; }
   virtual auto setContext(uintptr context) -> bool { return true; }
   virtual auto setBlocking(bool blocking) -> bool { return true; }
+  virtual auto setForceSRGB(bool forceSRGB) -> bool { return true; }
   virtual auto setFlush(bool flush) -> bool { return true; }
   virtual auto setFormat(string format) -> bool { return true; }
   virtual auto setShader(string shader) -> bool { return true; }
@@ -46,6 +48,7 @@ protected:
   bool exclusive = false;
   uintptr context = 0;
   bool blocking = false;
+  bool forceSRGB = false;
   bool flush = false;
   string format = "ARGB24";
   string shader = "Blur";
@@ -86,6 +89,7 @@ struct Video {
   auto hasExclusive() -> bool { return instance->hasExclusive(); }
   auto hasContext() -> bool { return instance->hasContext(); }
   auto hasBlocking() -> bool { return instance->hasBlocking(); }
+  auto hasForceSRGB() -> bool { return instance->hasForceSRGB(); }
   auto hasFlush() -> bool { return instance->hasFlush(); }
   auto hasFormats() -> vector<string> { return instance->hasFormats(); }
   auto hasShader() -> bool { return instance->hasShader(); }
@@ -97,6 +101,7 @@ struct Video {
   auto exclusive() -> bool { return instance->exclusive; }
   auto context() -> uintptr { return instance->context; }
   auto blocking() -> bool { return instance->blocking; }
+  auto forceSRGB() -> bool { return instance->forceSRGB; }
   auto flush() -> bool { return instance->flush; }
   auto format() -> string { return instance->format; }
   auto shader() -> string { return instance->shader; }
@@ -106,6 +111,7 @@ struct Video {
   auto setExclusive(bool exclusive) -> bool;
   auto setContext(uintptr context) -> bool;
   auto setBlocking(bool blocking) -> bool;
+  auto setForceSRGB(bool forceSRGB) -> bool;
   auto setFlush(bool flush) -> bool;
   auto setFormat(string format) -> bool;
   auto setShader(string shader) -> bool;
