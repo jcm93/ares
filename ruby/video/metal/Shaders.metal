@@ -6,8 +6,30 @@
 //
 
 #include <metal_stdlib>
+#include <simd/simd.h>
 
-#include "ShaderTypes.h"
+// Buffer index values shared between shader and C code to ensure Metal shader buffer inputs
+// match Metal API buffer set calls.
+typedef enum MetalVertexInputIndex
+{
+    MetalVertexInputIndexVertices     = 0,
+    MetalVertexInputIndexViewportSize = 1,
+} MetalVertexInputIndex;
+
+typedef enum MetalTextureIndex
+{
+    MetalTextureIndexBaseColor = 0,
+} MetalTextureIndex;
+
+//  This structure defines the layout of vertices sent to the vertex
+//  shader. This header is shared between the .metal shader and C code, to guarantee that
+//  the layout of the vertex array in the C code matches the layout that the .metal
+//  vertex shader expects.
+typedef struct
+{
+    vector_float2 position;
+    vector_float2 textureCoordinate;
+} MetalVertex;
 
 using namespace metal;
 
@@ -28,8 +50,8 @@ struct RasterizerData
 
 vertex RasterizerData
 vertexShader(uint vertexID [[vertex_id]],
-             constant AAPLVertex *vertices [[buffer(AAPLVertexInputIndexVertices)]],
-             constant vector_uint2 *viewportSizePointer [[buffer(AAPLVertexInputIndexViewportSize)]])
+             constant MetalVertex *vertices [[buffer(MetalVertexInputIndexVertices)]],
+             constant vector_uint2 *viewportSizePointer [[buffer(MetalVertexInputIndexViewportSize)]])
 {
     RasterizerData out;
 
@@ -55,7 +77,7 @@ vertexShader(uint vertexID [[vertex_id]],
 
 fragment float4
 samplingShader(RasterizerData in [[stage_in]],
-               texture2d<half> colorTexture [[ texture(AAPLTextureIndexBaseColor) ]])
+               texture2d<half> colorTexture [[ texture(MetalTextureIndexBaseColor) ]])
 {
     constexpr sampler textureSampler (mag_filter::nearest,
                                       min_filter::nearest);
@@ -69,7 +91,7 @@ samplingShader(RasterizerData in [[stage_in]],
 
 fragment float4
 drawableSamplingShader(RasterizerData in [[stage_in]],
-               texture2d<half> colorTexture [[ texture(AAPLTextureIndexBaseColor) ]])
+               texture2d<half> colorTexture [[ texture(MetalTextureIndexBaseColor) ]])
 {
     // We use this shader to sample the intermediate texture onto the screen texture;
     // both textures are identical in size. Despite that, if we use nearest neighbor

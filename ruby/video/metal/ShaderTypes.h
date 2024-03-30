@@ -8,16 +8,16 @@ Header containing types and enum constants shared between Metal shaders and C/Ob
 
 // Buffer index values shared between shader and C code to ensure Metal shader buffer inputs
 // match Metal API buffer set calls.
-typedef enum AAPLVertexInputIndex
+typedef enum MetalVertexInputIndex
 {
-    AAPLVertexInputIndexVertices     = 0,
-    AAPLVertexInputIndexViewportSize = 1,
-} AAPLVertexInputIndex;
+    MetalVertexInputIndexVertices     = 0,
+    MetalVertexInputIndexViewportSize = 1,
+} MetalVertexInputIndex;
 
-typedef enum AAPLTextureIndex
+typedef enum MetalTextureIndex
 {
-    AAPLTextureIndexBaseColor = 0,
-} AAPLTextureIndex;
+    MetalTextureIndexBaseColor = 0,
+} MetalTextureIndex;
 
 //  This structure defines the layout of vertices sent to the vertex
 //  shader. This header is shared between the .metal shader and C code, to guarantee that
@@ -27,4 +27,4 @@ typedef struct
 {
     vector_float2 position;
     vector_float2 textureCoordinate;
-} AAPLVertex;
+} MetalVertex;

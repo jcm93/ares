@@ -40,9 +40,9 @@ struct VideoMetal : VideoDriver, Metal {
   auto driver() -> string override { return "Metal"; }
   auto ready() -> bool override { return _ready; }
 
-  auto hasFullScreen() -> bool override { return true; }
+  auto hasFullScreen() -> bool override { return false; }
   auto hasContext() -> bool override { return true; }
-  auto hasBlocking() -> bool override { return true; }
+  auto hasBlocking() -> bool override { return !isVRRSupported(); }
   auto hasFlush() -> bool override { return true; }
   auto hasShader() -> bool override { return true; }
 
@@ -177,7 +177,7 @@ struct VideoMetal : VideoDriver, Metal {
     float widthfloat = (float)width;
     float heightfloat = (float)height;
     
-    AAPLVertex vertices[] =
+    MetalVertex vertices[] =
     {
       // Pixel positions, Texture coordinates
       { {  widthfloat / 2,  -heightfloat / 2 },  { 1.f, 1.f } },
@@ -250,7 +250,7 @@ struct VideoMetal : VideoDriver, Metal {
           
           [renderEncoder setVertexBytes:&_viewportSize
                                  length:sizeof(_viewportSize)
-                                atIndex:AAPLVertexInputIndexViewportSize];
+                                atIndex:MetalVertexInputIndexViewportSize];
           
           [renderEncoder setFragmentTexture:_sourceTexture atIndex:0];
           
@@ -280,7 +280,7 @@ struct VideoMetal : VideoDriver, Metal {
             
             [renderEncoder setVertexBytes:&_viewportSize
                                    length:sizeof(_viewportSize)
-                                  atIndex:AAPLVertexInputIndexViewportSize];
+                                  atIndex:MetalVertexInputIndexViewportSize];
             
             [renderEncoder setFragmentTexture:_renderTargetTexture atIndex:0];
             
@@ -302,7 +302,7 @@ struct VideoMetal : VideoDriver, Metal {
                 
               }
               
-              [view draw];
+              //[view draw];
               
             }
           }
@@ -330,7 +330,7 @@ struct VideoMetal : VideoDriver, Metal {
       resizeOutputBuffers(width, height);
     }
     
-    /*@autoreleasepool {
+    @autoreleasepool {
       
       dispatch_semaphore_wait(_semaphore, DISPATCH_TIME_FOREVER);
       
@@ -363,7 +363,7 @@ struct VideoMetal : VideoDriver, Metal {
           
           [renderEncoder setVertexBytes:&_viewportSize
                                  length:sizeof(_viewportSize)
-                                atIndex:AAPLVertexInputIndexViewportSize];
+                                atIndex:MetalVertexInputIndexViewportSize];
           
           [renderEncoder setFragmentTexture:_sourceTexture atIndex:0];
           
@@ -393,7 +393,7 @@ struct VideoMetal : VideoDriver, Metal {
             
             [renderEncoder setVertexBytes:&_viewportSize
                                    length:sizeof(_viewportSize)
-                                  atIndex:AAPLVertexInputIndexViewportSize];
+                                  atIndex:MetalVertexInputIndexViewportSize];
             
             [renderEncoder setFragmentTexture:_renderTargetTexture atIndex:0];
             
@@ -427,7 +427,7 @@ struct VideoMetal : VideoDriver, Metal {
           }
         }
       }
-    }*/
+    }
   }
 
 private:
@@ -452,8 +452,23 @@ private:
     _renderToTextureRenderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0, 0, 0, 1);
     _renderToTextureRenderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
     
-    NSURL *shaderLibURL = [NSURL fileURLWithPath:@"ares.app/Contents/Resources/Shaders/shaders.metallib"];
-    _library = [_device newLibraryWithURL: shaderLibURL error:&error];
+    NSString *bundleResourcePath = [NSBundle mainBundle].resourcePath;
+    const string& fileComponent = "/Shaders/Shaders.metal";
+    NSString *shaderFilePath = [bundleResourcePath stringByAppendingString: [[NSString new] initWithUTF8String:fileComponent]];
+    
+    NSString *shaderLibrarySource = [NSString stringWithContentsOfFile:shaderFilePath encoding:NSUTF8StringEncoding error: &error];
+    
+    if (shaderLibrarySource == nil) {
+      NSLog(@"%@",error);
+      return false;
+    }
+    
+    _library = [_device newLibraryWithSource: shaderLibrarySource options: [MTLCompileOptions alloc] error:&error];
+    
+    if (_library == nil) {
+      NSLog(@"%@",error);
+      return false;
+    }
     
     MTLRenderPipelineDescriptor *pipelineStateDescriptor = [MTLRenderPipelineDescriptor new];
     
@@ -468,6 +483,7 @@ private:
     
     if (_renderToTextureRenderPipeline == nil) {
       NSLog(@"%@",error);
+      return false;
     }
     
     pipelineStateDescriptor.label = @"Drawable Render Pipeline";
@@ -479,6 +495,7 @@ private:
     
     if (_drawableRenderPipeline == nil) {
       NSLog(@"%@",error);
+      return false;
     }
     
     auto frame = NSMakeRect(0, 0, size.width, size.height);
@@ -554,11 +571,11 @@ private:
   if(self = [super initWithFrame:frame device:metalDevice]) {
     video = videoPointer;
   }
-  //self.enableSetNeedsDisplay = NO;
-  //self.paused = YES;
-  self.enableSetNeedsDisplay = YES;
-  self.paused = NO;
-  [self setDelegate:self];
+  self.enableSetNeedsDisplay = NO;
+  self.paused = YES;
+  //self.enableSetNeedsDisplay = YES;
+  //self.paused = NO;
+  //[self setDelegate:self];
   return self;
 }
 
