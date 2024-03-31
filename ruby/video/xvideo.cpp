@@ -24,6 +24,7 @@ struct VideoXVideo : VideoDriver {
   auto hasMonitor() -> bool override { return true; }
   auto hasContext() -> bool override { return true; }
   auto hasBlocking() -> bool override { return true; }
+  auto hasShader() -> bool override { return false; }
 
   auto hasFormats() -> vector<string> override {
     return _formatNames;

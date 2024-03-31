@@ -594,7 +594,7 @@ auto Presentation::loadShaders() -> void {
 
   auto location = locate("Shaders/");
 
-  if(ruby::video.driver() == "OpenGL 3.2" || ruby::video.driver() == "Metal") {
+  if(ruby::video.hasShader()) {
     auto files = directory::files(location, "*.slangp");
     for(auto file : files) {
       MenuCheckItem item{&videoShaderMenu};
