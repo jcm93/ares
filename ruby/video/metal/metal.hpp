@@ -7,7 +7,6 @@
 
 #include <Metal/Metal.h>
 #include <MetalKit/MetalKit.h>
-#import <QuartzCore/QuartzCore.h>
 
 #include "librashader_ld.h"
 #include "ShaderTypes.h"
@@ -22,7 +21,7 @@ struct Metal {
   auto output() -> void;
   auto initialize(const string& shader) -> bool;
   auto terminate() -> void;
-  auto refreshRateHint(const string& systemName) -> void;
+  auto refreshRateHint(double refreshRate) -> void;
   
   auto getFormat() const -> GLuint;
   auto getType() const -> GLuint;
@@ -44,6 +43,7 @@ struct Metal {
   
   CGFloat _viewWidth = 0;
   CGFloat _viewHeight = 0;
+  vector_uint2 _viewportSize;
   
   double _presentInterval = .016;
   u32 frameCount = 0;
@@ -57,19 +57,14 @@ struct Metal {
   id<MTLLibrary> _library;
   dispatch_semaphore_t _semaphore;
   
-  vector_uint2 _viewportSize;
-  MTKView *viewTest;
-  
-  id<MTLBuffer> _pixelBuffers[kMaxBuffersInFlight];
   id<MTLBuffer> _vertexBuffer;
   id<MTLTexture> _sourceTexture;
   MTLVertexDescriptor *_mtlVertexDescriptor;
   
   MTLRenderPassDescriptor *_renderToTextureRenderPassDescriptor;
-  id<MTLTexture> _renderTargetTexture;
   id<MTLRenderPipelineState> _renderToTextureRenderPipeline;
-  
   id<MTLRenderPipelineState> _drawableRenderPipeline;
+  id<MTLTexture> _renderTargetTexture;
   
   libra_instance_t _libra;
   libra_shader_preset_t _preset;

@@ -18,6 +18,6 @@ struct Accuracy {
 
   struct GPU {
     //performs GPU primitive rendering on a separate thread
-    static constexpr bool Threaded = 1 & !Reference;
+    static constexpr bool Threaded = false;
   };
 };

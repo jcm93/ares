@@ -42,7 +42,13 @@ struct VideoMetal : VideoDriver, Metal {
 
   auto hasFullScreen() -> bool override { return false; }
   auto hasContext() -> bool override { return true; }
-  auto hasBlocking() -> bool override { return !isVRRSupported(); }
+  auto hasBlocking() -> bool override {
+    if (@available(macOS 10.15.4, *)) {
+      return !isVRRSupported();
+    } else {
+      return false;
+    }
+  }
   auto hasForceSRGB() -> bool override { return true; }
   auto hasFlush() -> bool override { return true; }
   auto hasShader() -> bool override { return true; }
@@ -80,20 +86,29 @@ struct VideoMetal : VideoDriver, Metal {
   }
   
   auto isVRRSupported() -> bool {
-    NSTimeInterval minInterval = view.window.screen.minimumRefreshInterval;
-    NSTimeInterval maxInterval = view.window.screen.maximumRefreshInterval;
-    return minInterval != maxInterval;
+    if (@available(macOS 12.0, *)) {
+      NSTimeInterval minInterval = view.window.screen.minimumRefreshInterval;
+      NSTimeInterval maxInterval = view.window.screen.maximumRefreshInterval;
+      return minInterval != maxInterval;
+    } else {
+      return false;
+    }
   }
   
   auto updatePresentInterval() -> void {
-    CFTimeInterval minimumInterval = view.window.screen.minimumRefreshInterval;
     if (!isVRRSupported()) {
-      _presentInterval = minimumInterval;
+      CGDirectDisplayID displayID = CGMainDisplayID();
+      CGDisplayModeRef displayMode = CGDisplayCopyDisplayMode(displayID);
+      CFTimeInterval refreshRate = CGDisplayModeGetRefreshRate(displayMode);
+      _presentInterval = (1.0 / refreshRate);
     } else {
-      if (_refreshRateHint != 0) {
-        _presentInterval = (1.0 / _refreshRateHint);
-      } else {
-        _presentInterval = minimumInterval;
+      if (@available(macOS 12.0, *)) {
+        CFTimeInterval minimumInterval = view.window.screen.minimumRefreshInterval;
+        if (_refreshRateHint != 0) {
+          _presentInterval = (1.0 / _refreshRateHint);
+        } else {
+          _presentInterval = minimumInterval;
+        }
       }
     }
   }
@@ -109,7 +124,7 @@ struct VideoMetal : VideoDriver, Metal {
     
     if (pathname == "Blur") return true;
     
-    if(_libra.preset_create(pathname.data(), &_preset) != NULL) {
+    if (_libra.preset_create(pathname.data(), &_preset) != NULL) {
       print(string{"Metal: Failed to load shader: ", pathname, "\n"});
       return false;
     }
@@ -155,11 +170,6 @@ struct VideoMetal : VideoDriver, Metal {
       }
       
       buffer = new u32[width * height]();
-      for (int i=0; i<kMaxBuffersInFlight;i++) {
-        _pixelBuffers[i] = [_device newBufferWithBytes:buffer
-                                                length:sourceWidth*sourceHeight*sizeof(u32)
-                                               options:MTLResourceStorageModeManaged];
-      }
       
       MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor new];
       textureDescriptor.pixelFormat = MTLPixelFormatBGRA8Unorm;
@@ -219,111 +229,6 @@ struct VideoMetal : VideoDriver, Metal {
     
     _outputX = (_viewWidth - width) / 2;
     _outputY = (_viewHeight - height) / 2;
-  }
-  
-  auto alternateDrawPath() -> void {
-    
-    auto width = outputWidth;
-    auto height = outputHeight;
-    
-    @autoreleasepool {
-      
-      dispatch_semaphore_wait(_semaphore, DISPATCH_TIME_FOREVER);
-      
-      id<MTLCommandBuffer> commandBuffer = [_commandQueue commandBuffer];
-      
-      if (commandBuffer != nil) {
-        __block dispatch_semaphore_t block_sema = _semaphore;
-        
-        [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> buffer) {
-         dispatch_semaphore_signal(block_sema);
-        }];
-        
-        _renderToTextureRenderPassDescriptor.colorAttachments[0].texture = _renderTargetTexture;
-        
-        if (_renderToTextureRenderPassDescriptor != nil) {
-          
-          id<MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:_renderToTextureRenderPassDescriptor];
-          
-          _renderToTextureRenderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
-          
-          [_sourceTexture replaceRegion:MTLRegionMake2D(0, 0, sourceWidth, sourceHeight) mipmapLevel:0 withBytes:buffer bytesPerRow:bytesPerRow];
-          
-          [renderEncoder setRenderPipelineState:_renderToTextureRenderPipeline];
-          
-          [renderEncoder setViewport:(MTLViewport){0, 0, (double)width, (double)height, -1.0, 1.0}];
-          
-          [renderEncoder setVertexBuffer:_vertexBuffer
-                                  offset:0
-                                 atIndex:0];
-          
-          [renderEncoder setVertexBytes:&_viewportSize
-                                 length:sizeof(_viewportSize)
-                                atIndex:MetalVertexInputIndexViewportSize];
-          
-          [renderEncoder setFragmentTexture:_sourceTexture atIndex:0];
-          
-          [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:0 vertexCount:6];
-          
-          [renderEncoder endEncoding];
-          
-          if (_filterChain) {
-            _libra.mtl_filter_chain_frame(&_filterChain, commandBuffer, frameCount++, _sourceTexture, _libraViewport, _renderTargetTexture, nil, nil);
-          }
-          
-          MTLRenderPassDescriptor *drawableRenderPassDescriptor = view.currentRenderPassDescriptor;
-          
-          drawableRenderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionClear;
-          
-          if (drawableRenderPassDescriptor != nil) {
-            
-            id<MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:drawableRenderPassDescriptor];
-            
-            [renderEncoder setRenderPipelineState:_drawableRenderPipeline];
-            
-            [renderEncoder setViewport:(MTLViewport){_outputX, _outputY, (double)width, (double)height, -1.0, 1.0}];
-            
-            [renderEncoder setVertexBuffer:_vertexBuffer
-                                    offset:0
-                                   atIndex:0];
-            
-            [renderEncoder setVertexBytes:&_viewportSize
-                                   length:sizeof(_viewportSize)
-                                  atIndex:MetalVertexInputIndexViewportSize];
-            
-            [renderEncoder setFragmentTexture:_renderTargetTexture atIndex:0];
-            
-            [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:0 vertexCount:6];
-            
-            [renderEncoder endEncoding];
-            
-            id<CAMetalDrawable> drawable = view.currentDrawable;
-            
-            if (drawable != nil) {
-              
-              if (_blocking) {
-                
-                [commandBuffer presentDrawable:drawable afterMinimumDuration:_presentInterval];
-                
-              } else {
-                
-                [commandBuffer presentDrawable:drawable];
-                
-              }
-              
-              //[view draw];
-              
-            }
-          }
-          
-          [commandBuffer commit];
-          
-          if (_flush) {
-            [commandBuffer waitUntilCompleted];
-          }
-        }
-      }
-    }
   }
 
   auto output(u32 width, u32 height) -> void override {
@@ -461,6 +366,13 @@ private:
     _renderToTextureRenderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0, 0, 0, 1);
     _renderToTextureRenderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
     
+    ///We compile shaders at runtime so we do not need to add the `xcrun` Metal compiler toolchain to the ares build process.
+    ///Metal frame capture does not get along with runtime-compiled shaders in my testing, however. If you are debugging ares
+    ///and need GPU captures, you should compile shaders with debug symbols offline, then instantiate the shader library by
+    ///directly referencing a compiled `.metallib` file, rather than the following instantiation flow. You will also need to alter
+    ///the `desktop-ui` Makefile such that it copies the `.metallib` into the bundle, rather than only the `Shaders.metal`
+    ///source.
+
     NSString *bundleResourcePath = [NSBundle mainBundle].resourcePath;
     const string& fileComponent = "/Shaders/Shaders.metal";
     NSString *shaderFilePath = [bundleResourcePath stringByAppendingString: [[NSString new] initWithUTF8String:fileComponent]];
@@ -511,8 +423,6 @@ private:
     view = [[RubyVideoMetal alloc] initWith:this frame:frame device:_device];
     [context addSubview:view];
     [[view window] makeFirstResponder:view];
-    viewTest = view;
-    context.autoresizesSubviews = true;
     bool forceSRGB = self.forceSRGB;
     self.setForceSRGB(forceSRGB);
     view.autoresizingMask = NSViewWidthSizable|NSViewHeightSizable;
@@ -520,15 +430,14 @@ private:
     _commandQueue = [_device newCommandQueue];
 
     _libra = librashader_load_instance();
-    if(!_libra.instance_loaded) {
+    if (!_libra.instance_loaded) {
       print("Metal: Failed to load librashader: shaders will be disabled\n");
     }
     
     setShader(self.shader);
-
-    s32 blocking = self.blocking;
-
-    clear();
+    
+    _blocking = self.blocking;
+    
     initialized = true;
     return _ready = true;
   }
@@ -560,7 +469,6 @@ private:
     }
 
     if (window) {
-    //[NSApp setPresentationOptions:NSApplicationPresentationDefault];
       [window toggleFullScreen:nil];
       [window setCollectionBehavior:NSWindowCollectionBehaviorDefault];
       [window close];
@@ -578,19 +486,24 @@ private:
 @implementation RubyVideoMetal : MTKView
 
 -(id) initWith:(VideoMetal*)videoPointer frame:(NSRect)frame device:(id<MTLDevice>)metalDevice {
-  if(self = [super initWithFrame:frame device:metalDevice]) {
+  if (self = [super initWithFrame:frame device:metalDevice]) {
     video = videoPointer;
   }
   self.enableSetNeedsDisplay = NO;
   self.paused = YES;
+  
+  //below is the delegate path; currently not used but likely will be used in future.
+  
   //self.enableSetNeedsDisplay = YES;
   //self.paused = NO;
   //[self setDelegate:self];
+  
   return self;
 }
 
 -(void) drawInMTKView:(MTKView *)view {
-  video->alternateDrawPath();
+  //currently not used
+  //video->alternateDrawPath();
 }
 
 -(void) mtkView:(MTKView *)view drawableSizeWillChange:(CGSize) size {

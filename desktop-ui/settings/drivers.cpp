@@ -40,7 +40,7 @@ auto DriverSettings::construct() -> void {
     ruby::video.setFlush(settings.video.flush);
   });
 #if defined(PLATFORM_MACOS)
-  videoColorSpaceToggle.setText("Present in sRGB").onToggle([&] {
+  videoColorSpaceToggle.setText("Force sRGB").onToggle([&] {
     settings.video.forceSRGB = videoColorSpaceToggle.checked();
     ruby::video.setForceSRGB(settings.video.forceSRGB);
   });
