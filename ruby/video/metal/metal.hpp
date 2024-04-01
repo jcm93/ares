@@ -23,9 +23,6 @@ struct Metal {
   auto terminate() -> void;
   auto refreshRateHint(double refreshRate) -> void;
   
-  auto getFormat() const -> GLuint;
-  auto getType() const -> GLuint;
-  
   auto size(u32 width, u32 height) -> void;
   auto release() -> void;
   auto render(u32 sourceWidth, u32 sourceHeight, u32 targetX, u32 targetY, u32 targetWidth, u32 targetHeight) -> void;
@@ -35,6 +32,8 @@ struct Metal {
   u32 sourceWidth = 0;
   u32 sourceHeight = 0;
   u32 bytesPerRow = 0;
+  
+  CFTimeInterval _now = 0;
   
   u32 outputWidth = 0;
   u32 outputHeight = 0;

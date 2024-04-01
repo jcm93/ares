@@ -7,6 +7,7 @@
 
 #include "metal/metal.hpp"
 #include <iostream>
+#include <QuartzCore/QuartzCore.h>
 
 struct VideoMetal;
 
@@ -239,6 +240,10 @@ struct VideoMetal : VideoDriver, Metal {
     /// We need this last pass because librashader expects the viewport to be the same size as the output texture,
     /// which is not the case for ares.
     
+    CFTimeInterval now = CACurrentMediaTime();
+    CFTimeInterval timeSinceLastCall = now - _now;
+    std::cout << "interval between calls: " << timeSinceLastCall << "\n";
+    _now = now;
     //can we do this outside of the output function?
     if (width != outputWidth || height != outputHeight) {
       resizeOutputBuffers(width, height);
