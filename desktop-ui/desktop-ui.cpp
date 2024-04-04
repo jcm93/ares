@@ -1,4 +1,6 @@
 #include "desktop-ui.hpp"
+//ifdef
+#include <dispatch/dispatch.h>
 
 namespace ruby {
   Video video;

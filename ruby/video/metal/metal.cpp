@@ -242,8 +242,6 @@ struct VideoMetal : VideoDriver, Metal {
     
     @autoreleasepool {
       
-      dispatch_semaphore_wait(_semaphore, DISPATCH_TIME_FOREVER);
-      
       id<MTLCommandBuffer> commandBuffer = [_commandQueue commandBuffer];
       
       if (commandBuffer != nil) {
@@ -261,14 +259,7 @@ struct VideoMetal : VideoDriver, Metal {
           
           _renderToTextureRenderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
           
-          auto bufferIndex = frameCount % kMaxBuffersInFlight;
-          //std::cout << "frameCount is " << frameCount << ", lastFrameCount is " << lastFrameCount << "\n";
-          if ((frameCount - 1) != lastFrameCount) {
-            std::cout << "FIX: skipped " << frameCount - lastFrameCount << " frames" << "\n";
-          } else if (frameCount == lastFrameCount) {
-            std::cout << "FIX: duped frame\n";
-          }
-          lastFrameCount = frameCount;
+          auto bufferIndex = (bufferFrameCount - 2) % kMaxBuffersInFlight;
           
           MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor new];
           textureDescriptor.pixelFormat = MTLPixelFormatBGRA8Unorm;
@@ -373,6 +364,8 @@ struct VideoMetal : VideoDriver, Metal {
     if (width != outputWidth || height != outputHeight) {
       resizeOutputBuffers(width, height);
     }
+    
+    dispatch_semaphore_wait(_semaphore, DISPATCH_TIME_FOREVER);
     
     auto index = bufferFrameCount % kMaxBuffersInFlight;
     id<MTLBuffer> nextBuffer = _pixelBuffers[index];
@@ -624,11 +617,12 @@ private:
   if (self = [super initWithFrame:frame device:metalDevice]) {
     video = videoPointer;
   }
-  self.enableSetNeedsDisplay = NO;
-  self.paused = YES;
+  //self.enableSetNeedsDisplay = NO;
+  //self.paused = YES;
   
   //below is the delegate path; currently not used but likely will be used in future.
   
+  self.preferredFramesPerSecond = 60;
   self.enableSetNeedsDisplay = YES;
   self.paused = NO;
   [self setDelegate:self];

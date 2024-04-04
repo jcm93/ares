@@ -1,5 +1,6 @@
 #include "../desktop-ui.hpp"
 #include "emulators.cpp"
+#include <dispatch/dispatch.h>
 
 vector<shared_pointer<Emulator>> emulators;
 shared_pointer<Emulator> emulator;

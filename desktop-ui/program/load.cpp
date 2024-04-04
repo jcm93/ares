@@ -1,3 +1,5 @@
+#include <dispatch/dispatch.h>
+
 auto Program::identify(const string& filename) -> shared_pointer<Emulator> {
   if(auto system = mia::identify(filename)) {
     for(auto& emulator : emulators) {
@@ -33,6 +35,8 @@ auto Program::load(shared_pointer<Emulator> emulator, string location) -> bool {
 }
 
 auto Program::load(string location) -> bool {
+  loaded = false;
+  
   if(settings.debugServer.enabled) {
     nall::GDB::server.reset();
   }
@@ -96,6 +100,7 @@ auto Program::load(string location) -> bool {
 }
 
 auto Program::unload() -> void {
+  //perform on worker queue
   if(!emulator) return;
 
   nall::GDB::server.close();
