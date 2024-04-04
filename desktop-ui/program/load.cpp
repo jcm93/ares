@@ -89,6 +89,8 @@ auto Program::load(string location) -> bool {
   }
   settings.recent.game[0] = {emulator->name, ";", location};
   presentation.loadEmulators();
+  
+  loaded = true;
 
   return true;
 }

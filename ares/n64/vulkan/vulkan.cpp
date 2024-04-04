@@ -55,7 +55,7 @@ auto Vulkan::load(Node::Object) -> bool {
 
     if (!implementation) {
       platform->status("Vulkan init failed: No RDP rendering support");
-      vulkan.enable = false;
+      vulkan.enable = false;  
     } else {
       platform->status("Vulkan Enabled: using paraLLEl-RDP");
     }

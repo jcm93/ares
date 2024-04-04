@@ -6,6 +6,9 @@
 #include "status.cpp"
 #include "utility.cpp"
 #include "drivers.cpp"
+#if defined(PLATFORM_MACOS)
+#include <dispatch/dispatch.h>
+#endif
 
 Program program;
 
@@ -47,7 +50,13 @@ auto Program::main() -> void {
     return;
   }
 
-  updateMessage();
+#if defined(PLATFORM_MACOS)
+  dispatch_async(dispatch_get_main_queue(), ^(void){
+#endif
+    updateMessage();
+#if defined(PLATFORM_MACOS)
+  });
+#endif
   inputManager.poll();
   inputManager.pollHotkeys();
 
@@ -55,9 +64,15 @@ auto Program::main() -> void {
   if(emulator && defocused) message.text = "Paused";
 
   if(settings.debugServer.enabled) {
-    presentation.statusDebug.setText(
-      nall::GDB::server.getStatusText(settings.debugServer.port, settings.debugServer.useIPv4)
-    );
+#if defined(PLATFORM_MACOS)
+    dispatch_async(dispatch_get_main_queue(), ^(void){
+#endif
+      presentation.statusDebug.setText(
+        nall::GDB::server.getStatusText(settings.debugServer.port, settings.debugServer.useIPv4)
+      );
+#if defined(PLATFORM_MACOS)
+    });
+#endif
   }
 
   if(emulator && nall::GDB::server.isHalted()) {
@@ -66,7 +81,7 @@ auto Program::main() -> void {
     return;
   }
 
-  if(!emulator || (paused && !program.requestFrameAdvance) || defocused) {
+  if(!emulator || (paused && !program.requestFrameAdvance) || defocused || !loaded) {
     ruby::audio.clear();
     nall::GDB::server.updateLoop();
     usleep(20 * 1000);
@@ -105,12 +120,25 @@ auto Program::main() -> void {
   //window operations must be performed from the main thread.
   if(emulator->latch.changed) {
     emulator->latch.changed = false;
-    if(settings.video.adaptiveSizing) presentation.resizeWindow();
+    if(settings.video.adaptiveSizing) {
+#if defined(PLATFORM_MACOS)
+      dispatch_async(dispatch_get_main_queue(), ^(void){
+#endif
+        presentation.resizeWindow();
+#if defined(PLATFORM_MACOS)
+      });
+#endif
+    }
   }
-
-  memoryEditor.liveRefresh();
-  graphicsViewer.liveRefresh();
-  propertiesViewer.liveRefresh();
+#if defined(PLATFORM_MACOS)
+  dispatch_async(dispatch_get_main_queue(), ^(void){
+#endif
+    memoryEditor.liveRefresh();
+    graphicsViewer.liveRefresh();
+    propertiesViewer.liveRefresh();
+#if defined(PLATFORM_MACOS)
+  });
+#endif
 }
 
 auto Program::quit() -> void {

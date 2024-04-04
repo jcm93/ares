@@ -15,7 +15,7 @@
   return NO;
 }
 
--(void) run:(NSTimer*)timer {
+-(void) run/*:(NSTimer*)timer*/ {
   using hiro::Application;
   if(Application::state().onMain) Application::doMain();
 }
@@ -32,6 +32,8 @@
 
 CocoaDelegate* cocoaDelegate = nullptr;
 NSTimer* applicationTimer = nullptr;
+dispatch_queue_t aresQueue = nullptr;
+dispatch_source_t aresTimerSource = nullptr;
 
 namespace hiro {
 
@@ -46,7 +48,13 @@ auto pApplication::modal() -> bool {
 
 auto pApplication::run() -> void {
   if(Application::state().onMain) {
-    applicationTimer = [NSTimer scheduledTimerWithTimeInterval:0.0 target:cocoaDelegate selector:@selector(run:) userInfo:nil repeats:YES];
+    //applicationTimer = [NSTimer scheduledTimerWithTimeInterval:0.0 target:cocoaDelegate selector:@selector(run:) userInfo:nil repeats:YES];
+    
+    dispatch_source_set_timer(aresTimerSource, DISPATCH_TIME_NOW, 0.001 * NSEC_PER_SEC, 0.001 * NSEC_PER_SEC);
+    dispatch_source_set_event_handler(aresTimerSource, ^{
+      [cocoaDelegate run];
+    });
+    dispatch_activate(aresTimerSource);
 
     //below line is needed to run application during window resize; however it has a large performance penalty on the resize smoothness
     //[[NSRunLoop currentRunLoop] addTimer:applicationTimer forMode:NSEventTrackingRunLoopMode];
@@ -113,6 +121,8 @@ auto pApplication::initialize() -> void {
   @autoreleasepool {
     [NSApplication sharedApplication];
     cocoaDelegate = [[CocoaDelegate alloc] init];
+    aresQueue = dispatch_queue_create("com.ares.worker", DISPATCH_QUEUE_SERIAL);
+    aresTimerSource = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, aresQueue);
     [NSApp setDelegate:cocoaDelegate];
   }
 }

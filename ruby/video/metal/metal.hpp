@@ -44,7 +44,11 @@ struct Metal {
   
   double _presentInterval = .016;
   u32 frameCount = 0;
+  u32 lastFrameCount = 0;
+  u32 bufferFrameCount = 0;
   double _refreshRateHint = 60;
+  
+  id<MTLBuffer> _pixelBuffers[kMaxBuffersInFlight];
   
   bool _blocking = false;
   bool _flush = false;

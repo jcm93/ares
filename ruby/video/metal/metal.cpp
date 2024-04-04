@@ -6,6 +6,7 @@
 //
 
 #include "metal.hpp"
+#include <iostream>
 
 struct VideoMetal;
 
@@ -176,6 +177,12 @@ struct VideoMetal : VideoDriver, Metal {
       
       _sourceTexture = [_device newTextureWithDescriptor:textureDescriptor];
       
+      for (int i=0; i<kMaxBuffersInFlight;i++) {
+        _pixelBuffers[i] = [_device newBufferWithBytes:buffer
+                                                length:sourceWidth*sourceHeight*4
+                                               options:MTLResourceStorageModeShared];
+      }
+      
       bytesPerRow = sourceWidth * sizeof(u32);
       if (bytesPerRow < 16) bytesPerRow = 16;
       
@@ -227,6 +234,132 @@ struct VideoMetal : VideoDriver, Metal {
     _outputX = (_viewWidth - width) / 2;
     _outputY = (_viewHeight - height) / 2;
   }
+  
+  auto alternateDrawPath() -> void {
+    
+    auto width = outputWidth;
+    auto height = outputHeight;
+    
+    @autoreleasepool {
+      
+      dispatch_semaphore_wait(_semaphore, DISPATCH_TIME_FOREVER);
+      
+      id<MTLCommandBuffer> commandBuffer = [_commandQueue commandBuffer];
+      
+      if (commandBuffer != nil) {
+        __block dispatch_semaphore_t block_sema = _semaphore;
+        
+        [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> buffer) {
+         dispatch_semaphore_signal(block_sema);
+        }];
+        
+        _renderToTextureRenderPassDescriptor.colorAttachments[0].texture = _renderTargetTexture;
+        
+        if (_renderToTextureRenderPassDescriptor != nil) {
+          
+          id<MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:_renderToTextureRenderPassDescriptor];
+          
+          _renderToTextureRenderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
+          
+          auto bufferIndex = frameCount % kMaxBuffersInFlight;
+          //std::cout << "frameCount is " << frameCount << ", lastFrameCount is " << lastFrameCount << "\n";
+          if ((frameCount - 1) != lastFrameCount) {
+            std::cout << "FIX: skipped " << frameCount - lastFrameCount << " frames" << "\n";
+          } else if (frameCount == lastFrameCount) {
+            std::cout << "FIX: duped frame\n";
+          }
+          lastFrameCount = frameCount;
+          
+          MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor new];
+          textureDescriptor.pixelFormat = MTLPixelFormatBGRA8Unorm;
+          textureDescriptor.width = sourceWidth;
+          textureDescriptor.height = sourceHeight;
+          textureDescriptor.usage = MTLTextureUsageRenderTarget|MTLTextureUsageShaderRead;
+                      
+          _sourceTexture = [_pixelBuffers[bufferIndex] newTextureWithDescriptor:textureDescriptor
+                                                                         offset:0
+                                                                    bytesPerRow:bytesPerRow];
+          
+          //[_sourceTexture replaceRegion:MTLRegionMake2D(0, 0, sourceWidth, sourceHeight) mipmapLevel:0 withBytes:buffer bytesPerRow:bytesPerRow];
+          
+          [renderEncoder setRenderPipelineState:_renderToTextureRenderPipeline];
+          
+          [renderEncoder setViewport:(MTLViewport){0, 0, (double)width, (double)height, -1.0, 1.0}];
+          
+          [renderEncoder setVertexBuffer:_vertexBuffer
+                                  offset:0
+                                 atIndex:0];
+          
+          [renderEncoder setVertexBytes:&_viewportSize
+                                 length:sizeof(_viewportSize)
+                                atIndex:MetalVertexInputIndexViewportSize];
+          
+          [renderEncoder setFragmentTexture:_sourceTexture atIndex:0];
+          
+          [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:0 vertexCount:6];
+          
+          [renderEncoder endEncoding];
+          
+          if (_filterChain) {
+            _libra.mtl_filter_chain_frame(&_filterChain, commandBuffer, frameCount++, _sourceTexture, _libraViewport, _renderTargetTexture, nil, nil);
+          } else {
+            frameCount++;
+          }
+          
+          MTLRenderPassDescriptor *drawableRenderPassDescriptor = view.currentRenderPassDescriptor;
+          
+          drawableRenderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionClear;
+          
+          if (drawableRenderPassDescriptor != nil) {
+            
+            id<MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:drawableRenderPassDescriptor];
+            
+            [renderEncoder setRenderPipelineState:_drawableRenderPipeline];
+            
+            [renderEncoder setViewport:(MTLViewport){_outputX, _outputY, (double)width, (double)height, -1.0, 1.0}];
+            
+            [renderEncoder setVertexBuffer:_vertexBuffer
+                                    offset:0
+                                   atIndex:0];
+            
+            [renderEncoder setVertexBytes:&_viewportSize
+                                   length:sizeof(_viewportSize)
+                                  atIndex:MetalVertexInputIndexViewportSize];
+            
+            [renderEncoder setFragmentTexture:_renderTargetTexture atIndex:0];
+            
+            [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:0 vertexCount:6];
+            
+            [renderEncoder endEncoding];
+            
+            id<CAMetalDrawable> drawable = view.currentDrawable;
+            
+            if (drawable != nil) {
+              
+              if (_blocking) {
+                
+                [commandBuffer presentDrawable:drawable afterMinimumDuration:_presentInterval];
+                
+              } else {
+                
+                [commandBuffer presentDrawable:drawable];
+                
+              }
+              
+              //[view draw];
+              
+            }
+          }
+          
+          [commandBuffer commit];
+          
+          if (_flush) {
+            [commandBuffer waitUntilCompleted];
+          }
+        }
+      }
+    }
+  }
 
   auto output(u32 width, u32 height) -> void override {
     /// Uses two render passes (plus librashader's render passes). The first render pass samples the source texture,
@@ -241,7 +374,12 @@ struct VideoMetal : VideoDriver, Metal {
       resizeOutputBuffers(width, height);
     }
     
-    @autoreleasepool {
+    auto index = bufferFrameCount % kMaxBuffersInFlight;
+    id<MTLBuffer> nextBuffer = _pixelBuffers[index];
+    memcpy(nextBuffer.contents, buffer, sourceWidth * sourceHeight * 4);
+    bufferFrameCount++;
+    
+    /*@autoreleasepool {
       
       dispatch_semaphore_wait(_semaphore, DISPATCH_TIME_FOREVER);
       
@@ -338,7 +476,7 @@ struct VideoMetal : VideoDriver, Metal {
           }
         }
       }
-    }
+    }*/
   }
 
 private:
@@ -491,16 +629,15 @@ private:
   
   //below is the delegate path; currently not used but likely will be used in future.
   
-  //self.enableSetNeedsDisplay = YES;
-  //self.paused = NO;
-  //[self setDelegate:self];
+  self.enableSetNeedsDisplay = YES;
+  self.paused = NO;
+  [self setDelegate:self];
   
   return self;
 }
 
 -(void) drawInMTKView:(MTKView *)view {
-  //currently not used
-  //video->alternateDrawPath();
+  video->alternateDrawPath();
 }
 
 -(void) mtkView:(MTKView *)view drawableSizeWillChange:(CGSize) size {

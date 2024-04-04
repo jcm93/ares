@@ -20,6 +20,8 @@ struct Program : ares::Platform {
   auto load(shared_pointer<Emulator> emulator, string location = {}) -> bool;
   auto load(string location) -> bool;
   auto unload() -> void;
+  
+  bool loaded = false;
 
   //states.cpp
   auto stateSave(u32 slot) -> bool;
