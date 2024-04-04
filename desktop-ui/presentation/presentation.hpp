@@ -9,6 +9,8 @@ struct Presentation : Window {
   auto showIcon(bool visible) -> void;
   auto loadShaders() -> void;
   auto refreshSystemMenu() -> void;
+  
+  vector<string> shaderDirectories;
 
   MenuBar menuBar{this};
     Menu loadMenu{&menuBar};

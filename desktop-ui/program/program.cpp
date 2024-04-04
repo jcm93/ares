@@ -46,7 +46,6 @@ auto Program::main() -> void {
     ruby::audio.clear();
     return;
   }
-
   updateMessage();
   inputManager.poll();
   inputManager.pollHotkeys();
@@ -66,7 +65,7 @@ auto Program::main() -> void {
     return;
   }
 
-  if(!emulator || (paused && !program.requestFrameAdvance) || defocused) {
+  if(!emulator || (paused && !program.requestFrameAdvance) || defocused || !loaded) {
     ruby::audio.clear();
     nall::GDB::server.updateLoop();
     usleep(20 * 1000);

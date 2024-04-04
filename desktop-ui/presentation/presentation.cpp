@@ -1,4 +1,5 @@
 #include "../desktop-ui.hpp"
+#include <iostream>
 namespace Instances { Instance<Presentation> presentation; }
 Presentation& presentation = Instances::presentation();
 
@@ -591,44 +592,79 @@ auto Presentation::loadShaders() -> void {
     loadShaders();
   });
   shaders.append(blur);
+  
+  auto start = std::chrono::high_resolution_clock::now();
+  
+  string location = locate("Shaders/");
 
-  auto location = locate("Shaders/");
+  if(shaderDirectories.size() == 0) {
+    function<void(string)> findShaderDirectories = [&](string path) {
+      for(auto &entry: directory::folders(path)) findShaderDirectories({path, entry});
+      auto files = directory::files(path, "*.slangp");
+      if(files.size() > 0) shaderDirectories.append((string({path}).trimLeft(location, 1L)));
+    };
+    findShaderDirectories(location);
+
+    // Sort by name and depth such that child folders appear after their parents
+    shaderDirectories.sort([](const string &lhs, const string &rhs) {
+      auto lhsParts = lhs.split("/");
+      auto rhsParts = rhs.split("/");
+      for(u32 i : range(min(lhsParts.size(), rhsParts.size()))) {
+        if(lhsParts[i] != rhsParts[i]) return lhsParts[i] < rhsParts[i];
+      }
+      return lhsParts.size() < rhsParts.size();
+    });
+  }
 
   if(ruby::video.hasShader()) {
-    auto files = directory::files(location, "*.slangp");
-    for(auto file : files) {
-      MenuCheckItem item{&videoShaderMenu};
-      item.setAttribute("file", {location, file});
-      item.setText(string{file}.trimRight(".slangp", 1L)).onToggle([=] {
-        settings.video.shader = {location, file};
-        ruby::video.setShader(settings.video.shader);
-        loadShaders();
-      });
-      shaders.append(item);
-    }
+      for(auto &directory : shaderDirectories) {
+        auto parts = directory.split("/");
+        Menu parent = videoShaderMenu;
 
-    for(auto dir : directory::folders(location)) {
-      bool menuAdded = false;
-      Menu folder;
+        if(directory != "") {
+          for (auto &part: parts) {
+            if(part == "") continue;
+            Menu child;
+            bool found = false;
+            for(auto &action: parent.actions()) {
+              if(auto menu = action.cast<Menu>()) {
+                if(menu.text() == part) {
+                  child = menu;
+                  found = true;
+                  break;
+                }
+              }
+            }
 
-      for(auto file : directory::files({location, "/", dir}, "*.slangp")) {
-        if(!menuAdded) {
-          folder.setText(dir.trimRight("/", 1L));
-          menuAdded = true;
-          videoShaderMenu.append(folder);
+            if(found) {
+              parent = child;
+            } else {
+              Menu newMenu{&parent};
+              newMenu.setText(part);
+              parent = newMenu;
+            }
+          }
         }
 
-        MenuCheckItem item{&folder};
-        item.setAttribute("file", {location, dir, "/", file});
-        item.setText(string{file}.trimRight(".slangp", 1L)).onToggle([=] {
-          settings.video.shader = {location, dir, "/", file};
-          ruby::video.setShader(settings.video.shader);
-          loadShaders();
-        });
-        shaders.append(item);
+        auto files = directory::files({location, directory}, "*.slangp");
+        for(auto &file: files) {
+          MenuCheckItem item{&parent};
+          item.setAttribute("file", {directory, file});
+          item.setText(string{file}.trimRight(".slangp", 1L)).onToggle([=] {
+            settings.video.shader = {directory, file};
+            ruby::video.setShader({location, settings.video.shader});
+            loadShaders();
+          });
+          shaders.append(item);
+        }
       }
     }
-  }
+  
+  auto stop = std::chrono::high_resolution_clock::now();
+  
+  auto duration = duration_cast<std::chrono::microseconds>(stop - start);
+  
+  std::cout << "parsing shaders took " << duration.count() << "\n";
 
   if(program.startShader) {
     string existingShader = settings.video.shader;

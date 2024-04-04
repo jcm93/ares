@@ -63,6 +63,8 @@ struct Program : ares::Platform {
 
   vector<ares::Node::Video::Screen> screens;
   vector<ares::Node::Audio::Stream> streams;
+  
+  bool loaded = false;
 
   bool paused = false;
   bool fastForwarding = false;

@@ -231,6 +231,117 @@ struct VideoMetal : VideoDriver, Metal {
     _outputX = (_viewWidth - width) / 2;
     _outputY = (_viewHeight - height) / 2;
   }
+  
+  auto alternateDrawPath() -> void {
+    /// Uses two render passes (plus librashader's render passes). The first render pass samples the source texture,
+    /// consisting of the pixel buffer from the emulator, onto a texture the same size as our eventual output,
+    /// `_renderTargetTexture`. Then it calls into librashader, which performs postprocessing onto the same
+    /// output texture. Then for the second render pass here, we composite the output texture within ares's viewport.
+    /// We need this last pass because librashader expects the viewport to be the same size as the output texture,
+    /// which is not the case for ares.
+    
+    auto width = outputWidth;
+    auto height = outputHeight;
+    
+    @autoreleasepool {
+      
+      dispatch_semaphore_wait(_semaphore, DISPATCH_TIME_FOREVER);
+      
+      id<MTLCommandBuffer> commandBuffer = [_commandQueue commandBuffer];
+      
+      if (commandBuffer != nil) {
+        __block dispatch_semaphore_t block_sema = _semaphore;
+        
+        [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> buffer) {
+         dispatch_semaphore_signal(block_sema);
+        }];
+        
+        _renderToTextureRenderPassDescriptor.colorAttachments[0].texture = _renderTargetTexture;
+        
+        if (_renderToTextureRenderPassDescriptor != nil) {
+          
+          id<MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:_renderToTextureRenderPassDescriptor];
+          
+          _renderToTextureRenderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
+          
+          [_sourceTexture replaceRegion:MTLRegionMake2D(0, 0, sourceWidth, sourceHeight) mipmapLevel:0 withBytes:buffer bytesPerRow:bytesPerRow];
+          
+          [renderEncoder setRenderPipelineState:_renderToTextureRenderPipeline];
+          
+          [renderEncoder setViewport:(MTLViewport){0, 0, (double)width, (double)height, -1.0, 1.0}];
+          
+          [renderEncoder setVertexBuffer:_vertexBuffer
+                                  offset:0
+                                 atIndex:0];
+          
+          [renderEncoder setVertexBytes:&_viewportSize
+                                 length:sizeof(_viewportSize)
+                                atIndex:MetalVertexInputIndexViewportSize];
+          
+          [renderEncoder setFragmentTexture:_sourceTexture atIndex:0];
+          
+          [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:0 vertexCount:6];
+          
+          [renderEncoder endEncoding];
+          
+          if (_filterChain) {
+            _libra.mtl_filter_chain_frame(&_filterChain, commandBuffer, frameCount++, _sourceTexture, _libraViewport, _renderTargetTexture, nil, nil);
+          }
+          
+          MTLRenderPassDescriptor *drawableRenderPassDescriptor = view.currentRenderPassDescriptor;
+          
+          drawableRenderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionClear;
+          
+          if (drawableRenderPassDescriptor != nil) {
+            
+            id<MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:drawableRenderPassDescriptor];
+            
+            [renderEncoder setRenderPipelineState:_drawableRenderPipeline];
+            
+            [renderEncoder setViewport:(MTLViewport){_outputX, _outputY, (double)width, (double)height, -1.0, 1.0}];
+            
+            [renderEncoder setVertexBuffer:_vertexBuffer
+                                    offset:0
+                                   atIndex:0];
+            
+            [renderEncoder setVertexBytes:&_viewportSize
+                                   length:sizeof(_viewportSize)
+                                  atIndex:MetalVertexInputIndexViewportSize];
+            
+            [renderEncoder setFragmentTexture:_renderTargetTexture atIndex:0];
+            
+            [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:0 vertexCount:6];
+            
+            [renderEncoder endEncoding];
+            
+            id<CAMetalDrawable> drawable = view.currentDrawable;
+            
+            if (drawable != nil) {
+              
+              if (_blocking) {
+                
+                [commandBuffer presentDrawable:drawable afterMinimumDuration:_presentInterval];
+                
+              } else {
+                
+                [commandBuffer presentDrawable:drawable];
+                
+              }
+              
+              //[view draw];
+              
+            }
+          }
+          
+          [commandBuffer commit];
+          
+          if (_flush) {
+            [commandBuffer waitUntilCompleted];
+          }
+        }
+      }
+    }
+  }
 
   auto output(u32 width, u32 height) -> void override {
     /// Uses two render passes (plus librashader's render passes). The first render pass samples the source texture,
@@ -242,14 +353,14 @@ struct VideoMetal : VideoDriver, Metal {
     
     CFTimeInterval now = CACurrentMediaTime();
     CFTimeInterval timeSinceLastCall = now - _now;
-    std::cout << "interval between calls: " << timeSinceLastCall << "\n";
+    //std::cout << "interval between calls: " << timeSinceLastCall << "\n";
     _now = now;
     //can we do this outside of the output function?
     if (width != outputWidth || height != outputHeight) {
       resizeOutputBuffers(width, height);
     }
     
-    @autoreleasepool {
+    /*@autoreleasepool {
       
       dispatch_semaphore_wait(_semaphore, DISPATCH_TIME_FOREVER);
       
@@ -346,7 +457,7 @@ struct VideoMetal : VideoDriver, Metal {
           }
         }
       }
-    }
+    }*/
   }
 
 private:
@@ -494,21 +605,21 @@ private:
   if (self = [super initWithFrame:frame device:metalDevice]) {
     video = videoPointer;
   }
-  self.enableSetNeedsDisplay = NO;
-  self.paused = YES;
+  //self.enableSetNeedsDisplay = NO;
+  //self.paused = YES;
   
   //below is the delegate path; currently not used but likely will be used in future.
   
-  //self.enableSetNeedsDisplay = YES;
-  //self.paused = NO;
-  //[self setDelegate:self];
+  self.enableSetNeedsDisplay = YES;
+  self.paused = NO;
+  [self setDelegate:self];
   
   return self;
 }
 
 -(void) drawInMTKView:(MTKView *)view {
   //currently not used
-  //video->alternateDrawPath();
+  video->alternateDrawPath();
 }
 
 -(void) mtkView:(MTKView *)view drawableSizeWillChange:(CGSize) size {

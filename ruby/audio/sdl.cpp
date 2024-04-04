@@ -25,6 +25,10 @@ struct AudioSDL : AudioDriver {
   auto hasFrequencies() -> vector<u32> override {
     return {44100, 48000, 96000};
   }
+  
+  auto hasLatencies() -> vector<u32> override {
+    return {8, 20, 40, 60, 80, 100};
+  }
 
   auto setFrequency(u32 frequency) -> bool override { return initialize(); }
   auto setLatency(u32 latency) -> bool override { return initialize(); }
@@ -63,7 +67,10 @@ private:
     want.freq = frequency;
     want.format = AUDIO_F32SYS;
     want.channels = 2;
-    want.samples = 4096;
+    
+    
+    auto desired_samples = (latency * frequency) / 1000.0f;
+    want.samples = pow(2, ceil(log2(desired_samples))); // SDL2 requires power-of-two buffer sizes
 
     _device = SDL_OpenAudioDevice(NULL,0,&want,&have,0);
     frequency = have.freq;
