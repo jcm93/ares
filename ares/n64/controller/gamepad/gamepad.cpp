@@ -229,8 +229,8 @@ auto Gamepad::read() -> n32 {
   platform->input(z);
   platform->input(start);
 
-  auto cardinalMax   = 85.0;
-  auto diagonalMax   = 69.0;
+  auto cardinalMax   = 127.0;
+  auto diagonalMax   = 179.6;
   auto innerDeadzone =  7.0; // default should remain 7 (~8.2% of 85) as the deadzone is axial in nature and fights cardinalMax
   auto outerDeadzoneRadiusMax = 2.0 / sqrt(2.0) * (diagonalMax / cardinalMax * (cardinalMax - innerDeadzone) + innerDeadzone); //from linear scaling equation, substitute outerDeadzoneRadiusMax*sqrt(2)/2 for lengthAbsoluteX and set diagonalMax as the result then solve for outerDeadzoneRadiusMax
 
@@ -262,7 +262,7 @@ auto Gamepad::read() -> n32 {
   }
   
   //bound diagonals to an octagonal range {-diagonalMax ... +diagonalMax}
-  if(ax != 0.0 && ay != 0.0) {
+  /*if(ax != 0.0 && ay != 0.0) {
     auto slope = ay / ax;
     auto edgex = copysign(cardinalMax / (abs(slope) + (cardinalMax - diagonalMax) / diagonalMax), ax);
     auto edgey = copysign(min(abs(edgex * slope), cardinalMax / (1.0 / abs(slope) + (cardinalMax - diagonalMax) / diagonalMax)), ay);
@@ -274,7 +274,7 @@ auto Gamepad::read() -> n32 {
       ax = edgex;
       ay = edgey;
     }
-  }
+  }*/
 
   //keep cardinal input within positive and negative bounds of cardinalMax
   if(abs(ax) > cardinalMax) ax = copysign(cardinalMax, ax);

@@ -44,6 +44,7 @@ struct AudioSDL : AudioDriver {
 
     if(self.blocking) {
       while(SDL_GetQueuedAudioSize(_device) > _bufferSize) {
+        usleep(1000);
         //wait for audio to drain
       }
     }

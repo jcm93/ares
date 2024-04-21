@@ -1,4 +1,5 @@
 #include "desktop-ui.hpp"
+#include <dispatch/dispatch.h>
 
 namespace ruby {
   Video video;
@@ -149,7 +150,6 @@ auto nall::main(Arguments arguments) -> void {
   program.create();
   Application::onMain({&Program::main, &program});
   Application::run();
-
   settings.save();
 
   Instances::presentation.destruct();
