@@ -67,6 +67,7 @@ struct AudioOpenAL : AudioDriver {
         _queueLength--;
       }
       //wait for buffer playback to catch up to sample generation if not synchronizing
+      usleep(1000);
       if(!self.blocking || _queueLength < 3) break;
     }
 
