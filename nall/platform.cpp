@@ -21,10 +21,9 @@ NALL_HEADER_INLINE auto setsockopt(int socket, int level, int option_name, const
 }
 
 NALL_HEADER_INLINE auto usleep(unsigned int us) -> int {
-  if(us != 0) {
+  if(us >= 0) {
     Sleep(us / 1000);
   }
-
   return 0;
 }
 

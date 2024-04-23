@@ -4,6 +4,8 @@
 #include <SDL2/SDL.h>
 #endif
 
+#include <iostream>
+
 struct AudioSDL : AudioDriver {
   AudioSDL& self = *this;
   AudioSDL(Audio& super) : AudioDriver(super) {}
@@ -69,6 +71,10 @@ struct AudioSDL : AudioDriver {
 private:
   auto initialize() -> bool {
     terminate();
+    
+#if defined(PLATFORM_WINDOWS)
+    timeBeginPeriod(1);
+#endif
 
     SDL_InitSubSystem(SDL_INIT_AUDIO);
 
@@ -94,6 +100,9 @@ private:
   }
 
   auto terminate() -> void {
+#if defined(PLATFORM_WINDOWS)
+    timeEndPeriod(1);
+#endif
     _ready = false;
     SDL_CloseAudioDevice(_device);
     SDL_QuitSubSystem(SDL_INIT_AUDIO);

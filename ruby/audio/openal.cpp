@@ -87,6 +87,10 @@ struct AudioOpenAL : AudioDriver {
 private:
   auto initialize() -> bool {
     terminate();
+    
+#if defined(PLATFORM_WINDOWS)
+    timeBeginPeriod(1);
+#endif
 
     if(!hasDevices().find(self.device)) self.device = hasDevices().first();
     _queueLength = 0;
@@ -120,6 +124,9 @@ private:
   }
 
   auto terminate() -> void {
+#if defined(PLATFORM_WINDOWS)
+    timeEndPeriod(1);
+#endif
     _ready = false;
 
     if(alIsSource(_source) == AL_TRUE) {
