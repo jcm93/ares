@@ -21,6 +21,7 @@ ifeq ($(ruby),)
     ruby += audio.openal
     ruby += input.quartz #input.carbon
     ruby += video.metal
+    ruby += audio.avae
     ifeq ($(sdl2),true)
       macsdl = ../thirdparty/SDL/libSDL2-2.0.0.dylib
       ares.dylibs += $(macsdl)
@@ -122,6 +123,7 @@ ifeq ($(platform),macos)
   ruby.options += -framework Metal
   ruby.options += -framework MetalKit
   ruby.options += -framework IOKit
+  ruby.options += -framework AVFoundation
   ruby.options += $(if $(findstring audio.openal,$(ruby)),-framework OpenAL)
   ifeq ($(sdl2),true)
     ruby.options += -L../thirdparty/SDL/ -lSDL2-2.0.0

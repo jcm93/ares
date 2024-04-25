@@ -46,6 +46,10 @@
 #include <ruby/audio/sdl.cpp>
 #endif
 
+#if defined(AUDIO_AVAE)
+#include <ruby/audio/avae.cpp>
+#endif
+
 namespace ruby {
 
 auto Audio::setExclusive(bool exclusive) -> bool {
@@ -193,6 +197,10 @@ auto Audio::create(string driver) -> bool {
 #if defined(AUDIO_SDL)
   if(driver == "SDL") self.instance = new AudioSDL(*this);
 #endif
+  
+#if defined(AUDIO_AVAE)
+  if(driver == "AVAudioEngine") self.instance = new AudioAVAE(*this);
+#endif
 
   if(!self.instance) self.instance = new AudioDriver(*this);
 
@@ -216,6 +224,10 @@ auto Audio::hasDrivers() -> vector<string> {
 
 #if defined(AUDIO_SDL)
   "SDL",
+#endif
+    
+#if defined(AUDIO_AVAE)
+  "AVAudioEngine",
 #endif
 
   #if defined(AUDIO_DIRECTSOUND)
@@ -278,6 +290,8 @@ auto Audio::optimalDriver() -> string {
   return "ALSA";
   #elif defined(AUDIO_OSS)
   return "OSS";
+  #elif defined(AUDIO_AVAE)
+  return "AVAudioEngine";
   #else
   return "None";
   #endif
