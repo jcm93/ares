@@ -11,6 +11,13 @@ if ! command -v gmake >/dev/null; then
     exit 1
 fi
 
+if [ -n "${GITHUB_ACTIONS+1}" ]; then
+    if [ $ImageOS == "macos14" ]; then
+        sudo xcode-select --switch /Applications/Xcode_15.2.app/Contents/Developer
+        echo "Set Xcode version to 15.2 for ares build."
+    fi
+fi
+
 # Change to parent directory (top-level)
 cd "$(dirname "$0")"/.. || exit 1
 

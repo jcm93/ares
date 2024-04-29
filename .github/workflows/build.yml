@@ -1,10 +1,6 @@
 name: Build
 on:
-  push:
-    branches: [ master ]
-    tags: [ 'v*' ]
-  pull_request:
-    branches: [ master ]
+  push
 jobs:
   build:
     strategy:
@@ -51,7 +47,11 @@ jobs:
           windres: rc
           shell: bash
           msvc-arch: x64_arm64
-        - name: macos
+        - name: macos-compat
+          os: macos-12
+          compiler: clang++
+          shell: sh
+        - name: macos-latest
           os: macos-latest
           compiler: clang++
           shell: sh
@@ -124,6 +124,9 @@ jobs:
     - name: Install macOS Dependencies
       if: runner.os == 'macOS'
       run: |
+        pushd /Applications
+        ls
+        popd
         brew install make ninja cmake
         pip install --no-input setuptools
         rustup toolchain install nightly
