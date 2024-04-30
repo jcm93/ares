@@ -1,10 +1,6 @@
 name: Build
 on:
-  push:
-    branches: [ master ]
-    tags: [ 'v*' ]
-  pull_request:
-    branches: [ master ]
+  push
 jobs:
   build:
     strategy:
@@ -51,7 +47,11 @@ jobs:
           windres: rc
           shell: bash
           msvc-arch: x64_arm64
-        - name: macos
+        - name: macos-compat
+          os: macos-12
+          compiler: clang++
+          shell: sh
+        - name: macos-latest
           os: macos-latest
           compiler: clang++
           shell: sh
@@ -105,25 +105,19 @@ jobs:
           ./build-librashader.sh
           popd
         fi
-    - name: "macOS: recover MoltenVK cache"
-      if: runner.os == 'macOS'
-      uses: actions/cache@v3
-      env:
-          cache-name: moltenvk
-      with:
-          path: thirdparty/MoltenVK/MoltenVK
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('thirdparty/MoltenVK/HEAD') }}
-    - name: "macOS: recover SDL cache"
-      if: runner.os == 'macOS'
-      uses: actions/cache@v3
-      env:
-          cache-name: sdl
-      with:
-          path: thirdparty/SDL/SDL
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('thirdparty/SDL/HEAD') }}
     - name: Install macOS Dependencies
       if: runner.os == 'macOS'
       run: |
+        pushd /Applications
+        ls
+        popd
+        if [ $ImageOS == "macos14" ]; then
+            sudo xcode-select -s /Applications/Xcode_15.2.app/Contents/Developer
+            echo "Set Xcode version to 15.2 for macos-latest build."
+        elif [ $ImageOS == "macos12" ]; then
+            sudo xcode-select -s /Applications/Xcode_13.4.app/Contents/Developer
+            echo "Set Xcode version to 13.4 for macos-compat build."
+        fi
         brew install make ninja cmake
         pip install --no-input setuptools
         rustup toolchain install nightly
