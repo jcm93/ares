@@ -33,7 +33,7 @@ struct VideoDriver {
   virtual auto setFlush(bool flush) -> bool { return true; }
   virtual auto setFormat(string format) -> bool { return true; }
   virtual auto setShader(string shader) -> bool { return true; }
-  virtual auto refreshRateHint(double refreshRate) -> void {}
+  virtual auto refreshRateHint(ares::Node::Video::Screen node, double refreshRate) -> void {}
 
   virtual auto focused() -> bool { return true; }
   virtual auto clear() -> void {}
@@ -128,7 +128,7 @@ struct Video {
   auto setFlush(bool flush) -> bool;
   auto setFormat(string format) -> bool;
   auto setShader(string shader) -> bool;
-  auto refreshRateHint(double refreshRate) -> void;
+  auto refreshRateHint(ares::Node::Video::Screen node, double refreshRate) -> void;
 
   auto focused() -> bool;
   auto clear() -> void;

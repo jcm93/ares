@@ -108,9 +108,9 @@ auto Video::setShader(string shader) -> bool {
   return true;
 }
 
-auto Video::refreshRateHint(double refreshRate) -> void {
+auto Video::refreshRateHint(ares::Node::Video::Screen node, double refreshRate) -> void {
   lock_guard<recursive_mutex> lock(mutex);
-  instance->refreshRateHint(refreshRate);
+  instance->refreshRateHint(node, refreshRate);
 }
 
 //

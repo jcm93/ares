@@ -78,7 +78,7 @@ auto Screen::refreshRateHint(double pixelFrequency, int dotsPerLine, int linesPe
 
 auto Screen::refreshRateHint(double refreshRate) -> void {
   lock_guard<recursive_mutex> lock(_mutex);
-  platform->refreshRateHint(refreshRate);
+  platform->platformRefreshRateHint(shared(), refreshRate);
 }
 
 auto Screen::setViewport(u32 x, u32 y, u32 width, u32 height) -> void {
