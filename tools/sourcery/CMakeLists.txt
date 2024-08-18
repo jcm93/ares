@@ -1,5 +1,5 @@
 add_executable(sourcery sourcery.cpp)
 
-target_link_libraries(sourcery PRIVATE nall)
+target_include_directories(sourcery PRIVATE ${CMAKE_SOURCE_DIR})
 
-nall_set_properties(sourcery)
+target_link_libraries(sourcery PRIVATE nall)

@@ -1,0 +1,66 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 22,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "environmentVars",
+      "hidden": true,
+      "cacheVariables": {
+        "ARES_PROFILE_ACCURACY": false,
+        "ENABLE_VULKAN": true,
+        "VULKAN": true
+      }
+    },
+    {
+      "name": "macos",
+      "displayName": "macOS",
+      "description": "Default macOS build (single architecture only)",
+      "inherits": ["environmentVars"],
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Darwin"
+      },
+      "generator": "Xcode",
+      "binaryDir": "${sourceDir}/build_macos",
+      "cacheVariables": {
+        "CMAKE_OSX_DEPLOYMENT_TARGET": {"type": "STRING", "value": "10.13"},
+        "ARES_CODESIGN_IDENTITY": {"type": "STRING", "value": "$penv{CODESIGN_IDENT}"},
+        "ARES_CODESIGN_TEAM": {"type": "STRING", "value": "$penv{CODESIGN_TEAM}"},
+        "ARES_PROVISIONING_PROFILE": {"type": "STRING", "value": "$penv{PROVISIONING_PROFILE}"}
+      }
+    },
+    {
+      "name": "windows-x64",
+      "displayName": "Windows x64",
+      "description": "Default Windows build (x64)",
+      "inherits": ["environmentVars"],
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
+      "architecture": "x64",
+      "binaryDir": "${sourceDir}/build_x64",
+      "generator": "Visual Studio 17 2022",
+      "cacheVariables": {
+        "ARES_CMAKE_VERSION": {"type": "STRING", "value": "3.0.0"},
+        "ENABLE_BROWSER": true,
+        "ENABLE_CCACHE": false
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "windows-x64",
+      "configurePreset": "windows-x64",
+      "displayName": "Windows 64-bit",
+      "description": "Windows build for 64-bit (aka x64)",
+      "configuration": "RelWithDebInfo"
+    }
+  ]
+}

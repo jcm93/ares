@@ -1,0 +1,33 @@
+{
+    "dependencies": {
+        "prebuilt": {
+            "version": "ares",
+            "baseUrl": "https://github.com/jcm93/obs-deps/releases/download",
+            "label": "Pre-Built ares-deps",
+            "hashes": {
+                "macos-universal": "3432423d81e41f3f89d11d0591024ad38403c156ac1ff9120734275a9d1d5823",
+                "windows-x64": "41979b44168450c0510d91e127d6c50d2b436c54b5e86f5142dc6c689dc38415",
+                "windows-x86": "6502c6e2343e693a0274e49ef9003ce7550c23c055b82ca8e51ccff18f2aae9b"
+            }
+        }
+    },
+    "tools": {
+        "ccache-win": {
+            "version": "4.8.1",
+            "baseUrl": "https://github.com/ccache/ccache/releases/download/",
+            "label": "Ccache for Windows x64",
+            "hash": "ca59770e9f46b59d6bec6e7036a17a27d601a0a5a0a721fe8e03fea734ccf732"
+        }
+    },
+    "platformConfig": {
+        "ubuntu-x86_64": {
+            "qtVersion": 6,
+            "generator": "Ninja"
+        },
+        "ubuntu-aarch64": {
+            "qtVersion": 6,
+            "generator": "Ninja"
+        }
+    },
+    "name": "ares"
+}

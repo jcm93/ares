@@ -25,20 +25,20 @@ namespace nall {
     static constexpr bool GCC       = 0;
     static constexpr bool Microsoft = 0;
   };
-  #pragma clang diagnostic error   "-Wgnu-case-range"
+  /*#pragma clang diagnostic error   "-Wgnu-case-range"
   #pragma clang diagnostic error   "-Wgnu-statement-expression"
   #pragma clang diagnostic error   "-Wvla"
   #pragma clang diagnostic warning "-Wimplicit-fallthrough"
   #pragma clang diagnostic warning "-Wreturn-type"
   #pragma clang diagnostic ignored "-Wunused-result"
-  #pragma clang diagnostic ignored "-Wunknown-pragmas"
+  #pragma clang diagnostic ignored "-Wunknown-pragmas"*/
   #pragma clang diagnostic ignored "-Wempty-body"
-  #pragma clang diagnostic ignored "-Wparentheses"
+  //#pragma clang diagnostic ignored "-Wparentheses"
   #pragma clang diagnostic ignored "-Wswitch"
   #pragma clang diagnostic ignored "-Wswitch-bool"
-  #pragma clang diagnostic ignored "-Wabsolute-value"
+  /*#pragma clang diagnostic ignored "-Wabsolute-value"
   #pragma clang diagnostic ignored "-Wtrigraphs"
-  #pragma clang diagnostic ignored "-Wattributes"
+  #pragma clang diagnostic ignored "-Wattributes"*/
 #elif defined(__GNUC__)
   #define COMPILER_GCC
   struct Compiler {
@@ -84,7 +84,7 @@ namespace nall {
     static constexpr bool BSD     = 0;
   };
 #elif defined(__APPLE__)
-  #define PLATFORM_MACOS
+  // #define PLATFORM_MACOS
   struct Platform {
     static constexpr bool Windows = 0;
     static constexpr bool MacOS   = 1;

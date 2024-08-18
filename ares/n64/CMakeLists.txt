@@ -22,24 +22,188 @@ target_sources(ares PRIVATE
   rdp/rdp.cpp
 )
 
-if(vulkan)
-  if(platform STREQUAL macos)
-#    molten = $(ares.path)/../thirdparty/MoltenVK/libMoltenVK.dylib
-#    ifeq ($(wildcard $(molten)),)  
-#      molten = $(shell brew --prefix molten-vk)/lib/libMoltenVK.dylib
-#      ifeq ($(wildcard $(molten)),)
-#        $(error Compiling Ares N64 Vulkan backend requires MoltenVK. Install it via Homebrew, compile it using thirdparty/MoltenVK/build-moltenvk.sh, or disable with vulkan=false")
-#      endif
-#    endif
-#    ares.dylibs += $(molten)
-  endif()
+if(PLATFORM_WINDOWS)
+  include(cmake/os-windows.cmake)
+elseif(OS_MACOS)
+  include(cmake/os-macos.cmake)
+elseif(OS_LINUX)
+  include(cmake/os-linux.cmake)
+elseif(OS_FREEBSD OR OS_OPENBSD)
+  include(cmake/os-freebsd.cmake)
+endif()
 
+ares_add_header_sources(n64 n64.hpp CMakeLists.txt)
+
+ares_add_header_sources(n64
+  # cmake-format: sortable
+  ai/ai.hpp
+  ai/debugger.cpp
+  ai/io.cpp
+  ai/serialization.cpp)
+  
+ares_add_header_sources(n64
+  # cmake-format: sortable
+  cartridge/cartridge.hpp
+  cartridge/debugger.cpp
+  cartridge/flash.cpp
+  cartridge/isviewer.cpp
+  cartridge/joybus.cpp
+  cartridge/rtc.cpp
+  cartridge/serialization.cpp
+  cartridge/slot.cpp
+  cartridge/slot.hpp)
+  
+ares_add_header_sources(n64
+  # cmake-format: sortable
+  cic/cic.hpp
+  cic/commands.cpp
+  cic/io.cpp
+  cic/serialization.cpp)
+  
+ares_add_header_sources(n64
+  # cmake-format: sortable
+  controller/controller.hpp
+  controller/port.cpp
+  controller/port.hpp)
+  
+ares_add_header_sources(n64
+  # cmake-format: sortable
+  controller/gamepad/gamepad.cpp
+  controller/gamepad/gamepad.hpp
+  controller/gamepad/transfer-pak.cpp)
+  
+ares_add_header_sources(n64
+  # cmake-format: sortable
+  controller/mouse/mouse.cpp
+  controller/mouse/mouse.hpp)
+  
+ares_add_header_sources(n64
+  # cmake-format: sortable
+  cpu/algorithms.cpp
+  cpu/context.cpp
+  cpu/cpu.hpp
+  cpu/dcache.cpp
+  cpu/debugger.cpp
+  cpu/disassembler.cpp
+  cpu/exceptions.cpp
+  cpu/interpreter-cop2.cpp
+  cpu/interpreter-fpu.cpp
+  cpu/interpreter-ipu.cpp
+  cpu/interpreter-scc.cpp
+  cpu/interpreter.cpp
+  cpu/memory.cpp
+  cpu/recompiler.cpp
+  cpu/serialization.cpp
+  cpu/tlb.cpp)
+  
+ares_add_header_sources(n64
+  # cmake-format: sortable
+  dd/controller.cpp
+  dd/dd.hpp
+  dd/debugger.cpp
+  dd/drive.cpp
+  dd/io.cpp
+  dd/rtc.cpp
+  dd/serialization.cpp)
+  
+ares_add_header_sources(n64
+  # cmake-format: sortable
+  memory/bus.hpp
+  memory/io.hpp
+  memory/memory.hpp
+  memory/lsb/readable.hpp
+  memory/lsb/writable.hpp
+  memory/msb/readable.hpp
+  memory/msb/writable.hpp)
+  
+ares_add_header_sources(n64
+  # cmake-format: sortable
+  mi/debugger.cpp
+  mi/io.cpp
+  mi/mi.hpp
+  mi/serialization.cpp)
+  
+ares_add_header_sources(n64
+  # cmake-format: sortable
+  pi/bus.hpp
+  pi/debugger.cpp
+  pi/dma.cpp
+  pi/io.cpp
+  pi/pi.hpp
+  pi/serialization.cpp)
+  
+ares_add_header_sources(n64
+  # cmake-format: sortable
+  pif/debugger.cpp
+  pif/hle.cpp
+  pif/io.cpp
+  pif/pif.hpp
+  pif/serialization.cpp)
+  
+ares_add_header_sources(n64
+  # cmake-format: sortable
+  rdp/debugger.cpp
+  rdp/io.cpp
+  rdp/rdp.hpp
+  rdp/render.cpp
+  rdp/serialization.cpp)
+  
+ares_add_header_sources(n64
+  # cmake-format: sortable
+  rdram/debugger.cpp
+  rdram/io.cpp
+  rdram/rdram.hpp
+  rdram/serialization.cpp)
+  
+ares_add_header_sources(n64
+  # cmake-format: sortable
+  ri/debugger.cpp
+  ri/io.cpp
+  ri/ri.hpp
+  ri/serialization.cpp)
+  
+ares_add_header_sources(n64
+  # cmake-format: sortable
+  rsp/debugger.cpp
+  rsp/decoder.cpp
+  rsp/disassembler.cpp
+  rsp/dma.cpp
+  rsp/interpreter-ipu.cpp
+  rsp/interpreter-scc.cpp
+  rsp/interpreter-vpu.cpp
+  rsp/interpreter.cpp
+  rsp/io.cpp
+  rsp/recompiler.cpp
+  rsp/rsp.hpp
+  rsp/serialization.cpp)
+  
+ares_add_header_sources(n64
+  # cmake-format: sortable
+  si/debugger.cpp
+  si/dma.cpp
+  si/io.cpp
+  si/serialization.cpp
+  si/si.hpp)
+  
+ares_add_header_sources(n64
+  # cmake-format: sortable
+  system/serialization.cpp
+  system/system.hpp)
+  
+ares_add_header_sources(n64
+  # cmake-format: sortable
+  vi/debugger.cpp
+  vi/io.cpp
+  vi/serialization.cpp
+  vi/vi.hpp)
+
+if(VULKAN_FOUND)
   target_sources(ares PRIVATE
     vulkan/vulkan.cpp
+    vulkan/vulkan.hpp
   )
  
   target_sources(ares PRIVATE
-#    $(wildcard vulkan/parallel-rdp/parallel-rdp/*.cpp)
     vulkan/parallel-rdp/parallel-rdp/command_ring.cpp
     vulkan/parallel-rdp/parallel-rdp/rdp_device.cpp
     vulkan/parallel-rdp/parallel-rdp/rdp_dump_write.cpp
@@ -74,6 +238,46 @@ if(vulkan)
     vulkan/parallel-rdp/util/timer.cpp
     vulkan/parallel-rdp/util/timeline_trace_file.cpp
     vulkan/parallel-rdp/util/thread_name.cpp
+    vulkan/parallel-rdp/util/environment.cpp
+
+    vulkan/parallel-rdp/volk/volk.c
+  )
+  target_sources(ares PRIVATE
+    vulkan/parallel-rdp/parallel-rdp/command_ring.hpp
+    vulkan/parallel-rdp/parallel-rdp/rdp_device.hpp
+    vulkan/parallel-rdp/parallel-rdp/rdp_dump_write.hpp
+    vulkan/parallel-rdp/parallel-rdp/rdp_renderer.hpp
+    vulkan/parallel-rdp/parallel-rdp/video_interface.hpp
+    vulkan/parallel-rdp/vulkan/buffer.hpp
+    vulkan/parallel-rdp/vulkan/buffer_pool.hpp
+    vulkan/parallel-rdp/vulkan/command_buffer.hpp
+    vulkan/parallel-rdp/vulkan/command_pool.hpp
+    vulkan/parallel-rdp/vulkan/context.hpp
+    vulkan/parallel-rdp/vulkan/cookie.hpp
+    vulkan/parallel-rdp/vulkan/descriptor_set.hpp
+    vulkan/parallel-rdp/vulkan/device.hpp
+    vulkan/parallel-rdp/vulkan/event_manager.hpp
+    vulkan/parallel-rdp/vulkan/fence.hpp
+    vulkan/parallel-rdp/vulkan/fence_manager.hpp
+    vulkan/parallel-rdp/vulkan/image.hpp
+    vulkan/parallel-rdp/vulkan/indirect_layout.hpp
+    vulkan/parallel-rdp/vulkan/memory_allocator.hpp
+    vulkan/parallel-rdp/vulkan/pipeline_event.hpp
+    vulkan/parallel-rdp/vulkan/query_pool.hpp
+    vulkan/parallel-rdp/vulkan/render_pass.hpp
+    vulkan/parallel-rdp/vulkan/sampler.hpp
+    vulkan/parallel-rdp/vulkan/semaphore.hpp
+    vulkan/parallel-rdp/vulkan/semaphore_manager.hpp
+    vulkan/parallel-rdp/vulkan/shader.hpp
+    vulkan/parallel-rdp/vulkan/texture/texture_format.hpp
+    vulkan/parallel-rdp/util/arena_allocator.hpp
+    vulkan/parallel-rdp/util/logging.hpp
+    vulkan/parallel-rdp/util/thread_id.hpp
+    vulkan/parallel-rdp/util/aligned_alloc.hpp
+    vulkan/parallel-rdp/util/timer.hpp
+    vulkan/parallel-rdp/util/timeline_trace_file.hpp
+    vulkan/parallel-rdp/util/thread_name.hpp
+    vulkan/parallel-rdp/util/environment.hpp
 
     vulkan/parallel-rdp/volk/volk.c
   )
@@ -95,5 +299,7 @@ if(vulkan)
   endif()
 
 else()
-  message(WARNING "Ares n64 core requires Vulkan for RDP emulation, only titles using Software Rendering will function")
+  message(FATAL_ERROR "Tried to compile the ares N64 core, which requires Vulkan for RDP emulation, but no Vulkan support was found.")
 endif()
+
+set_target_properties_ares(ares)
