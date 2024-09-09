@@ -119,7 +119,7 @@ target_sources(
 
 target_compile_definitions(mia PUBLIC MIA_LIBRARY)
 
-target_link_libraries(mia PUBLIC nall ares::ares PRIVATE tzxfile)
+target_link_libraries(mia PUBLIC ares::nall ares::ares PRIVATE tzxfile)
 
 add_executable(mia-ui mia.cpp resource/resource.cpp)
 
@@ -130,7 +130,7 @@ target_include_directories(mia-ui PRIVATE ${CMAKE_SOURCE_DIR}/thirdparty/libchdr
 target_include_directories(mia-ui PRIVATE ${CMAKE_SOURCE_DIR}/thirdparty/TZXFILE)
 
 if(PLATFORM_MACOS)
-  target_link_libraries(mia-ui PUBLIC nall ares::hiro ares::ares PRIVATE tzxfile "$<LINK_LIBRARY:FRAMEWORK,Cocoa.framework>"
+  target_link_libraries(mia-ui PUBLIC ares::nall ares::hiro ares::ares PRIVATE tzxfile
           "$<LINK_LIBRARY:FRAMEWORK,Carbon.framework>"
           "$<LINK_LIBRARY:FRAMEWORK,IOKit.framework>"
           "$<LINK_LIBRARY:FRAMEWORK,Security.framework>")
@@ -162,4 +162,15 @@ set_source_files_properties(
   
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${mia_SOURCES})
 
-set_target_properties_ares(mia-ui)
+set_target_properties(
+      mia-ui
+      PROPERTIES OUTPUT_NAME mia
+                 MACOSX_BUNDLE TRUE
+                 MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/resource/mia.plist"
+                 XCODE_EMBED_FRAMEWORKS_REMOVE_HEADERS_ON_COPY YES
+                 XCODE_EMBED_FRAMEWORKS_CODE_SIGN_ON_COPY YES
+                 XCODE_EMBED_PLUGINS_REMOVE_HEADERS_ON_COPY YES
+                 XCODE_EMBED_PLUGINS_CODE_SIGN_ON_COPY YES)
+
+ares_configure_executable(mia-ui)
+set_target_properties(mia-ui PROPERTIES FOLDER tools PREFIX "")

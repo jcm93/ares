@@ -1,9 +1,5 @@
 add_library(thirdparty INTERFACE)
 
-# set_target_properties_ares(SDL::SDL)
-# set_target_properties_ares(librashader::librashader)
-# set_target_properties_ares(MoltenVK::MoltenVK)
-
 target_include_directories(thirdparty INTERFACE
     ../thirdparty
 )
@@ -27,7 +23,7 @@ if (WITH_SYSTEM_ZLIB)
 else()
   option(ZLIB_BUILD_EXAMPLES "Enable Zlib Examples" OFF)
   add_subdirectory(libchdr/deps/zlib-1.3.1 EXCLUDE_FROM_ALL)
-  set_target_properties(zlibstatic PROPERTIES POSITION_INDEPENDENT_CODE ON)
+  set_target_properties(zlibstatic PROPERTIES POSITION_INDEPENDENT_CODE ON FOLDER thirdparty PREFIX "")
   list(APPEND CHDR_LIBS zlibstatic)
 endif()
 
@@ -96,3 +92,11 @@ add_library(ymfm STATIC
 target_include_directories(ymfm PUBLIC
     ../thirdparty/ymfm/src
 )
+
+set_target_properties(ymfm PROPERTIES FOLDER thirdparty PREFIX "")
+set_target_properties(tzxfile PROPERTIES FOLDER thirdparty PREFIX "")
+set_target_properties(chdr-static PROPERTIES FOLDER thirdparty PREFIX "")
+set_target_properties(sljit PROPERTIES FOLDER thirdparty PREFIX "")
+set_target_properties(zlib PROPERTIES FOLDER thirdparty PREFIX "")
+set_target_properties(lzma PROPERTIES FOLDER thirdparty PREFIX "")
+set_target_properties(libzstd_static PROPERTIES FOLDER thirdparty PREFIX "")

@@ -1,7 +1,7 @@
-add_library(hiro STATIC hiro.cpp)
+add_library(hiro STATIC)
 add_library(ares::hiro ALIAS hiro)
 
-target_link_libraries(hiro PUBLIC nall)
+target_link_libraries(hiro PUBLIC ares::nall)
 
 include(cmake/sources.cmake)
 
@@ -20,5 +20,3 @@ add_sourcery_command(hiro resource)
 target_include_directories(hiro PRIVATE ${CMAKE_SOURCE_DIR})
   
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${hiro_SOURCES})
-
-

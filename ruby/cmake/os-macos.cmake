@@ -28,15 +28,9 @@ target_sources(
           
 target_sources(
   ruby
-  PRIVATE cmake/os-macos.cmake)
-  
-# Explicitly mark ruby.cpp as Objective-C++
-set_source_files_properties(
-  ruby
-  ruby.cpp
-  PROPERTIES
-  XCODE_EXPLICIT_FILE_TYPE
-  sourcecode.cpp.objcpp)
+  PRIVATE cmake/os-macos.cmake
+  ruby.mm
+  ruby.cpp)
   
 target_link_libraries(
   ruby
@@ -66,7 +60,5 @@ endif()
 target_enable_feature(ruby "Quartz input driver" INPUT_QUARTZ)
 
 target_compile_definitions(ruby PUBLIC PLATFORM_MACOS)
-          
-set_target_properties_ares(ruby)
 
 

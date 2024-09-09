@@ -123,7 +123,7 @@ if(SDL_FOUND)
       add_library(SDL::SDL UNKNOWN IMPORTED)
       set_property(TARGET SDL::SDL PROPERTY IMPORTED_LOCATION "${SDL_LIBRARY}")
     else()
-      add_library(SDL::SDL INTERFACE IMPORTED)
+      add_library(SDL::SDL SHARED IMPORTED)
       set_property(TARGET SDL::SDL PROPERTY IMPORTED_LIBNAME "${SDL_LIBRARY}")
     endif()
 

@@ -69,7 +69,7 @@ add_custom_command(
   POST_BUILD
   COMMAND ditto "${CMAKE_SOURCE_DIR}/.deps/obs-deps-ares-universal/lib/slang-shaders" "$<TARGET_BUNDLE_CONTENT_DIR:desktop-ui>/Resources/Shaders/"
   WORKING_DIRECTORY "$<TARGET_BUNDLE_CONTENT_DIR:desktop-ui>"
-  COMMENT "Copy slang shaders to app bundle"
+  COMMENT "Copying slang shaders to app bundle"
 )
 
 # target_install_shaders(desktop-ui)

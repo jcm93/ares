@@ -16,4 +16,5 @@ endif()
 
 target_link_libraries(genius PRIVATE nall ares::hiro)
 
-set_target_properties_ares(genius)
+ares_configure_executable(genius)
+set_target_properties(genius PROPERTIES FOLDER tools PREFIX "")

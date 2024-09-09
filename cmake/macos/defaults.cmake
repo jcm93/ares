@@ -30,6 +30,8 @@ set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH FALSE)
 # Use common bundle-relative RPATH for installed targets
 set(CMAKE_INSTALL_RPATH "@executable_path/../Frameworks")
+# Use build tree as the install prefix
+set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR})
 
 # configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake/macos/resources/package.applescript"
 #                "${CMAKE_CURRENT_BINARY_DIR}/package.applescript" @ONLY)

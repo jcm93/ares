@@ -1,6 +1,7 @@
 target_sources(
   hiro
   PRIVATE # cmake-format: sortable
+          hiro.mm
           hiro.cpp
           hiro.hpp
           components.hpp)

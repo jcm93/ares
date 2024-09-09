@@ -4,6 +4,7 @@ add_library(ares::ruby ALIAS ruby)
 target_sources(
   ruby
   PRIVATE # cmake-format: sortable
+          ruby.mm
           ruby.cpp
           ruby.hpp)
           
@@ -33,9 +34,6 @@ target_sources(
           video/opengl/texture.hpp
           video/opengl/utility.hpp)
           
-          
-
-target_link_libraries(ruby PUBLIC nall PRIVATE thirdparty)
 
 if(PLATFORM_WINDOWS)
   include(cmake/os-windows.cmake)
@@ -47,6 +45,8 @@ elseif(OS_FREEBSD OR OS_OPENBSD)
   include(cmake/os-freebsd.cmake)
 endif()
 
+target_link_libraries(ruby PUBLIC ares::nall PRIVATE thirdparty)
+
 target_include_directories(ruby PRIVATE ${CMAKE_SOURCE_DIR})
 
 get_target_property(ruby_SOURCES ruby SOURCES)
@@ -57,12 +57,21 @@ set_source_files_properties(
   PROPERTIES
   HEADER_FILE_ONLY
   TRUE)
-  
-set_source_files_properties(
-  ruby
-  ruby.cpp
-  PROPERTIES
-  HEADER_FILE_ONLY
-  FALSE)
+
+if(${CMAKE_SYSTEM_NAME} STREQUAL Darwin)
+  set_source_files_properties(
+    ruby
+    ruby.mm
+    PROPERTIES
+    HEADER_FILE_ONLY
+    FALSE)
+else()
+  set_source_files_properties(
+    ruby
+    ruby.cpp
+    PROPERTIES
+    HEADER_FILE_ONLY
+    FALSE)
+endif()
   
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${ruby_SOURCES})

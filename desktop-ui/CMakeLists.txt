@@ -159,7 +159,7 @@ elseif(OS_FREEBSD OR OS_OPENBSD)
   include(cmake/os-freebsd.cmake)
 endif()
 
-target_link_libraries(desktop-ui PRIVATE ares::nall ares::ruby ares::hiro ares::ares ares::mia chdr-static)
+target_link_libraries(desktop-ui PRIVATE nall ares::ruby ares::hiro ares::ares mia chdr-static)
 
 set_target_properties(
   desktop-ui
@@ -178,4 +178,4 @@ if(WIN32)
   )
 endif()
 
-set_target_properties_ares(desktop-ui)
+ares_configure_executable(desktop-ui)

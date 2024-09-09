@@ -198,6 +198,8 @@ ares_add_header_sources(n64
   vi/vi.hpp)
 
 if(VULKAN_FOUND)
+  target_compile_definitions(ares PRIVATE VULKAN)
+  
   target_sources(ares PRIVATE
     vulkan/vulkan.cpp
     vulkan/vulkan.hpp
@@ -301,5 +303,3 @@ if(VULKAN_FOUND)
 else()
   message(FATAL_ERROR "Tried to compile the ares N64 core, which requires Vulkan for RDP emulation, but no Vulkan support was found.")
 endif()
-
-set_target_properties_ares(ares)

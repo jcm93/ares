@@ -1,8 +1,7 @@
-set(hiro cocoa)
-          
 target_sources(
   hiro
-  PRIVATE cmake/os-macos.cmake)
+  PRIVATE cmake/os-macos.cmake
+  hiro.mm)
   
 target_enable_feature(hiro "Cocoa UI backend" HIRO_COCOA)
           
@@ -11,7 +10,7 @@ target_compile_definitions(
   PRIVATE PLATFORM_MACOS)
           
 target_link_libraries(
-  ruby
+  hiro
   PRIVATE # cmake-format: sortable
           "$<LINK_LIBRARY:FRAMEWORK,Cocoa.framework>"
           "$<LINK_LIBRARY:FRAMEWORK,Carbon.framework>"
@@ -27,17 +26,19 @@ set_source_files_properties(
   HEADER_FILE_ONLY
   TRUE)
   
-set_source_files_properties(
-  hiro
-  hiro.cpp
-  PROPERTIES
-  HEADER_FILE_ONLY
-  FALSE)
   
-# Explicitly mark hiro.cpp as Objective-C++
-set_source_files_properties(
-  hiro
-  hiro.cpp
-  PROPERTIES
-  XCODE_EXPLICIT_FILE_TYPE
-  sourcecode.cpp.objcpp)  
+if(${CMAKE_SYSTEM_NAME} STREQUAL Darwin)
+  set_source_files_properties(
+    hiro
+    hiro.mm
+    PROPERTIES
+    HEADER_FILE_ONLY
+    FALSE)
+else()
+  set_source_files_properties(
+    hiro
+    hiro.cpp
+    PROPERTIES
+    HEADER_FILE_ONLY
+    FALSE)
+endif()

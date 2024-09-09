@@ -1,13 +1,5 @@
 # ares CMake macOS helper functions module
 
-# cmake-format: off
-# cmake-lint: disable=C0301
-# cmake-lint: disable=C0307
-# cmake-lint: disable=E1126
-# cmake-lint: disable=R0912
-# cmake-lint: disable=R0915
-# cmake-format: on
-
 include_guard(GLOBAL)
 
 include(helpers_common)
@@ -27,20 +19,8 @@ function(set_target_xcode_properties target)
   endwhile()
 endfunction()
 
-# set_target_properties_ares: Set target properties
-function(set_target_properties_ares target)
-  set(options "")
-  set(oneValueArgs "")
-  set(multiValueArgs PROPERTIES)
-  cmake_parse_arguments(PARSE_ARGV 0 _STPO "${options}" "${oneValueArgs}" "${multiValueArgs}")
-
-  message(DEBUG "Setting additional properties for target ${target}...")
-
-  while(_STPO_PROPERTIES)
-    list(POP_FRONT _STPO_PROPERTIES key value)
-    set_property(TARGET ${target} PROPERTY ${key} "${value}")
-  endwhile()
-
+# ares_configure_executable: Perform extra work needed to build an executable
+function(ares_configure_executable target)
   get_target_property(target_type ${target} TYPE)
   
   if(target_type STREQUAL EXECUTABLE)
@@ -136,6 +116,7 @@ function(_bundle_dependencies target)
   list(REMOVE_DUPLICATES found_dependencies)
 
   set(library_paths)
+  set(bundled_targets)
   set(plugins_list)
   file(GLOB sdk_library_paths /Applications/Xcode*.app)
   set(system_library_path "/usr/lib/")
@@ -144,6 +125,8 @@ function(_bundle_dependencies target)
     get_target_property(library_type ${library} TYPE)
     get_target_property(is_framework ${library} FRAMEWORK)
     get_target_property(is_imported ${library} IMPORTED)
+    
+    #message(AUTHOR_WARNING "library ${library} is ${library_type}")
 
     if(is_imported)
       get_target_property(imported_location ${library} LOCATION)
@@ -175,6 +158,8 @@ function(_bundle_dependencies target)
       else()
         continue()
       endif()
+      
+      list(APPEND bundled_targets ${library})
 
       list(APPEND library_paths ${library_location})
     elseif(NOT is_imported AND library_type STREQUAL "SHARED_LIBRARY")
@@ -183,8 +168,47 @@ function(_bundle_dependencies target)
   endforeach()
 
   list(REMOVE_DUPLICATES library_paths)
-  set_property(
-    TARGET ${target}
-    APPEND
-    PROPERTY XCODE_EMBED_FRAMEWORKS ${library_paths})
+  
+  if(UNUSED)
+    # One of these would be nice, but we cannot install our imported pre-built targets (librashader, SDL, MoltenVK).
+    install(TARGETS ${target} ${bundled_targets}
+      RUNTIME_DEPENDENCIES
+      RUNTIME DESTINATION "$<TARGET_BUNDLE_CONTENT_DIR:${target}>/Frameworks"
+      LIBRARY DESTINATION "$<TARGET_BUNDLE_CONTENT_DIR:${target}>/Frameworks"
+      FRAMEWORK DESTINATION "$<TARGET_BUNDLE_CONTENT_DIR:${target}>/Frameworks"
+      BUNDLE DESTINATION "."
+    )
+    install(IMPORTED_RUNTIME_ARTIFACTS ${target}
+      RUNTIME DESTINATION "$<TARGET_BUNDLE_CONTENT_DIR:${target}>/Frameworks"
+      LIBRARY DESTINATION "$<TARGET_BUNDLE_CONTENT_DIR:${target}>/Frameworks"
+      FRAMEWORK DESTINATION "$<TARGET_BUNDLE_CONTENT_DIR:${target}>/Frameworks"
+      BUNDLE DESTINATION "."
+    )
+  endif()
+  
+  if(XCODE)
+    set_property(
+      TARGET ${target}
+      APPEND
+      PROPERTY XCODE_EMBED_FRAMEWORKS ${library_paths})
+  else()
+    # This isn't strictly good practice, since the --install command should ideally be responsible for assembling
+    # the bundle. Using install commands to assemble an app bundle with pre-built dependencies isn't very feasible
+    # though, and seems to violate various CMake principles. This also debatably violates various CMake principles,
+    # but hopefully not too much.
+    add_custom_command(
+      TARGET ${target}
+      POST_BUILD
+      COMMAND ditto ${library_paths} "$<TARGET_BUNDLE_CONTENT_DIR:${target}>/Frameworks/"
+      WORKING_DIRECTORY "$<TARGET_BUNDLE_CONTENT_DIR:${target}>"
+      COMMENT "Copying dynamic libraries into app bundle"
+    )
+    # Add an rpath for the dynamic libraries
+    add_custom_command(TARGET ${target}
+      POST_BUILD COMMAND
+      ${CMAKE_INSTALL_NAME_TOOL} -add_rpath "@executable_path/../Frameworks/"
+      $<TARGET_FILE:${target}>
+      COMMENT "Adding rpath for dynamic libraries to binary"
+    )
+  endif()
 endfunction()

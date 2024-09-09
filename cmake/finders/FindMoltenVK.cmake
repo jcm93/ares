@@ -112,7 +112,7 @@ if(MoltenVK_FOUND)
       add_library(MoltenVK::MoltenVK UNKNOWN IMPORTED)
       set_property(TARGET MoltenVK::MoltenVK PROPERTY IMPORTED_LOCATION "${MoltenVK_LIBRARY}")
     else()
-      add_library(MoltenVK::MoltenVK INTERFACE IMPORTED)
+      add_library(MoltenVK::MoltenVK SHARED IMPORTED)
       set_property(TARGET MoltenVK::MoltenVK PROPERTY IMPORTED_LIBNAME "${MoltenVK_LIBRARY}")
     endif()
 
