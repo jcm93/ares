@@ -1,5 +1,9 @@
 add_executable(sourcery sourcery.cpp)
 
-target_link_libraries(sourcery PRIVATE nall)
+target_include_directories(sourcery PRIVATE ${CMAKE_SOURCE_DIR})
 
-nall_set_properties(sourcery)
+target_link_libraries(sourcery PRIVATE nall "$<$<PLATFORM_ID:Darwin>:$<LINK_LIBRARY:FRAMEWORK,Cocoa.framework>>")
+
+ares_configure_executable(sourcery)
+
+set_target_properties(sourcery PROPERTIES FOLDER tools PREFIX "")
