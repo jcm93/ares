@@ -9,17 +9,21 @@ include(compiler_common)
 
 add_compile_definitions(_WIN32_WINNT=0x0601) #global
 
+set(
+  _ares_msvc_cxx_options
+  /MP
+  /Zc:__cplusplus
+  /utf-8
+  /permissive-
+  $<$<NOT:$<CONFIG:Debug>>:/GL>
+  $<$<NOT:$<CONFIG:Debug>>:/Oi>
+  $<$<NOT:$<CONFIG:Debug>>:/Ob2>
+  $<$<NOT:$<CONFIG:Debug>>:/Ot>
+)
+
 if(MSVC)
   add_compile_options(
-    # none of these are cpp- or c-specific, so just add them wholesale
-    /MP
-    /Zc:__cplusplus
-    /utf-8
-    /permissive-
-    $<$<NOT:$<CONFIG:Debug>>:/GL>
-    $<$<NOT:$<CONFIG:Debug>>:/Oi>
-    $<$<NOT:$<CONFIG:Debug>>:/Ob2>
-    $<$<NOT:$<CONFIG:Debug>>:/Ot>
+    "$<$<COMPILE_LANGUAGE:C,CXX>:${_ares_msvc_cxx_options}>"
   )
   add_link_options(
     $<$<NOT:$<CONFIG:Debug>>:/LTCG>
@@ -39,7 +43,9 @@ else()
 endif()
 
 if(ARES_BUILD_LOCAL)
-  add_compile_options(-march=native)
+  if(NOT MSVC)
+    add_compile_options(-march=native)
+  endif()
 else()
   # todo
 endif()
