@@ -6,7 +6,7 @@ add_custom_command(
   TARGET desktop-ui
   POST_BUILD
   COMMAND "${CMAKE_COMMAND}" -E make_directory "${ARES_EXECUTABLE_DESTINATION}/desktop-ui/$<CONFIG>/Shaders/"
-  COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_SOURCE_DIR}/.deps/ares-deps-windows-${CMAKE_GENERATOR_PLATFORM}/lib/slang-shaders/"
+  COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_SOURCE_DIR}/.deps/ares-deps-windows-${arch}/lib/slang-shaders/"
     "${ARES_EXECUTABLE_DESTINATION}/desktop-ui/$<CONFIG>/Shaders/"
   WORKING_DIRECTORY "."
   COMMENT "Copying slang shaders to rundir"

@@ -9,8 +9,6 @@ function(_check_dependencies_windows)
   set(prebuilt_destination "ares-deps-windows-ARCH")
 
   set(dependencies_list prebuilt)
-  set(arch ${CMAKE_GENERATOR_PLATFORM})
-  set(platform windows-${arch})
 
   _check_dependencies()
 endfunction()
