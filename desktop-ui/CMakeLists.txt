@@ -47,7 +47,7 @@ endif()
 
 target_link_libraries(
   desktop-ui
-  PRIVATE nall ares::ruby ares::hiro ares::ares mia chdr-static
+  PRIVATE ares::ruby ares::hiro ares::ares mia chdr-static
 )
 
 set_target_properties(desktop-ui PROPERTIES OUTPUT_NAME ares)
