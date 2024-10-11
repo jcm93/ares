@@ -1,7 +1,13 @@
 add_library(ruby STATIC)
 add_library(ares::ruby ALIAS ruby)
 
-target_sources(ruby PRIVATE ruby.mm ruby.cpp ruby.hpp)
+if(OS_MACOS)
+  target_sources(ruby PRIVATE ruby.mm)
+else()
+  target_sources(ruby PRIVATE ruby.cpp)
+endif()
+
+target_sources(ruby PRIVATE ruby.hpp)
 
 target_sources(ruby PRIVATE audio/audio.cpp audio/audio.hpp audio/sdl.cpp)
 

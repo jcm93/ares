@@ -1,4 +1,15 @@
-target_sources(hiro PRIVATE hiro.mm hiro.cpp hiro.hpp components.hpp)
+if(OS_MACOS)
+  target_sources(hiro PRIVATE hiro.mm)
+else()
+  target_sources(hiro PRIVATE hiro.cpp)
+endif()
+
+target_sources(
+  hiro
+  PRIVATE
+    hiro.hpp
+    components.hpp
+)
 
 target_sources(
   hiro
