@@ -2,7 +2,7 @@
   "version": 3,
   "cmakeMinimumRequired": {
     "major": 3,
-    "minor": 22,
+    "minor": 28,
     "patch": 0
   },
   "configurePresets": [
@@ -19,7 +19,7 @@
     {
       "name": "macos",
       "displayName": "macOS",
-      "description": "Default macOS build (single architecture only)",
+      "description": "Xcode project (host architecture by default)",
       "inherits": ["environmentVars"],
       "condition": {
         "type": "equals",
@@ -37,31 +37,45 @@
       }
     },
     {
-      "name": "windows-x64",
-      "displayName": "Windows x64",
-      "description": "Default Windows build (x64)",
+      "name": "windows",
+      "displayName": "Windows (Visual Studio, ClangCL)",
+      "description": "Visual Studio project using ClangCL (host architecture)",
       "inherits": ["environmentVars"],
       "condition": {
         "type": "equals",
         "lhs": "${hostSystemName}",
         "rhs": "Windows"
       },
-      "architecture": "x64",
-      "binaryDir": "${sourceDir}/build_x64",
+      "binaryDir": "${sourceDir}/build_vsclang",
+      "generator": "Visual Studio 17 2022",
+      "toolset": "ClangCL",
+      "cacheVariables": {
+        "ENABLE_CCACHE": false
+      }
+    },
+    {
+      "name": "windows-msvc",
+      "displayName": "Windows (Visual Studio, MSVC)",
+      "description": "Visual Studio project using MSVC (host architecture)",
+      "inherits": ["environmentVars"],
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
+      "binaryDir": "${sourceDir}/build_msvc",
       "generator": "Visual Studio 17 2022",
       "cacheVariables": {
-        "ARES_CMAKE_VERSION": {"type": "STRING", "value": "3.0.0"},
-        "ENABLE_BROWSER": true,
         "ENABLE_CCACHE": false
       }
     }
   ],
   "buildPresets": [
     {
-      "name": "windows-x64",
-      "configurePreset": "windows-x64",
-      "displayName": "Windows 64-bit",
-      "description": "Windows build for 64-bit (aka x64)",
+      "name": "windows",
+      "configurePreset": "windows",
+      "displayName": "Windows build (host architecture)",
+      "description": "Windows build (host architecture)",
       "configuration": "RelWithDebInfo"
     }
   ]

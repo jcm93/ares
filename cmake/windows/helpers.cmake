@@ -93,8 +93,7 @@ function(_bundle_dependencies target)
     list(REMOVE_DUPLICATES library_paths_${config})
   endforeach()
   
-  if(${target} STREQUAL sourcery)
-    # todo: fix
+  if(NOT library_paths_DEBUG)
     return()
   endif()
   

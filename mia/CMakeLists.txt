@@ -124,17 +124,15 @@ target_include_directories(mia-ui PRIVATE ${CMAKE_SOURCE_DIR}/thirdparty)
 target_include_directories(mia-ui PRIVATE ${CMAKE_SOURCE_DIR}/thirdparty/libchdr/include)
 target_include_directories(mia-ui PRIVATE ${CMAKE_SOURCE_DIR}/thirdparty/TZXFILE)
 
-if(PLATFORM_MACOS)
-  target_link_libraries(
-    mia-ui
-    PUBLIC ares::nall ares::hiro ares::ares
-    PRIVATE
-      tzxfile
-      "$<LINK_LIBRARY:FRAMEWORK,Carbon.framework>"
-      "$<LINK_LIBRARY:FRAMEWORK,IOKit.framework>"
-      "$<LINK_LIBRARY:FRAMEWORK,Security.framework>"
-  )
-endif()
+target_link_libraries(
+  mia-ui
+  PUBLIC ares::nall ares::hiro ares::ares
+  PRIVATE
+    tzxfile
+    "$<$<PLATFORM_ID:Darwin>:$<LINK_LIBRARY:FRAMEWORK,Carbon.framework>>"
+    "$<$<PLATFORM_ID:Darwin>:$<LINK_LIBRARY:FRAMEWORK,IOKit.framework>>"
+    "$<$<PLATFORM_ID:Darwin>:$<LINK_LIBRARY:FRAMEWORK,Security.framework>>"
+)
 
 if(WIN32)
   target_sources(mia-ui PRIVATE resource/mia.rc resource/mia.Manifest)

@@ -1,5 +1,6 @@
 target_sources(desktop-ui PRIVATE resource/ares.rc resource/ares.Manifest)
 
+set_property(DIRECTORY ${CMAKE_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT desktop-ui)
 
 add_custom_command(
   TARGET desktop-ui
