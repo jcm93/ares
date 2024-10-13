@@ -57,6 +57,7 @@ if(MSVC)
   endif()
   set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT ProgramDatabase)
 else()
+  # msys2
   if(CMAKE_CXX_COMPILER_ID STREQUAL Clang)
     add_compile_options(
       "$<$<COMPILE_LANGUAGE:C>:${_ares_clang_c_options}>"
@@ -64,8 +65,20 @@ else()
       -Wno-reorder-ctor
       -Wno-unused
     )
+    set(
+      _ares_mingw_clang_debug_compile_options
+      -g
+      -gcodeview
+    )
+    set(
+      _ares_mingw_clang_debug_link_options
+      -fuse-ld=lld
+      -g
+      -Wl,--pdb=
+    )
+    add_compile_options("$<$<CONFIG:Debug,RelWithDebInfo>:${_ares_mingw_clang_debug_compile_options}>")
+    add_link_options("$<$<CONFIG:Debug,RelWithDebInfo>:${_ares_mingw_clang_debug_link_options}>")
   endif()
-  # msys2
 endif()
 
 if(ARES_BUILD_LOCAL)

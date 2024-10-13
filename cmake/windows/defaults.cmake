@@ -9,7 +9,7 @@ set(ARES_DATA_PATH "../../${ARES_DATA_DESTINATION}")
 
 set(CMAKE_FIND_PACKAGE_TARGETS_GLOBAL TRUE)
 
-# Small hack: under MSYS2, CMake looks for .dll.a files rather than .dll files; tell it to also look for .dll files
-set(CMAKE_FIND_LIBRARY_SUFFIXES .dll ${CMAKE_FIND_LIBRARY_SUFFIXES})
+# todo, fix: under MSYS2, CMake looks for .dll.a files rather than .lib files; tell it to also look for .lib files
+set(CMAKE_FIND_LIBRARY_SUFFIXES .lib ${CMAKE_FIND_LIBRARY_SUFFIXES})
 
 include(dependencies)

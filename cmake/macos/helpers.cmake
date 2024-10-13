@@ -114,7 +114,9 @@ function(_bundle_dependencies target)
   list(REMOVE_DUPLICATES library_paths)
 
   if(UNUSED)
-    # One of these would be nice, but we cannot install our imported pre-built targets (librashader, SDL, MoltenVK).
+    # One of these would be nice, but we cannot install IMPORTed targets (librashader, SDL, MoltenVK).
+    # We could use install(FILES ...), but that wouldn't fixup rpaths, which obviates the need for
+    # install() in the first place.
     install(
       TARGETS ${target} ${bundled_targets}
       RUNTIME_DEPENDENCIES
@@ -141,19 +143,22 @@ function(_bundle_dependencies target)
     # debatably violates CMake principles, but hopefully not too much.
 
     # Copy resolved dependencies into app bundle
-    add_custom_command(
-      TARGET ${target}
-      POST_BUILD
-      COMMAND ditto ${library_paths} "$<TARGET_BUNDLE_CONTENT_DIR:${target}>/Frameworks/"
-      WORKING_DIRECTORY "$<TARGET_BUNDLE_CONTENT_DIR:${target}>"
-      COMMENT "Copying dynamic libraries into app bundle"
-    )
-    # Add an rpath for the bundled dynamic libraries
-    add_custom_command(
-      TARGET ${target}
-      POST_BUILD
-      COMMAND ${CMAKE_INSTALL_NAME_TOOL} -add_rpath "@executable_path/../Frameworks/" $<TARGET_FILE:${target}>
-      COMMENT "Adding rpath for dynamic libraries to binary"
-    )
+    get_target_property(IS_BUNDLE ${target} MACOSX_BUNDLE)
+    if(IS_BUNDLE)
+      add_custom_command(
+        TARGET ${target}
+        POST_BUILD
+        COMMAND ditto ${library_paths} "$<TARGET_BUNDLE_CONTENT_DIR:${target}>/Frameworks/"
+        WORKING_DIRECTORY "$<TARGET_BUNDLE_CONTENT_DIR:${target}>"
+        COMMENT "Copying dynamic libraries into app bundle"
+      )
+      # Add an rpath for the bundled dynamic libraries
+      add_custom_command(
+        TARGET ${target}
+        POST_BUILD
+        COMMAND ${CMAKE_INSTALL_NAME_TOOL} -add_rpath "@executable_path/../Frameworks/" $<TARGET_FILE:${target}>
+        COMMENT "Adding rpath for dynamic libraries to binary"
+      )
+    endif()
   endif()
 endfunction()

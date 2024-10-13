@@ -6,7 +6,7 @@ include(helpers_common)
 function(ares_configure_executable target)
   set_target_properties(${target} PROPERTIES WIN32_EXECUTABLE TRUE)
   _bundle_dependencies(${target})
-  install(TARGETS ${target} BUNDLE DESTINATION "." COMPONENT Application)
+  install(TARGETS ${target} DESTINATION "${ARES_EXECUTABLE_DESTINATION}/${target}/$<CONFIG>" COMPONENT Application)
 endfunction()
 
 # _target_install_obs: Helper function to install build artifacts to rundir and install location
@@ -100,6 +100,9 @@ function(_bundle_dependencies target)
   message(AUTHOR_WARNING "binary directory is ${ARES_EXECUTABLE_DESTINATION}")
   message(AUTHOR_WARNING "library paths is ${library_paths}")
   
+  # Somewhat cursed, but in keeping with other platforms, make the build process create a runnable application.
+  # That means copying dependencies and packaging as part of the build process. cmake --install will redundantly
+  # perform this same process to conform with CMake convention.
   add_custom_command(
     TARGET ${target}
     POST_BUILD
@@ -119,6 +122,14 @@ function(_bundle_dependencies target)
       "${CMAKE_COMMAND}" -E "$<IF:$<CONFIG:MinSizeRel>,copy_if_different,true>"
       "$<$<CONFIG:MinSizeRel>:${library_paths_MINSIZEREL}>"
       "${ARES_EXECUTABLE_DESTINATION}/${target}/MinSizeRel/"
+    COMMAND
+      "${CMAKE_COMMAND}" -E copy_if_different
+      "$<TARGET_FILE:${target}>"
+      "${ARES_EXECUTABLE_DESTINATION}/${target}/$<CONFIG>/"
+    COMMAND
+      "${CMAKE_COMMAND}" -E copy_if_different
+      "$<TARGET_FILE_BASE_NAME:${target}>.pdb"
+      "${ARES_EXECUTABLE_DESTINATION}/${target}/$<CONFIG>/"
     COMMENT "."
     VERBATIM
     COMMAND_EXPAND_LISTS
