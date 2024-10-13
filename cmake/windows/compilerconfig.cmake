@@ -51,12 +51,20 @@ if(MSVC)
     add_compile_options(
       "$<$<COMPILE_LANGUAGE:C>:${_ares_clang_c_options}>"
       "$<$<COMPILE_LANGUAGE:CXX>:${_ares_clang_cxx_options}>"
+      -Wno-reorder-ctor
+      -Wno-unused
     )
-    -Wno-reorder-ctor
-    -Wno-unused
   endif()
   set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT ProgramDatabase)
 else()
+  if(CMAKE_CXX_COMPILER_ID STREQUAL Clang)
+    add_compile_options(
+      "$<$<COMPILE_LANGUAGE:C>:${_ares_clang_c_options}>"
+      "$<$<COMPILE_LANGUAGE:CXX>:${_ares_clang_cxx_options}>"
+      -Wno-reorder-ctor
+      -Wno-unused
+    )
+  endif()
   # msys2
 endif()
 
