@@ -26,7 +26,7 @@ set(
   -Wbool-conversion
   -Wconstant-conversion
   # -Wshorten-64-to-32
-  -Wanon-enum-enum-conversion
+  # -Wanon-enum-enum-conversion
   -Wint-conversion
   -Wnon-literal-null-conversion
   -Winfinite-recursion
@@ -36,7 +36,7 @@ set(
   -Wquoted-include-in-framework-header
   -Wnewline-eof
   # -Wsign-compare
-  -Wstrict-prototypes
+  # -Wstrict-prototypes
   # -Wcomma
   -Wignored-pragmas
   -Wunguarded-availability
@@ -77,7 +77,7 @@ set(
   -Wrange-loop-analysis
   -Wmove
   -Winvalid-offsetof
-  -Wno-error=delete-non-abstract-non-virtual-dtor
+  -Wno-delete-non-abstract-non-virtual-dtor
 )
 
 if(NOT DEFINED CMAKE_COMPILE_WARNING_AS_ERROR)

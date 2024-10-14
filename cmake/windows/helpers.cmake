@@ -103,6 +103,11 @@ function(_bundle_dependencies target)
   # Somewhat cursed, but in keeping with other platforms, make the build process create a runnable application.
   # That means copying dependencies and packaging as part of the build process. cmake --install will redundantly
   # perform this same process to conform with CMake convention.
+  if(CMAKE_CONFIGURATION_TYPES)
+    set(MULTI_CONFIG ON)
+  else()
+    set(MULTI_CONFIG OFF)
+  endif()
   add_custom_command(
     TARGET ${target}
     POST_BUILD
@@ -110,30 +115,23 @@ function(_bundle_dependencies target)
     COMMAND "${CMAKE_COMMAND}" -E make_directory "${ARES_OUTPUT_DIR}/${target}"
     COMMAND
       "${CMAKE_COMMAND}" -E "$<IF:$<CONFIG:Debug>,copy_if_different,true>" "$<$<CONFIG:Debug>:${library_paths_DEBUG}>"
-      "${ARES_EXECUTABLE_DESTINATION}/${target}/Debug/"
+      "${ARES_EXECUTABLE_DESTINATION}/${target}/$<IF:$<BOOL:${MULTI_CONFIG}>,Debug,>/"
     COMMAND
       "${CMAKE_COMMAND}" -E "$<IF:$<CONFIG:RelWithDebInfo>,copy_if_different,true>"
       "$<$<CONFIG:RelWithDebInfo>:${library_paths_RELWITHDEBINFO}>"
-      "${ARES_EXECUTABLE_DESTINATION}/${target}/RelWithDebInfo/"
+      "${ARES_EXECUTABLE_DESTINATION}/${target}/$<IF:$<BOOL:${MULTI_CONFIG}>,RelWithDebInfo,>/"
     COMMAND
       "${CMAKE_COMMAND}" -E "$<IF:$<CONFIG:Release>,copy_if_different,true>"
-      "$<$<CONFIG:Release>:${library_paths_RELEASE}>" "${ARES_EXECUTABLE_DESTINATION}/${target}/Release/"
+      "$<$<CONFIG:Release>:${library_paths_RELEASE}>" "${ARES_EXECUTABLE_DESTINATION}/${target}/$<IF:$<BOOL:${MULTI_CONFIG}>,Release,>"
     COMMAND
       "${CMAKE_COMMAND}" -E "$<IF:$<CONFIG:MinSizeRel>,copy_if_different,true>"
       "$<$<CONFIG:MinSizeRel>:${library_paths_MINSIZEREL}>"
-      "${ARES_EXECUTABLE_DESTINATION}/${target}/MinSizeRel/"
-    COMMAND
-      "${CMAKE_COMMAND}" -E copy_if_different
-      "$<TARGET_FILE:${target}>"
-      "${ARES_EXECUTABLE_DESTINATION}/${target}/$<CONFIG>/"
-    COMMAND
-      "${CMAKE_COMMAND}" -E copy_if_different
-      "$<TARGET_FILE_BASE_NAME:${target}>.pdb"
-      "${ARES_EXECUTABLE_DESTINATION}/${target}/$<CONFIG>/"
-    COMMENT "."
+      "${ARES_EXECUTABLE_DESTINATION}/${target}/$<IF:$<BOOL:${MULTI_CONFIG}>,MinSizeRel,>/"
+    COMMENT "Copying dynamic dependencies to rundir"
     VERBATIM
     COMMAND_EXPAND_LISTS
   )
+
 
   install(
     FILES ${library_paths_DEBUG}

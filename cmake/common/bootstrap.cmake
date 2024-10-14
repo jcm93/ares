@@ -32,7 +32,7 @@ include(versionconfig)
 include(osconfig)
 
 # Allow selection of common build types via UI
-if(NOT CMAKE_GENERATOR MATCHES "(Xcode|Visual Studio .+)")
+if(NOT CMAKE_GENERATOR MATCHES "(Xcode|Ninja Multi-Config|Visual Studio .+)")
   if(NOT CMAKE_BUILD_TYPE)
     set(
       CMAKE_BUILD_TYPE

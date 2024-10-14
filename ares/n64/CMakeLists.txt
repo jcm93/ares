@@ -314,6 +314,10 @@ target_include_directories(
     vulkan/parallel-rdp/util
 )
 
+target_compile_options(ares PRIVATE
+  $<$<CXX_COMPILER_ID:Clang>:-Wno-newline-eof>
+)
+
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 target_link_libraries(ares PUBLIC Threads::Threads)
