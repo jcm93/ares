@@ -126,7 +126,7 @@ WIP
 
 When generating/configuring ares on any platform, a number of configuration options are available.
 
-###### `ARES_CORES`
+##### ARES_CORES
 Default: `"a26;fc;sfc;sg;ms;md;ps1;pce;ng;msx;cv;myvision;gb;gba;ws;ngp;spec;n64"`
 
 By default, ares configures with all emulator cores. To specify that only a subset of cores should be built, use the `-DARES_CORES` option. For example:
@@ -134,7 +134,7 @@ By default, ares configures with all emulator cores. To specify that only a subs
 cmake .. -G Ninja -DARES_CORES="a26;n64;sg;myvision"
 ```
 
-###### `CMAKE_BUILD_TYPE`
+##### CMAKE_BUILD_TYPE
 Default: `RelWithDebInfo`
 
 Multi-configuration generators (Xcode, Visual Studio, Ninja Multi-Config) will automatically configure with all build configurations available. Single-configuration generators will configure by default using the `RelWithDebInfo` configuration. To specify another configuration, use `-DCMAKE_BUILD_TYPE`:
@@ -144,17 +144,17 @@ cmake .. -G "MinGW Makefiles" -DARES_CORES="a26" -DCMAKE_BUILD_TYPE=Release
 ```
 
 Supported build types are `<Debug|Release|RelWithDebInfo|MinSizeRel>`.
-###### `ENABLE_CCACHE`
+##### ENABLE_CCACHE
 Default: `ON`
 
 ares will try to use CCache by default on all platforms to speed up compilation. You may disable CCache if you are experimenting with compilation options or the build system by building with `-DENABLE_CCACHE=OFF`.
 
-###### `ARES_BUILD_LOCAL`
+##### ARES_BUILD_LOCAL
 Default: `ON`
 
 When this option is enabled, certain compiler optimizations are enabled to optimize performance for the host/target system. This option also controls certain entitlements and runtime options on macOS that interfere with may debugging but are necessary for notarization and distribution.
 
-###### `ARES_PROFILE_ACCURACY`
+##### ARES_PROFILE_ACCURACY
 Default: `OFF`
 
 Mostly unused in current versions of ares; acts as a compile-time switch for certain performance-sensitive areas of emulation.

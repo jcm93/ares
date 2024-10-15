@@ -159,4 +159,5 @@ set_target_properties(
 )
 
 ares_configure_executable(mia-ui)
+target_enable_subproject(mia-ui "mia (manifest generator)")
 set_target_properties(mia-ui PROPERTIES FOLDER tools PREFIX "")

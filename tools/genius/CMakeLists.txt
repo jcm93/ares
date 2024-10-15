@@ -2,6 +2,8 @@ add_executable(genius genius.cpp)
 
 target_sources(genius PRIVATE genius.hpp)
 
+target_enable_subproject(genius "genius (database editor)")
+
 target_include_directories(genius PRIVATE ${CMAKE_SOURCE_DIR})
 
 if(OS_WINDOWS)

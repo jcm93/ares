@@ -76,7 +76,44 @@ function(message_configuration)
     message(NOTICE " - ${core}")
   endforeach()
 
+  # message(NOTICE "==================================================================================\n")
+  
+  get_property(ARES_SUBPROJECTS_ENABLED GLOBAL PROPERTY ARES_SUBPROJECTS_ENABLED)
+  list(SORT ARES_SUBPROJECTS_ENABLED COMPARE NATURAL CASE SENSITIVE ORDER ASCENDING)
+
+  if(ARES_SUBPROJECTS_ENABLED)
+    message(NOTICE "-----------------------       Enabled Subprojects           ----------------------")
+    foreach(subproject IN LISTS ARES_SUBPROJECTS_ENABLED)
+      message(NOTICE " - ${subproject}")
+    endforeach()
+  endif()
+
+  get_property(ARES_SUBPROJECTS_DISABLED GLOBAL PROPERTY ARES_SUBPROJECTS_DISABLED)
+  list(SORT ARES_SUBPROJECTS_DISABLED COMPARE NATURAL CASE SENSITIVE ORDER ASCENDING)
+
+  if(ARES_SUBPROJECTS_DISABLED)
+    message(NOTICE "-----------------------       Disabled Subprojects          ----------------------")
+    foreach(subproject IN LISTS ARES_SUBPROJECTS_DISABLED)
+      message(NOTICE " - ${subproject}")
+    endforeach()
+  endif()
   message(NOTICE "==================================================================================")
+endfunction()
+
+function(target_enable_subproject target subproject_description)
+  set_property(GLOBAL APPEND PROPERTY ARES_SUBPROJECTS_ENABLED "${subproject_description}")
+
+  if(ARGN)
+    target_compile_definitions(${target} PRIVATE ${ARGN})
+  endif()
+endfunction()
+
+function(target_disable_subproject target subproject_description)
+  set_property(GLOBAL APPEND PROPERTY ARES_SUBPROJECTS_DISABLED "${subproject_description}")
+
+  if(ARGN)
+    target_compile_definitions(${target} PRIVATE ${ARGN})
+  endif()
 endfunction()
 
 # target_enable_feature: Adds feature to list of enabled application features and sets optional compile definitions

@@ -6,4 +6,6 @@ target_link_libraries(sourcery PRIVATE nall "$<$<PLATFORM_ID:Darwin>:$<LINK_LIBR
 
 ares_configure_executable(sourcery)
 
+target_enable_subproject(sourcery "sourcery (resource compiler)")
+
 set_target_properties(sourcery PROPERTIES FOLDER tools PREFIX "")
