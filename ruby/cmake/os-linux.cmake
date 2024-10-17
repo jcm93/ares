@@ -32,14 +32,19 @@ target_sources(
 find_package(SDL)
 find_package(librashader)
 
+if(SDL_FOUND)
+  target_enable_feature(ruby "SDL input driver" INPUT_SDL)
+  target_enable_feature(ruby "SDL audio driver" AUDIO_SDL)
+endif()
+if(librashader_FOUND)
+  target_enable_feature(ruby "librashader OpenGL runtime" LIBRA_RUNTIME_OPENGL)
+endif()
+
 target_compile_definitions(
   ruby
-  VIDEO_CGL
-  VIDEO_METAL
+  PRIVATE
+  VIDEO_GLX
   AUDIO_OPENAL
-  AUDIO_SDL
-  INPUT_QUARTZ
-  INPUT_SDL
 )
 
 #elseif(platform STREQUAL linux)

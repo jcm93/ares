@@ -106,7 +106,7 @@ find_library(
 )
 
 if(CMAKE_HOST_SYSTEM_NAME MATCHES "Darwin|Windows")
-  set(librashader_ERROR_REASON "Ensure that obs-deps is provided as part of CMAKE_PREFIX_PATH.")
+  set(librashader_ERROR_REASON "Ensure that ares-deps is provided as part of CMAKE_PREFIX_PATH.")
 elseif(CMAKE_HOST_SYSTEM_NAME MATCHES "Linux|FreeBSD")
   set(librashader_ERROR_REASON "Ensure librashader libraries are available in local library paths.")
 endif()
