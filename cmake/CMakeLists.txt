@@ -15,6 +15,9 @@ target_sources(
     finders/Findlibrashader.cmake
     finders/FindMoltenVK.cmake
     finders/FindSDL.cmake
+    finders/Findcairo.cmake
+    finders/FindGTK.cmake
+    finders/FindGLib.cmake
     macos/dependencies.cmake
     macos/compilerconfig.cmake
     macos/defaults.cmake
