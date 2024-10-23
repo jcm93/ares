@@ -31,10 +31,6 @@ set_source_files_properties(
   PROPERTIES HEADER_FILE_ONLY FALSE
 )
 
-target_include_directories(desktop-ui PRIVATE ${CMAKE_SOURCE_DIR})
-target_include_directories(desktop-ui PRIVATE ${CMAKE_SOURCE_DIR}/thirdparty)
-target_include_directories(desktop-ui PRIVATE ${CMAKE_SOURCE_DIR}/ares)
-
 if(OS_WINDOWS)
   include(cmake/os-windows.cmake)
 elseif(OS_MACOS)

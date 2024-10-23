@@ -41,7 +41,7 @@ set(CHDR_SOURCES
 list(APPEND CHDR_INCLUDES ${CMAKE_CURRENT_BINARY_DIR}/libchdr/include)
 
 add_library(chdr-static STATIC ${CHDR_SOURCES})
-target_include_directories(chdr-static PRIVATE ${CHDR_INCLUDES} PUBLIC libchdr/include)
+target_include_directories(chdr-static PUBLIC ${CHDR_INCLUDES} PUBLIC libchdr/include)
 target_link_libraries(chdr-static PRIVATE ${CHDR_LIBS} ${PLATFORM_LIBS})
 target_compile_options(chdr-static PRIVATE
   $<$<CXX_COMPILER_ID:Clang>:-Wno-unreachable-code -Wno-unused-function>

@@ -118,12 +118,6 @@ target_link_libraries(mia PUBLIC ares::nall ares::ares ares::hiro PRIVATE tzxfil
 
 add_executable(mia-ui mia.cpp resource/resource.cpp)
 
-target_include_directories(mia-ui PRIVATE ${CMAKE_SOURCE_DIR})
-target_include_directories(mia-ui PRIVATE ${CMAKE_SOURCE_DIR}/ares/)
-target_include_directories(mia-ui PRIVATE ${CMAKE_SOURCE_DIR}/thirdparty)
-target_include_directories(mia-ui PRIVATE ${CMAKE_SOURCE_DIR}/thirdparty/libchdr/include)
-target_include_directories(mia-ui PRIVATE ${CMAKE_SOURCE_DIR}/thirdparty/TZXFILE)
-
 target_link_libraries(
   mia-ui
   PUBLIC ares::nall ares::hiro ares::ares

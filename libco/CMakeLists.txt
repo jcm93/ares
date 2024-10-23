@@ -26,6 +26,8 @@ target_sources(libco PRIVATE libco.h settings.h)
 
 get_target_property(libco_SOURCES libco SOURCES)
 
+target_include_directories(libco INTERFACE ..)
+
 set_source_files_properties(libco ${libco_SOURCES} PROPERTIES HEADER_FILE_ONLY TRUE)
 
 set_source_files_properties(libco libco.c PROPERTIES HEADER_FILE_ONLY FALSE)
