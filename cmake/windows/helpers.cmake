@@ -97,9 +97,6 @@ function(_bundle_dependencies target)
     return()
   endif()
   
-  message(AUTHOR_WARNING "binary directory is ${ARES_EXECUTABLE_DESTINATION}")
-  message(AUTHOR_WARNING "library paths is ${library_paths}")
-  
   # Somewhat cursed, but in keeping with other platforms, make the build process create a runnable application.
   # That means copying dependencies and packaging as part of the build process. cmake --install will redundantly
   # perform this same process to conform with CMake convention.

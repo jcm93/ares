@@ -30,7 +30,11 @@ target_sources(
 )
 
 find_package(SDL)
+find_package(X11)
+find_package(OpenGL)
+find_package(OpenAL)
 find_package(librashader)
+target_link_libraries(ruby PRIVATE X11::Xrandr OpenGL::GLX OpenAL::OpenAL)
 
 if(SDL_FOUND)
   target_enable_feature(ruby "SDL input driver" INPUT_SDL)

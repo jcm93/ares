@@ -108,7 +108,7 @@ namespace nall {
     static constexpr bool BSD     = 0;
   };
 #elif defined(linux) || defined(__linux__)
-  #define PLATFORM_LINUX
+  // #define PLATFORM_LINUX
   struct Platform {
     static constexpr bool Windows = 0;
     static constexpr bool MacOS   = 0;

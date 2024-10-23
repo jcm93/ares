@@ -39,10 +39,8 @@ include(FindPackageHandleStandardArgs)
 
 find_package(PkgConfig QUIET)
 if(PKG_CONFIG_FOUND)
-  pkg_search_module(PC_GTK QUIET gtk3)
+  pkg_check_modules(PC_GTK QUIET gtk+-3.0)
 endif()
-
-message(AUTHOR_WARNING "pkg-config gtk include dirs are ${PC_GTK_INCLUDE_DIRS}")
 
 find_path(
   GTK_INCLUDE_DIRS
@@ -51,8 +49,6 @@ find_path(
   PATHS /usr/include /usr/local/include /usr/include/gtk-3.0
   DOC "GTK include directory"
 )
-
-message(AUTHOR_WARNING "gtk include dirs are ${GTK_INCLUDE_DIRS}")
 
 find_library(
   GTK_LIBRARY
@@ -87,7 +83,8 @@ if(GTK_FOUND)
       GTK::GTK
       PROPERTIES
         INTERFACE_COMPILE_OPTIONS "${PC_GTK_CFLAGS_OTHER}"
-        INTERFACE_INCLUDE_DIRECTORIES "${GTK_INCLUDE_DIRS}"
+        INTERFACE_INCLUDE_DIRECTORIES "${PC_GTK_INCLUDE_DIRS}"
+        INTERFACE_LINK_LIBRARIES "${PC_GTK_LINK_LIBRARIES}"
     )
   endif()
 endif()

@@ -1,11 +1,13 @@
 target_compile_definitions(hiro PRIVATE HIRO_GTK)
-find_package(cairo)
 find_package(GTK)
 find_package(GLib)
-target_link_libraries(hiro PRIVATE GTK::GTK cairo::cairo GLib::GLib)
+find_package(X11)
+target_link_libraries(hiro PRIVATE GTK::GTK X11::X11)
+target_enable_feature(hiro "GTK3 UI backend" HIRO_GTK=3)
+# target_compile_options(hiro PRIVATE -Wl,--copy-dt-needed-entries)
 
-# find_package(PkgConfig REQUIRED)
-# pkg_search_module(GLIB REQUIRED glib-2.0)
-# target_include_directories(hiro PRIVATE ${GLIB_INCLUDE_DIRS})
-# message(AUTHOR_WARNING "glib ldflags are ${GLIB_LDFLAGS}")
-# target_link_libraries(hiro INTERFACE ${GLIB_LDFLAGS}) # why
+get_target_property(hiro_SOURCES hiro SOURCES)
+
+set_source_files_properties(hiro ${hiro_SOURCES} PROPERTIES HEADER_FILE_ONLY TRUE)
+
+set_source_files_properties(hiro hiro.cpp PROPERTIES HEADER_FILE_ONLY FALSE)
