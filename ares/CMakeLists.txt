@@ -2,9 +2,7 @@ add_library(ares STATIC ares/ares.cpp ares/memory/fixed-allocator.cpp)
 
 add_library(ares::ares ALIAS ares)
 
-if(UNUSED)
-  target_precompile_headers(ares PUBLIC "$<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/ares/ares.hpp>")
-endif()
+target_precompile_headers(ares PRIVATE "$<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/ares/ares.hpp>")
 
 target_include_directories(ares PRIVATE ${CMAKE_SOURCE_DIR})
 target_include_directories(ares PRIVATE ${CMAKE_SOURCE_DIR}/thirdparty)
@@ -269,6 +267,16 @@ set_source_files_properties(
   ares/scheduler/thread.cpp
   ares/scheduler/scheduler.cpp
   PROPERTIES HEADER_FILE_ONLY TRUE
+)
+
+set_source_files_properties(
+  n64/vulkan/parallel-rdp/vulkan/shader.cpp
+  n64/vulkan/parallel-rdp/vulkan/descriptor_set.cpp
+  n64/vulkan/parallel-rdp/vulkan/device.cpp
+  n64/vulkan/parallel-rdp/vulkan/command_buffer.cpp
+  n64/vulkan/parallel-rdp/vulkan/render_pass.cpp
+  PROPERTIES
+  SKIP_PRECOMPILE_HEADERS ON
 )
 
 set_source_files_properties(ares ${ARES_HEADER_SOURCES} PROPERTIES HEADER_FILE_ONLY TRUE)

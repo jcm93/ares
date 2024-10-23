@@ -1,6 +1,6 @@
 # Dependencies
 
-This document provides an extensive overview of how dependencies work in the ares build system with a little bit of overall contextual information about dependencies in CMake in general.
+This document provides an extensive overview of how dependencies and packaging work in the ares build system with a little bit of overall contextual information about dependencies in CMake in general.
 
 ## The Link Interface
 
