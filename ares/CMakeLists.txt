@@ -2,6 +2,8 @@ add_library(ares STATIC ares/ares.cpp ares/memory/fixed-allocator.cpp)
 
 add_library(ares::ares ALIAS ares)
 
+option(ARES_PROFILE_ACCURACY "Build to prefer emulation accuracy over performance in certain specific areas" OFF)
+
 target_precompile_headers(ares PRIVATE "$<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/ares/ares.hpp>")
 
 target_link_libraries(ares PUBLIC libco sljit nall)
@@ -92,11 +94,8 @@ elseif(OS_FREEBSD OR OS_OPENBSD)
   include(cmake/os-freebsd.cmake)
 endif()
 
-if(ENABLE_VULKAN)
-  target_enable_feature(ares "N64 Vulkan rendering with paraLLEl-RDP" VULKAN)
-  target_compile_definitions(ares PUBLIC ENABLE_VULKAN)
-  target_compile_definitions(ares PUBLIC VULKAN)
-endif()
+target_enable_feature(ares "N64 Vulkan rendering with paraLLEl-RDP" VULKAN)
+target_compile_definitions(ares PUBLIC VULKAN)
 
 macro(ares_components)
   list(APPEND ares.components ${ARGV})

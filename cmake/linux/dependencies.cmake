@@ -18,4 +18,6 @@ function(_check_dependencies_linux)
   _check_dependencies()
 endfunction()
 
-_check_dependencies_linux()
+if(NOT ARES_SKIP_DEPS)
+  _check_dependencies_linux()
+endif()
