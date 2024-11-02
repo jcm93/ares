@@ -14,7 +14,6 @@ if(ENABLE_CCACHE AND CCACHE_PROGRAM)
       CMAKE_VS_GLOBALS
       "CLToolExe=cl.exe"
       "CLToolPath=${CMAKE_BINARY_DIR}"
-      "TrackFileAccess=false"
       "UseMultiToolTask=true"
     )
     set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT Embedded)
@@ -24,7 +23,6 @@ if(ENABLE_CCACHE AND CCACHE_PROGRAM)
       CMAKE_VS_GLOBALS
       "CLToolExe=clang-cl.exe"
       "CLToolPath=${CMAKE_BINARY_DIR}"
-      "TrackFileAccess=false"
       "UseMultiToolTask=true"
     )
   endif()
