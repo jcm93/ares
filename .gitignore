@@ -23,6 +23,8 @@
 !.editorconfig
 !.gitmodules
 !.gitignore
+!.gitattributes
+!.gersemirc
 !buildspec.json
 !CMakeLists.txt
 !CMakePresets.json

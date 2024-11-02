@@ -13,7 +13,7 @@
         "ARES_PROFILE_ACCURACY": false,
         "ENABLE_VULKAN": true,
         "ARES_BUILD_LOCAL": true,
-        "ENABLE_CCACHE": false
+        "ENABLE_CCACHE": true
       }
     },
     {
@@ -33,7 +33,7 @@
         "ARES_CODESIGN_IDENTITY": {"type": "STRING", "value": "$penv{CODESIGN_IDENT}"},
         "ARES_CODESIGN_TEAM": {"type": "STRING", "value": "$penv{CODESIGN_TEAM}"},
         "ENABLE_COMPILER_TRACE": true,
-        "ENABLE_CCACHE": false
+        "ENABLE_CCACHE": true
       }
     },
     {
@@ -50,7 +50,7 @@
       "generator": "Visual Studio 17 2022",
       "toolset": "ClangCL",
       "cacheVariables": {
-        "ENABLE_CCACHE": false
+        "ENABLE_CCACHE": true
       }
     },
     {
@@ -66,7 +66,7 @@
       "binaryDir": "${sourceDir}/build_msvc",
       "generator": "Visual Studio 17 2022",
       "cacheVariables": {
-        "ENABLE_CCACHE": false
+        "ENABLE_CCACHE": true
       }
     }
   ],

@@ -47,6 +47,7 @@ add_compile_definitions(_WIN32_WINNT=0x0601) #global
 
 set(
   _ares_msvc_cxx_options
+  /W2
   /MP
   /Zc:__cplusplus
   /utf-8
@@ -58,7 +59,7 @@ set(
 )
 
 if(MSVC)
-  if(CMAKE_CXX_COMPILER_ID STREQUAL MSVC)
+  if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     add_compile_options(
       "$<$<COMPILE_LANGUAGE:C,CXX>:${_ares_msvc_cxx_options}>"
     )
@@ -70,7 +71,7 @@ if(MSVC)
     if(CMAKE_COMPILE_WARNING_AS_ERROR)
       add_link_options(/WX)
     endif()
-  elseif(CMAKE_CXX_COMPILER_ID STREQUAL Clang)
+  elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     add_compile_options(
       "$<$<COMPILE_LANGUAGE:C>:${_ares_clang_c_options}>"
       "$<$<COMPILE_LANGUAGE:CXX>:${_ares_clang_cxx_options}>"
@@ -81,7 +82,7 @@ if(MSVC)
   set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT ProgramDatabase)
 else()
   # msys2
-  if(CMAKE_CXX_COMPILER_ID STREQUAL Clang)
+  if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     add_compile_options(
       "$<$<COMPILE_LANGUAGE:C>:${_ares_clang_c_options}>"
       "$<$<COMPILE_LANGUAGE:CXX>:${_ares_clang_cxx_options}>"
