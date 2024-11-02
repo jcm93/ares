@@ -41,6 +41,7 @@ target_enable_feature(ruby "Windows input driver (XInput/DirectInput)" INPUT_WIN
 
 if(SDL_FOUND)
   target_enable_feature(ruby "SDL input driver" INPUT_SDL)
+  target_enable_feature(ruby "SDL audio driver" AUDIO_SDL)
 endif()
 
 if(OpenAL_FOUND)
