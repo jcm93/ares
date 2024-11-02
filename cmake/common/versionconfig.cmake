@@ -18,7 +18,7 @@ if(NOT DEFINED ARES_VERSION_OVERRIDE AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.gi
   string(REGEX REPLACE "^v([0-9]+)(.*)$" "\\1.0.0\\2" _ares_version "${ARES_VERSION}")
   string(REGEX REPLACE "(-[0-9]+-.*|-.+)" "" ARES_VERSION_CANONICAL "${_ares_version}")
 elseif(DEFINED ARES_VERSION_OVERRIDE)
-  set(ARES_VERSION ARES_VERSION_OVERRIDE)
+  set(ARES_VERSION ${ARES_VERSION_OVERRIDE})
 endif()
 
 unset(_ares_version)
