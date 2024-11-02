@@ -25,4 +25,6 @@ function(_check_dependencies_macos)
   )
 endfunction()
 
-_check_dependencies_macos()
+if(NOT ARES_SKIP_DEPS)
+  _check_dependencies_macos()
+endif()

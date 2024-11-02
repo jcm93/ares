@@ -2,6 +2,9 @@
 
 include_guard(GLOBAL)
 
+option(ARES_SKIP_DEPS "Do not fetch prebuilt dependencies" OFF)
+mark_as_advanced(ARES_SKIP_DEPS)
+
 # _check_dependencies: Fetch and extract pre-built ares build dependencies
 function(_check_dependencies)
   file(READ "${CMAKE_CURRENT_SOURCE_DIR}/buildspec.json" buildspec)

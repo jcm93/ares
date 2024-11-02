@@ -13,4 +13,6 @@ function(_check_dependencies_windows)
   _check_dependencies()
 endfunction()
 
-_check_dependencies_windows()
+if(NOT ARES_SKIP_DEPS)
+  _check_dependencies_windows()
+endif()
