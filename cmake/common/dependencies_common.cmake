@@ -7,9 +7,9 @@ mark_as_advanced(ARES_SKIP_DEPS)
 
 # _check_dependencies: Fetch and extract pre-built ares build dependencies
 function(_check_dependencies)
-  file(READ "${CMAKE_CURRENT_SOURCE_DIR}/buildspec.json" buildspec)
+  file(READ "${CMAKE_CURRENT_SOURCE_DIR}/deps.json" deps)
 
-  string(JSON dependency_data GET ${buildspec} dependencies)
+  string(JSON dependency_data GET ${deps} dependencies)
 
   foreach(dependency IN LISTS dependencies_list)
     string(JSON data GET ${dependency_data} ${dependency})

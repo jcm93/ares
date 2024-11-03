@@ -8,7 +8,7 @@ function(_check_dependencies_linux)
   set(arch universal)
   set(platform linux-${arch})
 
-  file(READ "${CMAKE_CURRENT_SOURCE_DIR}/buildspec.json" buildspec)
+  file(READ "${CMAKE_CURRENT_SOURCE_DIR}/deps.json" deps)
 
   set(dependencies_dir "${CMAKE_CURRENT_SOURCE_DIR}/.deps")
   set(prebuilt_filename "ares-deps-linux-ARCH-REVISION.tar.xz")
