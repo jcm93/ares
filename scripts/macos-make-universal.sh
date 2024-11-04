@@ -1,24 +1,19 @@
 #!/bin/bash
 set -euo pipefail
 
-if ! command -v lipo >/dev/null; then
-    echo "Command lipo not found; please install XCode"
-    exit 1
-fi
-
-if ! command -v gmake >/dev/null; then
-    echo "Please install make via Homebrew (brew install make)"
-    exit 1
-fi
-
 # Change to parent directory (top-level)
 cd "$(dirname "$0")"/.. || exit 1
 
-echo "Building for amd64..."
-gmake arch=amd64 object.path=obj-amd64 output.path=out-amd64 "$@"
+mkdir build
+cd build
+cmake .. -G "Xcode" -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
+                    -DENABLE_CCACHE=NO \
+                    -DARES_BUILD_LOCAL=NO \
+                    -DCMAKE_OSX_DEPLOYMENT_TARGET="10.13" \
+                    -DARES_CODESIGN_IDENTITY=$penv{CODESIGN_IDENT} \
+                    -DARES_CODESIGN_TEAM=$penv{CODESIGN_TEAM}
 
-echo "Building for arm64..."
-gmake arch=arm64 object.path=obj-arm64 output.path=out-arm64 "$@"
+xcodebuild build 2>&1 | xcbeautify --renderer terminal
 
 echo "Assembling universal binary"
 rm -rf desktop-ui/out
