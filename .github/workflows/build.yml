@@ -12,53 +12,47 @@ jobs:
       matrix:
         program:
         - ares
+        config:
+        - RelWithDebInfo
         platform:
-        - name: windows
+        - name: windows-x64
           os: windows-latest
           compiler: clang++
           windres: windres
           shell: 'msys2 {0}'
           msystem: clang64
-          install: mingw-w64-clang-x86_64-clang mingw-w64-clang-x86_64-pkgconf mingw-w64-clang-x86_64-SDL2
+          install: mingw-w64-clang-x86_64-clang mingw-w64-clang-x86_64-pkgconf
+          cmake-args: '-A x64'
         - name: windows-arm64
           os: windows-latest
           compiler: clang++ --target=aarch64-w64-windows-gnu --sysroot=/clangarm64 -resource-dir=/clangarm64/lib/clang/$(basename "$(clang++ -print-resource-dir)")
           windres: windres --target=aarch64-w64-windows-gnu
           shell: 'msys2 {0}'
           msystem: clang64
-          install: mingw-w64-clang-x86_64-clang mingw-w64-clang-aarch64-clang mingw-w64-clang-aarch64-pkgconf mingw-w64-clang-aarch64-SDL2
-        - name: windows-msvc-x64
+          install: mingw-w64-clang-x86_64-clang mingw-w64-clang-aarch64-clang mingw-w64-clang-aarch64-pkgconf
+          cmake-args: '-A ARM64'
+        - name: windows-clang-cl-x64
           os: windows-latest
-          compiler: clang++
-          windres: llvm-rc
-          shell: bash
-          msvc-arch: x64
-        - name: windows-msvc-arm64
-          os: windows-latest
-          compiler: clang++ --target=aarch64-w64-windows-msvc
-          windres: llvm-rc
-          shell: bash
-          msvc-arch: x64_arm64
-        - name: windows-cl-x64
-          os: windows-latest
-          compiler: cl
           windres: rc
           shell: bash
           msvc-arch: x64
-        - name: windows-cl-arm64
+          cmake-args: '-A x64 -T ClangCL'
+        - name: windows-clang-cl-arm64
           os: windows-latest
-          compiler: cl
           windres: rc
           shell: bash
           msvc-arch: x64_arm64
+          cmake-args: '-A ARM64 -T ClangCL'
         - name: macos-compat
           os: macos-12
           compiler: clang++
           shell: sh
+          cmake-args: '-DCMAKE_OSX_DEPLOYMENT_TARGET=10.9'
         - name: macos-latest
           os: macos-latest
           compiler: clang++
           shell: sh
+          cmake-args: '-DCMAKE_OSX_DEPLOYMENT_TARGET=10.13'
     name: ${{ matrix.program }}-${{ matrix.platform.name }}
     runs-on: ${{ matrix.platform.os }}
     defaults:
@@ -71,11 +65,6 @@ jobs:
       with:
         msystem: ${{ matrix.platform.msystem }}
         install: make ${{ matrix.platform.install }}
-    - name: Install Linux Dependencies
-      if: runner.os == 'Linux'
-      run: |
-        sudo apt-get update -y -qq
-        sudo apt-get install libsdl2-dev libgtk-3-dev libao-dev libopenal-dev
     - name: "macOS: Import Certificate"
       if: runner.os == 'macOS' && github.event_name != 'pull_request'
       continue-on-error: ${{ github.repository != 'ares-emulator/ares' }}
@@ -87,19 +76,22 @@ jobs:
         keychain-password: ${{ secrets.MACOS_KEYCHAIN_PASSWORD }}
     - name: Checkout source code
       uses: actions/checkout@v4
+    - name: Install macOS Dependencies
+      if: runner.os == 'macOS'
+      run: |
+        brew install cmake ccache
     - name: Set up MSVC environment
       if: matrix.platform.msvc-arch != ''
       uses: ilammy/msvc-dev-cmd@v1
       with:
         arch: ${{ matrix.platform.msvc-arch }}
-    - name: Make
+    - name: "Build: Windows"
       if: runner.os != 'macOS'
-      run: ${MAKE:-make} -j4 -C desktop-ui build=optimized local=false compiler="${{ matrix.platform.compiler }}" windres="${{ matrix.platform.windres }}"
-    - name: "macOS: Make universal app"
+      run: .github/scripts/build_windows.sh ${{ matrix.platform.cmake-args }}
+    - name: "Build: macOS"
       if: runner.os == 'macOS'
-      run: scripts/macos-make-universal.sh build=optimized local=false
+      run: .github/scripts/build_macos.sh ${{ matrix.platform.cmake-args }}
       env:
-        MAKEFLAGS: -j3
         MACOS_CERTIFICATE_NAME: ${{ secrets.MACOS_CERTIFICATE_NAME }}
         MACOS_KEYCHAIN_NAME: ares-macos-keychain
         MACOS_KEYCHAIN_PASSWORD: ${{ secrets.MACOS_KEYCHAIN_PASSWORD }}
@@ -111,8 +103,8 @@ jobs:
         password: '${{ secrets.WIN_PASSWORD }}'
         certificatesha1: '${{ secrets.WIN_CERTHASH }}'
         certificatename: '${{ secrets.WIN_CERTNAME }}'
-        folder: 'desktop-ui/out'
-        timestampUrl: 'http://timestamp.digicert.com' 
+        folder: 'build/rundir/${{ matrix.config }}'
+        timestampUrl: 'http://timestamp.digicert.com'
     - name: "macOS: notarize"
       if: runner.os == 'macOS' && github.event_name != 'pull_request'
       continue-on-error: ${{ github.repository != 'ares-emulator/ares' }}
