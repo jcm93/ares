@@ -1,10 +1,6 @@
 name: Build
 on:
-  push:
-    branches: [ master ]
-    tags: [ 'v*' ]
-  pull_request:
-    branches: [ master ]
+  push
 jobs:
   build:
     strategy:
@@ -79,7 +75,7 @@ jobs:
     - name: Install macOS Dependencies
       if: runner.os == 'macOS'
       run: |
-        brew install cmake ccache
+        brew install cmake ccache xcbeautify
     - name: Set up MSVC environment
       if: matrix.platform.msvc-arch != ''
       uses: ilammy/msvc-dev-cmd@v1
@@ -106,7 +102,7 @@ jobs:
         folder: 'build/rundir/${{ matrix.config }}'
         timestampUrl: 'http://timestamp.digicert.com'
     - name: "macOS: notarize"
-      if: runner.os == 'macOS' && github.event_name != 'pull_request'
+      if: runner.os == 'macOS' && needs.pr-check.outputs.number != null
       continue-on-error: ${{ github.repository != 'ares-emulator/ares' }}
       run: |
         ditto -c -k --keepParent desktop-ui/out/ares.app /tmp/ares.zip
@@ -120,7 +116,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.program }}-${{ matrix.platform.name }}
-        path: desktop-ui/out/*
+        path: desktop-ui/${{ matrix.config }}/*
 
      
   release:
@@ -137,34 +133,7 @@ jobs:
       with:
         path: 'bin'
     - name: Package Artifacts
-      run: |
-        set -eu
-        case ${GITHUB_REF} in
-          refs/tags/*) suffix="-${GITHUB_REF#refs/tags/}" ;;
-          refs/heads/master) suffix="-nightly" ;;
-          *) suffix="" ;;
-        esac
-
-        srcdir="${GITHUB_WORKSPACE}/src"
-        bindir="${GITHUB_WORKSPACE}/bin"
-
-        # Hack: Workaround for GitHub artifacts losing attributes.
-        chmod +x ${bindir}/ares-macos-latest/ares.app/Contents/MacOS/ares
-        chmod +x ${bindir}/ares-macos-compat/ares.app/Contents/MacOS/ares
-
-        for package in windows windows-msvc-arm64 macos-latest macos-compat
-        do
-          mkdir "${package}"
-          cd "${package}"
-
-          # Package ares.
-          outdir=ares${suffix}
-          mkdir ${outdir}
-          cp -ar ${bindir}/ares-${package}/* ${outdir}
-          zip -r ../ares-${package}.zip ${outdir}
-
-          cd -
-        done
+      run: .github/scripts/package_artifacts.sh
     - name: Create Release
       id: release
       env:
