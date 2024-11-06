@@ -1,9 +1,3 @@
-add_library(thirdparty INTERFACE)
-
-target_include_directories(thirdparty INTERFACE
-    ../thirdparty
-)
-
 add_library(sljit STATIC
     sljit/sljit_src/sljitLir.c
 )
@@ -11,49 +5,48 @@ add_library(sljit STATIC
 target_include_directories(sljit PUBLIC ../thirdparty)
 target_compile_definitions(sljit PUBLIC SLJIT_HAVE_CONFIG_PRE=1 SLJIT_HAVE_CONFIG_POST=1)
 
-add_library(libchdr STATIC
-    libchdr/src/libchdr_bitstream.c
-    libchdr/src/libchdr_cdrom.c
-    libchdr/src/libchdr_chd.c
-    libchdr/src/libchdr_flac.c
-    libchdr/src/libchdr_huffman.c
+# lzma
+add_subdirectory(libchdr/deps/lzma-24.05 EXCLUDE_FROM_ALL)
+  list(APPEND CHDR_LIBS lzma)
+  list(APPEND CHDR_INCLUDES lzma)
 
-    libchdr/deps/lzma-19.00/src/Alloc.c
-    libchdr/deps/lzma-19.00/src/Bra86.c
-    libchdr/deps/lzma-19.00/src/BraIA64.c
-    libchdr/deps/lzma-19.00/src/CpuArch.c
-    libchdr/deps/lzma-19.00/src/Delta.c
-    libchdr/deps/lzma-19.00/src/LzFind.c
-    libchdr/deps/lzma-19.00/src/Lzma86Dec.c
-    libchdr/deps/lzma-19.00/src/LzmaDec.c
-    libchdr/deps/lzma-19.00/src/LzmaEnc.c
-    libchdr/deps/lzma-19.00/src/Sort.c
+# zlib
+if (WITH_SYSTEM_ZLIB)
+  find_package(ZLIB REQUIRED)
+  list(APPEND PLATFORM_LIBS ZLIB::ZLIB)
+else()
+  option(ZLIB_BUILD_EXAMPLES "Enable Zlib Examples" OFF)
+  add_subdirectory(libchdr/deps/zlib-1.3.1 EXCLUDE_FROM_ALL)
+  set_target_properties(zlibstatic PROPERTIES POSITION_INDEPENDENT_CODE ON FOLDER thirdparty PREFIX "")
+  list(APPEND CHDR_LIBS zlibstatic)
+endif()
 
-    libchdr/deps/zlib-1.2.13/adler32.c
-    libchdr/deps/zlib-1.2.13/compress.c
-    libchdr/deps/zlib-1.2.13/crc32.c
-    libchdr/deps/zlib-1.2.13/deflate.c
-    libchdr/deps/zlib-1.2.13/infback.c
-    libchdr/deps/zlib-1.2.13/inffast.c
-    libchdr/deps/zlib-1.2.13/inflate.c
-    libchdr/deps/zlib-1.2.13/inftrees.c
-    libchdr/deps/zlib-1.2.13/trees.c
-    libchdr/deps/zlib-1.2.13/uncompr.c
-    libchdr/deps/zlib-1.2.13/zutil.c
+# zstd
+option(ZSTD_BUILD_SHARED "BUILD SHARED LIBRARIES" OFF)
+option(ZSTD_BUILD_PROGRAMS "BUILD PROGRAMS" OFF)
+add_subdirectory(libchdr/deps/zstd-1.5.6/build/cmake EXCLUDE_FROM_ALL)
+list(APPEND CHDR_LIBS libzstd_static)
+#--------------------------------------------------
+# chdr
+#--------------------------------------------------
+
+set(CHDR_SOURCES
+  libchdr/src/libchdr_bitstream.c
+  libchdr/src/libchdr_cdrom.c
+  libchdr/src/libchdr_chd.c
+  libchdr/src/libchdr_flac.c
+  libchdr/src/libchdr_huffman.c
 )
 
-target_include_directories(libchdr
-    PUBLIC ../thirdparty/libchdr/include
-    PRIVATE
-    ../thirdparty/libchdr/deps/lzma-19.00/include
-    ../thirdparty/libchdr/deps/zlib-1.2.13
+list(APPEND CHDR_INCLUDES ${CMAKE_CURRENT_BINARY_DIR}/libchdr/include)
+
+add_library(chdr-static STATIC ${CHDR_SOURCES})
+target_include_directories(chdr-static PUBLIC ${CHDR_INCLUDES} PUBLIC libchdr/include)
+target_link_libraries(chdr-static PRIVATE ${CHDR_LIBS} ${PLATFORM_LIBS})
+target_compile_options(chdr-static PRIVATE
+  $<$<CXX_COMPILER_ID:Clang>:-Wno-unreachable-code -Wno-unused-function>
 )
 
-target_compile_definitions(libchdr PRIVATE
-    _7ZIP_ST
-    # instruct glibc to declare fseeko/ftello
-    _LARGEFILE_SOURCE
-)
 
 add_library(tzxfile STATIC
     TZXFile/TZXAudioGenerator.cpp
@@ -96,3 +89,13 @@ add_library(ymfm STATIC
 target_include_directories(ymfm PUBLIC
     ../thirdparty/ymfm/src
 )
+
+target_compile_options(ymfm PRIVATE $<$<CXX_COMPILER_ID:Clang>:-Wno-unreachable-code>)
+
+set_target_properties(ymfm PROPERTIES FOLDER thirdparty PREFIX "")
+set_target_properties(tzxfile PROPERTIES FOLDER thirdparty PREFIX "")
+set_target_properties(chdr-static PROPERTIES FOLDER thirdparty PREFIX "")
+set_target_properties(sljit PROPERTIES FOLDER thirdparty PREFIX "")
+set_target_properties(zlib PROPERTIES FOLDER thirdparty PREFIX "")
+set_target_properties(lzma PROPERTIES FOLDER thirdparty PREFIX "")
+set_target_properties(libzstd_static PROPERTIES FOLDER thirdparty PREFIX "")

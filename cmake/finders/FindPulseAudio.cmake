@@ -1,0 +1,59 @@
+include(FindPackageHandleStandardArgs)
+
+find_package(PkgConfig QUIET)
+if(PKG_CONFIG_FOUND)
+  pkg_search_module(PC_PulseAudio QUIET libpulse)
+endif()
+
+find_path(
+  PulseAudio_INCLUDE_DIR
+  NAMES pulse/pulseaudio.h
+  HINTS ${PC_PulseAudio_INCLUDE_DIRS}
+  PATHS /usr/include/ /usr/local/include
+  DOC "PulseAudio include directory"
+)
+
+find_library(
+  PulseAudio_LIBRARY
+  NAMES pulse
+  HINTS ${PC_PulseAudio_LIBRARY_DIRS}
+  PATHS /usr/lib /usr/local/lib
+  DOC "PulseAudio location"
+)
+
+find_package_handle_standard_args(
+  PulseAudio
+  REQUIRED_VARS PulseAudio_INCLUDE_DIR PulseAudio_LIBRARY
+  VERSION_VAR PulseAudio_VERSION
+  REASON_FAILURE_MESSAGE "Ensure that PulseAudio is available in local library paths."
+)
+mark_as_advanced(PulseAudio_INCLUDE_DIR PulseAudio_LIBRARY)
+
+if(PulseAudio_FOUND)
+  if(NOT TARGET PulseAudio::PulseAudio)
+    if(IS_ABSOLUTE "${PulseAudio_LIBRARY}")
+      add_library(PulseAudio::PulseAudio UNKNOWN IMPORTED)
+      set_property(TARGET PulseAudio::PulseAudio PROPERTY IMPORTED_LOCATION "${PulseAudio_LIBRARY}")
+    else()
+      add_library(PulseAudio::PulseAudio INTERFACE IMPORTED)
+      set_property(TARGET PulseAudio::PulseAudio PROPERTY IMPORTED_LIBNAME "${PulseAudio_LIBRARY}")
+    endif()
+
+    set_target_properties(
+      PulseAudio::PulseAudio
+      PROPERTIES
+        INTERFACE_COMPILE_OPTIONS "${PC_PulseAudio_CFLAFGS_OTHER}"
+        INTERFACE_INCLUDE_DIRECTORIES "${PulseAudio_INCLUDE_DIR}"
+        VERSION ${PulseAudio_VERSION}
+    )
+  endif()
+endif()
+
+include(FeatureSummary)
+set_package_properties(
+  PulseAudio
+  PROPERTIES
+    URL "https://www.freedesktop.org/wiki/Software/PulseAudio/"
+    DESCRIPTION
+      "PulseAudio is a sound server system for POSIX OSes, meaning that it is a proxy for your sound applications."
+)
