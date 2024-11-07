@@ -19,6 +19,6 @@ function(ares_configure_executable target)
       VERBATIM
     )
 
-    install(TARGETS ${target} RUNTIME DESTINATION "${ARES_INSTALL_EXECUTABLE_DESTINATION}" COMPONENT Runtime)
+    install(TARGETS ${target} RUNTIME DESTINATION "${ARES_INSTALL_EXECUTABLE_DESTINATION}" COMPONENT ${target})
   endif()
 endfunction()
