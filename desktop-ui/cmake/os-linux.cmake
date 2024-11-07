@@ -1,20 +1,26 @@
+option(ARES_BUNDLE_SHADERS "Add slang-shaders to the ares resources folder" ON)
+mark_as_advanced(ARES_BUNDLE_SHADERS)
+
 # Stage and install slang shaders
 if(ARES_ENABLE_LIBRASHADER)
-  add_custom_command(
-    TARGET desktop-ui
-    POST_BUILD
-    COMMAND
-      cp -R "${CMAKE_SOURCE_DIR}/.deps/ares-deps-linux-universal/lib/slang-shaders/."
-      "${ARES_BUILD_OUTPUT_DIR}/$<CONFIG>/Shaders"
-    COMMENT "Copying slang shaders to staging directory"
-  )
-
-  install(
-    DIRECTORY "${CMAKE_SOURCE_DIR}/.deps/ares-deps-linux-universal/lib/slang-shaders/"
-    DESTINATION "${ARES_INSTALL_DATA_DESTINATION}/Shaders"
-    USE_SOURCE_PERMISSIONS
-    COMPONENT Runtime
-  )
+  if(TARGET libretro::slang_shaders)
+    add_custom_command(
+      TARGET desktop-ui
+      POST_BUILD
+      COMMAND
+        cp -R "${slang_shaders_LOCATION}/."
+        "${ARES_BUILD_OUTPUT_DIR}/$<CONFIG>/Shaders"
+      COMMENT "Copying slang shaders to staging directory"
+    )
+    if(ARES_BUNDLE_SHADERS)
+      install(
+        DIRECTORY "${slang_shaders_LOCATION}"
+        DESTINATION "${ARES_INSTALL_DATA_DESTINATION}/Shaders"
+        USE_SOURCE_PERMISSIONS
+        COMPONENT desktop-ui
+      )
+    endif()
+  endif()
 endif()
 
 # Stage and install mia database
@@ -32,7 +38,7 @@ install(
   DIRECTORY "${CMAKE_SOURCE_DIR}/mia/Database/"
   DESTINATION "${ARES_INSTALL_DATA_DESTINATION}/Database"
   USE_SOURCE_PERMISSIONS
-  COMPONENT Runtime
+  COMPONENT desktop-ui
 )
 
 # Stage and install icon, .desktop file
@@ -51,11 +57,11 @@ add_custom_command(
 install(
   FILES "${CMAKE_CURRENT_SOURCE_DIR}/resource/ares.desktop"
   DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/applications"
-  COMPONENT Runtime
+  COMPONENT desktop-ui
 )
 
 install(
   FILES "${CMAKE_CURRENT_SOURCE_DIR}/resource/ares.png"
   DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/256x256/apps"
-  COMPONENT Runtime
+  COMPONENT desktop-ui
 )
