@@ -17,6 +17,17 @@ auto locate(const string& name) -> string {
   // 2. The user data directory
   location = {Path::userData(), "ares/", name};
   if(inode::exists(location)) return location;
+  
+#if defined(PLATFORM_LINUX)
+  // 2.5. A shared data directory for an install prefix; can be used by package managers that do not
+  // use /usr/share
+  location = {Path::prefixSharedData(), "ares/", name};
+  if(inode::exists(location)) return location;
+  
+  // 2.75. A shared data directory for locally compiled software
+  location = {Path::localSharedData(), "ares/", name};
+  if(inode::exists(location)) return location;
+#endif
 
   // 3. The shared data directory
   location = {Path::sharedData(), "ares/", name};
