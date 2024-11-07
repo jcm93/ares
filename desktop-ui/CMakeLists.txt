@@ -40,6 +40,11 @@ set_source_files_properties(
   PROPERTIES HEADER_FILE_ONLY FALSE
 )
 
+
+if(ARES_ENABLE_LIBRASHADER)
+  find_package(slang_shaders)
+endif()
+
 if(OS_WINDOWS)
   include(cmake/os-windows.cmake)
 elseif(OS_MACOS)

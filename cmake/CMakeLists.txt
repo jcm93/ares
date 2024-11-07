@@ -13,6 +13,7 @@ target_sources(
     common/osconfig.cmake
     common/versionconfig.cmake
     finders/Findlibrashader.cmake
+    finders/Findslang_shaders.cmake
     finders/FindMoltenVK.cmake
     finders/FindSDL.cmake
     finders/FindGTK.cmake

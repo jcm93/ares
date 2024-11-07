@@ -33,13 +33,13 @@ target_add_resource(desktop-ui "${CMAKE_CURRENT_SOURCE_DIR}/resource/Assets.xcas
 
 function(target_install_shaders target)
   message(DEBUG "Installing shaders for target ${target}...")
-  if(EXISTS "${CMAKE_SOURCE_DIR}/.deps/ares-deps-macos-universal/lib/slang-shaders")
-    file(GLOB_RECURSE data_files "${CMAKE_SOURCE_DIR}/.deps/ares-deps-macos-universal/lib/slang-shaders/*")
+  if(EXISTS "${slang_shaders_LOCATION}")
+    file(GLOB_RECURSE data_files "${slang_shaders_LOCATION}/*")
     foreach(data_file IN LISTS data_files)
       cmake_path(
         RELATIVE_PATH
         data_file
-        BASE_DIRECTORY "${CMAKE_SOURCE_DIR}/.deps/ares-deps-macos-universal/lib/slang-shaders/"
+        BASE_DIRECTORY "${slang_shaders_LOCATION}"
         OUTPUT_VARIABLE relative_path
       )
       cmake_path(GET relative_path PARENT_PATH relative_path)
@@ -71,15 +71,17 @@ endfunction()
 
 # Add slang-shaders as a post-build script so we don't have an exceedingly long "Copy Files" phase
 if(ARES_ENABLE_LIBRASHADER)
-  add_custom_command(
-    TARGET desktop-ui
-    POST_BUILD
-    COMMAND
-      ditto "${CMAKE_SOURCE_DIR}/.deps/ares-deps-macos-universal/lib/slang-shaders"
-      "$<TARGET_BUNDLE_CONTENT_DIR:desktop-ui>/Resources/Shaders/"
-    WORKING_DIRECTORY "$<TARGET_BUNDLE_CONTENT_DIR:desktop-ui>"
-    COMMENT "Copying slang shaders to app bundle"
-  )
+  if(TARGET libretro::slang_shaders)
+    add_custom_command(
+      TARGET desktop-ui
+      POST_BUILD
+      COMMAND
+        ditto "${slang_shaders_LOCATION}"
+        "$<TARGET_BUNDLE_CONTENT_DIR:desktop-ui>/Resources/Shaders/"
+      WORKING_DIRECTORY "$<TARGET_BUNDLE_CONTENT_DIR:desktop-ui>"
+      COMMENT "Copying slang shaders to app bundle"
+    )
+  endif()
 endif()
 
 # Can't use target_add_resource for this since we only want it to occur in debug configurations
