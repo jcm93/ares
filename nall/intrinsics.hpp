@@ -81,7 +81,9 @@ namespace nall {
 /* Platform detection */
 
 #if defined(_WIN32)
-  #define PLATFORM_WINDOWS
+  #if !defined(CMAKE)
+    #define PLATFORM_WINDOWS
+  #endif
   struct Platform {
     static constexpr bool Windows = 1;
     static constexpr bool MacOS   = 0;
@@ -90,7 +92,9 @@ namespace nall {
     static constexpr bool BSD     = 0;
   };
 #elif defined(__APPLE__)
-  // #define PLATFORM_MACOS
+  #if !defined(CMAKE)
+    #define PLATFORM_MACOS
+  #endif
   struct Platform {
     static constexpr bool Windows = 0;
     static constexpr bool MacOS   = 1;
@@ -108,7 +112,9 @@ namespace nall {
     static constexpr bool BSD     = 0;
   };
 #elif defined(linux) || defined(__linux__)
-  // #define PLATFORM_LINUX
+  #if !defined(CMAKE)
+    #define PLATFORM_LINUX
+  #endif
   struct Platform {
     static constexpr bool Windows = 0;
     static constexpr bool MacOS   = 0;
@@ -117,7 +123,9 @@ namespace nall {
     static constexpr bool BSD     = 0;
   };
 #elif defined(__FreeBSD__) || defined(__FreeBSD_kernel__) || defined(__NetBSD__) || defined(__OpenBSD__)
-  // #define PLATFORM_BSD
+  #if !defined(CMAKE)
+    #define PLATFORM_LINUX
+  #endif
   struct Platform {
     static constexpr bool Windows = 0;
     static constexpr bool MacOS   = 0;
