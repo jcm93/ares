@@ -22,6 +22,9 @@ target_sources(
     rdp/rdp.cpp
 )
 
+target_enable_feature(ares "N64 Vulkan rendering with paraLLEl-RDP" VULKAN)
+target_compile_definitions(ares PUBLIC VULKAN)
+
 if(OS_WINDOWS)
   include(cmake/os-windows.cmake)
 elseif(OS_MACOS)
