@@ -110,6 +110,8 @@ macro(ares_add_header_sources core)
   set(ARES_HEADER_SOURCES ${ARES_HEADER_SOURCES} PARENT_SCOPE)
 endmacro()
 
+list(TRANSFORM ARES_CORES STRIP)
+
 if(a26 IN_LIST ARES_CORES)
   enable_core("Atari 2600")
   add_subdirectory(a26)
