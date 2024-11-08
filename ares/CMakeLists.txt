@@ -92,9 +92,6 @@ elseif(OS_LINUX OR OS_FREEBSD OR OS_OPENBSD)
   include(cmake/os-linux.cmake)
 endif()
 
-target_enable_feature(ares "N64 Vulkan rendering with paraLLEl-RDP" VULKAN)
-target_compile_definitions(ares PUBLIC VULKAN)
-
 macro(ares_components)
   list(APPEND ares.components ${ARGV})
   set(ares.components ${ares.components} PARENT_SCOPE)
