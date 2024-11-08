@@ -19,6 +19,7 @@ target_sources(
     finders/FindGTK.cmake
     finders/FindAO.cmake
     finders/FindOSS.cmake
+    finders/FindPulseAudio.cmake
     macos/dependencies.cmake
     macos/compilerconfig.cmake
     macos/defaults.cmake

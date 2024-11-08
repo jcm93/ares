@@ -21,6 +21,8 @@ find_library(
   DOC "PulseAudio location"
 )
 
+set(PulseAudio_VERSION ${PC_PulseAudio_VERSION})
+
 find_package_handle_standard_args(
   PulseAudio
   REQUIRED_VARS PulseAudio_INCLUDE_DIR PulseAudio_LIBRARY
@@ -42,7 +44,7 @@ if(PulseAudio_FOUND)
     set_target_properties(
       PulseAudio::PulseAudio
       PROPERTIES
-        INTERFACE_COMPILE_OPTIONS "${PC_PulseAudio_CFLAFGS_OTHER}"
+        INTERFACE_COMPILE_OPTIONS "${PC_PulseAudio_CFLAGS_OTHER}"
         INTERFACE_INCLUDE_DIRECTORIES "${PulseAudio_INCLUDE_DIR}"
         VERSION ${PulseAudio_VERSION}
     )

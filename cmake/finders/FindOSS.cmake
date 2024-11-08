@@ -1,8 +1,8 @@
 #[=======================================================================[.rst:
-FindSDL
+FindOSS
 -------
 
-Finds the SDL library.
+Finds the OSS library.
 
 Imported Targets
 ^^^^^^^^^^^^^^^^
@@ -16,22 +16,12 @@ Result Variables
 
 This will define the following variables:
 
-``GTK_FOUND``
-  True if the system has GTK 3.
-``GTK_VERSION``
-  The version of GTK3 which was found.
-``GTK_INCLUDE_DIRS``
-  Include directories needed to use GTK3.
-``GTK_LIBRARIES``
-  Libraries needed to link to GTK3.
-
-Cache Variables
-^^^^^^^^^^^^^^^
-
-The following cache variables may also be set:
-.
-``GTK_LIBRARY``
-  The path to the SDL library.
+``OSS_FOUND``
+  True if the system has OSS.
+``OSS_VERSION``
+  The version of OSS which was found.
+``GTK_INCLUDE_DIR``
+  Include directories needed to use OSS.
 
 #]=======================================================================]
 
