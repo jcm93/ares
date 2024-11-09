@@ -29,10 +29,12 @@ if(ENABLE_CCACHE AND CCACHE_PROGRAM)
 endif()
 
 if(CMAKE_GENERATOR_PLATFORM)
+  message(AUTHOR_WARNING "cmake generator platform is set to ${CMAKE_GENERATOR_PLATFORM}")
   set(arch ${CMAKE_GENERATOR_PLATFORM})
   set(platform windows-${arch})
 else()
-  if(CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL ARM64)
+  message(AUTHOR_WARNING "cmake system processor is set to ${CMAKE_SYSTEM_PROCESSOR}")
+  if(CMAKE_SYSTEM_PROCESSOR STREQUAL ARM64)
     set(arch arm64)
     set(platform windows-${arch})
   else()
@@ -87,6 +89,7 @@ else()
       -Wno-reorder-ctor
       -Wno-unused
     )
+    add_link_options(-static-libstdc++)
     set(
       _ares_mingw_clang_debug_compile_options
       -g

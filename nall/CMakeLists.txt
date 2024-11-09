@@ -4,7 +4,7 @@ add_library(ares::nall ALIAS nall)
 include(cmake/sources.cmake)
 
 target_link_libraries(nall PUBLIC sljit chdr-static)
-target_compile_definitions(nall PRIVATE CMAKE)
+target_compile_definitions(nall PUBLIC CMAKE)
 target_compile_options(
   nall
   PRIVATE

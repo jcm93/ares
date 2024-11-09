@@ -22,6 +22,8 @@ set(
   -Wblock-capture-autoreleasing
   # -Wswitch
   # -Wdeprecated
+  -Wno-switch
+  -Wno-parentheses
   -Wempty-body
   -Wbool-conversion
   -Wconstant-conversion
