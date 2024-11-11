@@ -6,7 +6,16 @@ include(helpers_common)
 function(ares_configure_executable target)
   set_target_properties(${target} PROPERTIES WIN32_EXECUTABLE TRUE)
   _bundle_dependencies(${target})
-  install(TARGETS ${target} DESTINATION "${ARES_EXECUTABLE_DESTINATION}/${target}/$<CONFIG>" COMPONENT Application)
+  install(TARGETS ${target} DESTINATION "${ARES_EXECUTABLE_DESTINATION}/${target}/rundir" COMPONENT Application)
+  add_custom_command(
+    TARGET ${target}
+    POST_BUILD
+    COMMAND "${CMAKE_COMMAND}" -E echo "Copy binary ${target} to rundir"
+    COMMAND "${CMAKE_COMMAND}" -E make_directory "${ARES_EXECUTABLE_DESTINATION}/${target}/rundir"
+    COMMAND "${CMAKE_COMMAND}" -E copy "$<TARGET_FILE:${target}>" "${ARES_EXECUTABLE_DESTINATION}/${target}/rundir"
+    COMMENT ""
+    VERBATIM
+  )
 endfunction()
 
 # _target_install_obs: Helper function to install build artifacts to rundir and install location
@@ -38,8 +47,8 @@ function(target_add_resource target resource)
     TARGET ${target}
     POST_BUILD
     COMMAND "${CMAKE_COMMAND}" -E echo "Copy ${target} resource ${resource} to library directory"
-    COMMAND "${CMAKE_COMMAND}" -E make_directory "${ARES_OUTPUT_DIR}/$<CONFIG>/${target_destination}/"
-    COMMAND "${CMAKE_COMMAND}" -E copy "${resource}" "${ARES_OUTPUT_DIR}/$<CONFIG>/${target_destination}/"
+    COMMAND "${CMAKE_COMMAND}" -E make_directory "${ARES_OUTPUT_DIR}/${target_destination}/"
+    COMMAND "${CMAKE_COMMAND}" -E copy "${resource}" "${ARES_OUTPUT_DIR}/${target_destination}/"
     COMMENT ""
     VERBATIM
   )
@@ -109,21 +118,21 @@ function(_bundle_dependencies target)
     TARGET ${target}
     POST_BUILD
     COMMAND "${CMAKE_COMMAND}" -E echo "Copy dependencies to binary directory (${ARES_EXECUTABLE_DESTINATION})..."
-    COMMAND "${CMAKE_COMMAND}" -E make_directory "${ARES_OUTPUT_DIR}/${target}"
+    COMMAND "${CMAKE_COMMAND}" -E make_directory "${ARES_OUTPUT_DIR}/${target}/rundir"
     COMMAND
       "${CMAKE_COMMAND}" -E "$<IF:$<CONFIG:Debug>,copy_if_different,true>" "$<$<CONFIG:Debug>:${library_paths_DEBUG}>"
-      "${ARES_EXECUTABLE_DESTINATION}/${target}/$<IF:$<BOOL:${MULTI_CONFIG}>,Debug,>/"
+      "${ARES_EXECUTABLE_DESTINATION}/${target}/rundir"
     COMMAND
       "${CMAKE_COMMAND}" -E "$<IF:$<CONFIG:RelWithDebInfo>,copy_if_different,true>"
       "$<$<CONFIG:RelWithDebInfo>:${library_paths_RELWITHDEBINFO}>"
-      "${ARES_EXECUTABLE_DESTINATION}/${target}/$<IF:$<BOOL:${MULTI_CONFIG}>,RelWithDebInfo,>/"
+      "${ARES_EXECUTABLE_DESTINATION}/${target}/rundir"
     COMMAND
       "${CMAKE_COMMAND}" -E "$<IF:$<CONFIG:Release>,copy_if_different,true>"
-      "$<$<CONFIG:Release>:${library_paths_RELEASE}>" "${ARES_EXECUTABLE_DESTINATION}/${target}/$<IF:$<BOOL:${MULTI_CONFIG}>,Release,>"
+      "$<$<CONFIG:Release>:${library_paths_RELEASE}>" "${ARES_EXECUTABLE_DESTINATION}/${target}/rundir"
     COMMAND
       "${CMAKE_COMMAND}" -E "$<IF:$<CONFIG:MinSizeRel>,copy_if_different,true>"
       "$<$<CONFIG:MinSizeRel>:${library_paths_MINSIZEREL}>"
-      "${ARES_EXECUTABLE_DESTINATION}/${target}/$<IF:$<BOOL:${MULTI_CONFIG}>,MinSizeRel,>/"
+      "${ARES_EXECUTABLE_DESTINATION}/${target}/rundir"
     COMMENT "Copying dynamic dependencies to rundir"
     VERBATIM
     COMMAND_EXPAND_LISTS
@@ -134,7 +143,7 @@ function(_bundle_dependencies target)
     FILES ${library_paths_DEBUG}
     CONFIGURATIONS Debug
     DESTINATION "${ARES_EXECUTABLE_DESTINATION}"
-    DESTINATION "${ARES_EXECUTABLE_DESTINATION}/${target}/Debug/"
+    DESTINATION "${ARES_EXECUTABLE_DESTINATION}/${target}/rundir"
     COMPONENT Runtime
   )
 
@@ -142,7 +151,7 @@ function(_bundle_dependencies target)
     FILES ${library_paths_RELWITHDEBINFO}
     CONFIGURATIONS RelWithDebInfo
     DESTINATION "${ARES_EXECUTABLE_DESTINATION}"
-    DESTINATION "${ARES_EXECUTABLE_DESTINATION}/${target}/RelWithDebInfo/"
+    DESTINATION "${ARES_EXECUTABLE_DESTINATION}/${target}/rundir"
     COMPONENT Runtime
   )
 
@@ -150,7 +159,7 @@ function(_bundle_dependencies target)
     FILES ${library_paths_RELEASE}
     CONFIGURATIONS Release
     DESTINATION "${ARES_EXECUTABLE_DESTINATION}"
-    DESTINATION "${ARES_EXECUTABLE_DESTINATION}/${target}/Release/"
+    DESTINATION "${ARES_EXECUTABLE_DESTINATION}/${target}/rundir"
     COMPONENT Runtime
   )
 
@@ -158,7 +167,7 @@ function(_bundle_dependencies target)
     FILES ${library_paths_MINSIZEREL}
     CONFIGURATIONS MinSizeRel
     DESTINATION "${ARES_EXECUTABLE_DESTINATION}"
-    DESTINATION "${ARES_EXECUTABLE_DESTINATION}/${target}/MinSizeRel/"
+    DESTINATION "${ARES_EXECUTABLE_DESTINATION}/${target}/rundir"
     COMPONENT Runtime
   )
 endfunction()
