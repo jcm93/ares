@@ -5,6 +5,8 @@ include_guard(GLOBAL)
 option(ARES_COMPILE_DEPRECATION_AS_WARNING "Downgrade deprecation warnings to actual warnings" FALSE)
 mark_as_advanced(ARES_COMPILE_DEPRECATION_AS_WARNING)
 
+set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+
 # Set C and C++ language standards to C17 and C++17
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_C_STANDARD_REQUIRED TRUE)
@@ -22,6 +24,8 @@ set(
   -Wblock-capture-autoreleasing
   # -Wswitch
   # -Wdeprecated
+  -Wno-switch
+  -Wno-parentheses
   -Wempty-body
   -Wbool-conversion
   -Wconstant-conversion
