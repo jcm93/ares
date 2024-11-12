@@ -20,6 +20,8 @@ target_sources(
     finders/FindAO.cmake
     finders/FindOSS.cmake
     finders/FindPulseAudio.cmake
+    finders/Findudev.cmake
+    finders/Finduhid.cmake
     macos/dependencies.cmake
     macos/compilerconfig.cmake
     macos/defaults.cmake
