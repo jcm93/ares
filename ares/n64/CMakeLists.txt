@@ -316,7 +316,7 @@ target_include_directories(
 )
 
 target_compile_options(ares PRIVATE
-  $<$<CXX_COMPILER_ID:Clang>:-Wno-newline-eof>
+  $<$<CXX_COMPILER_ID:Clang,AppleClang>:-Wno-newline-eof>
 )
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)

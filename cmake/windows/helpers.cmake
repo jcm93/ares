@@ -5,6 +5,7 @@ include(helpers_common)
 # ares_configure_executable: Bundle entitlements, dependencies, resources to prepare macOS app bundle
 function(ares_configure_executable target)
   set_target_properties(${target} PROPERTIES WIN32_EXECUTABLE TRUE)
+  set_target_properties(${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "$<$<CONFIG:Debug,RelWithDebInfo,Release,MinSizeRel>:${ARES_EXECUTABLE_DESTINATION}/${target}/rundir>")
   _bundle_dependencies(${target})
   install(TARGETS ${target} DESTINATION "${ARES_EXECUTABLE_DESTINATION}/${target}/rundir" COMPONENT Application)
   add_custom_command(
