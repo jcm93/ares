@@ -69,7 +69,7 @@
       }
     },
     {
-      "name": "macos-ci",
+      "name": "macos-ci-latest",
       "displayName": "macOS for CI",
       "description": "Universal binary for building on Github Actions",
       "inherits": ["baseCacheVars"],
@@ -83,8 +83,29 @@
       "cacheVariables": {
         "CMAKE_OSX_ARCHITECTURES": {"type": "STRING", "value": "x86_64;arm64"},
         "CMAKE_OSX_DEPLOYMENT_TARGET": {"type": "STRING", "value": "10.13"},
-        "ARES_CODESIGN_IDENTITY": {"type": "STRING", "value": "$penv{CODESIGN_IDENT}"},
-        "ARES_CODESIGN_TEAM": {"type": "STRING", "value": "$penv{CODESIGN_TEAM}"},
+        "ARES_CODESIGN_IDENTITY": {"type": "STRING", "value": "$penv{MACOS_CERTIFICATE_NAME}"},
+        "ARES_CODESIGN_TEAM": {"type": "STRING", "value": "$penv{MACOS_NOTARIZATION_TEAMID}"},
+        "ENABLE_CCACHE": true,
+        "ARES_BUILD_LOCAL": false
+      }
+    },
+    {
+      "name": "macos-ci-compat",
+      "displayName": "macOS for CI",
+      "description": "Universal binary for building on Github Actions",
+      "inherits": ["baseCacheVars"],
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Darwin"
+      },
+      "generator": "Xcode",
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "CMAKE_OSX_ARCHITECTURES": {"type": "STRING", "value": "x86_64;arm64"},
+        "CMAKE_OSX_DEPLOYMENT_TARGET": {"type": "STRING", "value": "10.9"},
+        "ARES_CODESIGN_IDENTITY": {"type": "STRING", "value": "$penv{MACOS_CERTIFICATE_NAME}"},
+        "ARES_CODESIGN_TEAM": {"type": "STRING", "value": "$penv{MACOS_NOTARIZATION_TEAMID}"},
         "ENABLE_CCACHE": true,
         "ARES_BUILD_LOCAL": false
       }

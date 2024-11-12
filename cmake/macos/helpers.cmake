@@ -102,6 +102,11 @@ function(_bundle_dependencies target)
       else()
         continue()
       endif()
+      
+      if(XCODE AND ${target} STREQUAL mia-ui AND ${library} STREQUAL "MoltenVK::MoltenVK")
+        message(DEBUG "Working around https://gitlab.kitware.com/cmake/cmake/-/issues/23675")
+        continue()
+      endif()
 
       list(APPEND bundled_targets ${library})
 

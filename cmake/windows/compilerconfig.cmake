@@ -58,6 +58,18 @@ set(
   $<$<NOT:$<CONFIG:Debug>>:/Ot>
 )
 
+set(
+  _ares_clang_cl_c_cxx_options
+  -Wno-unused-function
+  -Wno-reorder-ctor
+  -Wno-missing-braces
+  -Wno-char-subscripts
+  -Wno-misleading-indentation
+  -Wno-bitwise-instead-of-logical
+  -Wno-self-assign-overloaded
+  -Wno-overloaded-virtual
+)
+
 # add compiler flags
 if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   # we are on either msys2/mingw clang, or clang-cl
@@ -65,8 +77,7 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   add_compile_options(
     "$<$<COMPILE_LANGUAGE:C>:${_ares_clang_c_options}>"
     "$<$<COMPILE_LANGUAGE:CXX>:${_ares_clang_cxx_options}>"
-    "$<$<COMPILE_LANGUAGE:C,CXX>:-Wno-reorder-ctor>"
-    "$<$<COMPILE_LANGUAGE:C,CXX>:-Wno-unused>"
+    "$<$<COMPILE_LANGUAGE:C,CXX>:${_ares_clang_cl_c_cxx_options}>"
   )
   if(NOT MSVC)
     # statically link libstdc++ if compiling under msys2/mingw
@@ -88,6 +99,12 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   else()
     # generate PDBs rather than embed debug symbols
     set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT ProgramDatabase)
+    add_compile_options("$<$<COMPILE_LANGUAGE:CXX>:${_ares_msvc_cxx_options}>")
+    add_link_options(
+      $<$<NOT:$<CONFIG:Debug>>:/LTCG>
+      $<$<NOT:$<CONFIG:Debug>>:/INCREMENTAL:NO>
+      /Debug
+    )
   endif()
   
   # optimizations
@@ -102,12 +119,6 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   add_compile_options(
     "$<$<COMPILE_LANGUAGE:C,CXX>:${_ares_msvc_cxx_options}>"
   )
-  # should be covered by CMAKE_INTERPROCEDURAL_OPTIMIZATION
-#   add_link_options(
-#     $<$<NOT:$<CONFIG:Debug>>:/LTCG>
-#     $<$<NOT:$<CONFIG:Debug>>:/INCREMENTAL:NO>
-#     /Debug
-#   )
   if(CMAKE_COMPILE_WARNING_AS_ERROR)
     add_link_options(/WX)
   endif()

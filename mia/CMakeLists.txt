@@ -114,7 +114,7 @@ add_executable(mia-ui mia.cpp resource/resource.cpp)
 
 target_link_libraries(
   mia-ui
-  PUBLIC ares::nall ares::hiro ares::ares
+  PUBLIC ares::hiro ares::ares
   PRIVATE
     tzxfile
     "$<$<PLATFORM_ID:Darwin>:$<LINK_LIBRARY:FRAMEWORK,Carbon.framework>>"

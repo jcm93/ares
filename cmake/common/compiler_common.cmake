@@ -23,10 +23,11 @@ set(
   _ares_clang_common_options
   -Wblock-capture-autoreleasing
   # -Wswitch
-  # -Wdeprecated
+  -Wdeprecated
+  -Wno-deprecated-literal-operator
   -Wno-switch
   -Wno-parentheses
-  -Wempty-body
+  -Wno-empty-body
   -Wbool-conversion
   -Wconstant-conversion
   # -Wshorten-64-to-32
@@ -47,27 +48,19 @@ set(
   -Wuninitialized
   -Wunreachable-code
   # -Wunused
+  -Wno-unused
   -Wvla
   -Wformat-security
   -Wno-error=strict-prototypes
-  -Wno-error=shorten-64-to-32
-  -Wno-error=sign-compare
-  -Wno-error=comma
-  -Wno-error=parentheses
-  -Wno-error=unused-parameter
-  -Wno-error=unused-variable
-  -Wno-error=unused-but-set-variable
-  -Wno-error=deprecated-declarations
-  -Wno-error=deprecated-literal-operator
-  -Wno-error=newline-eof
-  -Wno-error=protocol
-  -Wno-error=comma
-  -Wno-error=deprecated-copy-with-user-provided-copy
-  -Wno-error=deprecated-copy
-  -Wno-error=anon-enum-enum-conversion
-  -Wno-error=deprecated-copy-with-user-provided-dtor
-  -Wno-error=unused-local-typedef
-  -Wno-error=unused-private-field
+  -Wno-shorten-64-to-32
+  -Wno-sign-compare
+  -Wno-comma
+  -Wno-protocol
+  -Wno-comma
+  -Wno-deprecated-copy-with-user-provided-copy
+  -Wno-deprecated-copy
+  -Wno-anon-enum-enum-conversion
+  -Wno-deprecated-copy-with-user-provided-dtor
 )
 
 set(_ares_clang_c_options ${_ares_clang_common_options})
