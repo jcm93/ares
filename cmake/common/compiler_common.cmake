@@ -5,7 +5,7 @@ include_guard(GLOBAL)
 option(ARES_COMPILE_DEPRECATION_AS_WARNING "Downgrade deprecation warnings to actual warnings" FALSE)
 mark_as_advanced(ARES_COMPILE_DEPRECATION_AS_WARNING)
 
-set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+set(CMAKE_INTERPROCEDURAL_OPTIMIZATION $<$<CONFIG:RelWithDebInfo,Release>:TRUE>)
 
 # Set C and C++ language standards to C17 and C++17
 set(CMAKE_C_STANDARD 17)
