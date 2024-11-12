@@ -1,4 +1,5 @@
-set -eu
+set -euo pipefail
+
 case ${GITHUB_REF} in
   refs/tags/*) suffix="-${GITHUB_REF#refs/tags/}" ;;
   refs/heads/master) suffix="-nightly" ;;
