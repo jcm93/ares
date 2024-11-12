@@ -4,7 +4,7 @@
 git tag v140
 
 # configure
-cmake --preset macos-ci ${@}
+cmake --preset $TARGET_PRESET
 
 # change into the build directory
 pushd build

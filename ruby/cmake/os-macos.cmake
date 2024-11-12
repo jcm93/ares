@@ -6,6 +6,9 @@ target_sources(
   PRIVATE video/cgl.cpp video/metal/metal.cpp video/metal/metal.hpp video/metal/Shaders.metal video/metal/ShaderTypes.h
 )
 
+# todo address
+target_compile_options(ruby PRIVATE $<$<CXX_COMPILER_ID:Clang,AppleClang>:-Wno-unguarded-availability>)
+
 target_sources(ruby PRIVATE audio/openal.cpp audio/sdl.cpp)
 
 target_sources(

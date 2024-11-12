@@ -100,7 +100,7 @@ endif()
 
 find_library(
   SDL_LIBRARY
-  NAMES SDL2-2.0.0 SDL2-2.0 SDL2
+  NAMES SDL2 SDL2-2.0.0 SDL2-2.0
   HINTS ${PC_SDL_LIBRARY_DIRS}
   PATHS ${CMAKE_SOURCE_DIR}/.deps /usr/lib /usr/local/lib
   DOC "SDL location"

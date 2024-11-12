@@ -44,7 +44,7 @@ add_library(chdr-static STATIC ${CHDR_SOURCES})
 target_include_directories(chdr-static PUBLIC ${CHDR_INCLUDES} PUBLIC libchdr/include)
 target_link_libraries(chdr-static PRIVATE ${CHDR_LIBS} ${PLATFORM_LIBS})
 target_compile_options(chdr-static PRIVATE
-  $<$<CXX_COMPILER_ID:Clang>:-Wno-unreachable-code -Wno-unused-function>
+  $<$<CXX_COMPILER_ID:Clang,AppleClang>:-Wno-unreachable-code -Wno-unused-function>
 )
 
 
@@ -90,7 +90,7 @@ target_include_directories(ymfm PUBLIC
     ../thirdparty/ymfm/src
 )
 
-target_compile_options(ymfm PRIVATE $<$<CXX_COMPILER_ID:Clang>:-Wno-unreachable-code>)
+target_compile_options(ymfm PRIVATE $<$<CXX_COMPILER_ID:Clang,AppleClang>:-Wno-unreachable-code>)
 
 set_target_properties(ymfm PROPERTIES FOLDER thirdparty PREFIX "")
 set_target_properties(tzxfile PROPERTIES FOLDER thirdparty PREFIX "")

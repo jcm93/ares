@@ -2,6 +2,8 @@
 
 include_guard(GLOBAL)
 
+set(CMAKE_FIND_FRAMEWORK LAST)
+
 # Set empty codesigning team if not specified as cache variable
 if(NOT ARES_CODESIGN_TEAM)
   set(ARES_CODESIGN_TEAM "" CACHE STRING "ares code signing team for macOS" FORCE)
