@@ -32,7 +32,8 @@
         "ARES_CODESIGN_IDENTITY": {"type": "STRING", "value": "$penv{CODESIGN_IDENT}"},
         "ARES_CODESIGN_TEAM": {"type": "STRING", "value": "$penv{CODESIGN_TEAM}"},
         "ENABLE_COMPILER_TRACE": true,
-        "ENABLE_CCACHE": true
+        "ENABLE_CCACHE": true,
+        "WITH_SYSTEM_ZLIB": true
       }
     },
     {
