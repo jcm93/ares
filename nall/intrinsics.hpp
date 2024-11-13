@@ -104,7 +104,9 @@ namespace nall {
     static constexpr bool BSD     = 0;
   };
 #elif defined(__ANDROID__)
-  #define PLATFORM_ANDROID
+  #if !defined(CMAKE)
+    #define PLATFORM_ANDROID
+  #endif
   struct Platform {
     static constexpr bool Windows = 0;
     static constexpr bool MacOS   = 0;
@@ -125,7 +127,7 @@ namespace nall {
   };
 #elif defined(__FreeBSD__) || defined(__FreeBSD_kernel__) || defined(__NetBSD__) || defined(__OpenBSD__)
   #if !defined(CMAKE)
-    #define PLATFORM_LINUX
+    #define PLATFORM_BSD
   #endif
   struct Platform {
     static constexpr bool Windows = 0;
