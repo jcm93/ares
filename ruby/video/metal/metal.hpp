@@ -11,7 +11,7 @@
 #if defined(CMAKE)
 #include <librashader/librashader_ld.h>
 #else
-#include "librashader/librashader_ld.h"
+#include "librashader_ld.h"
 #endif
 #include "ShaderTypes.h"
 
