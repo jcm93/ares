@@ -195,6 +195,16 @@ function(_handle_generator_expression_dependency library)
     if(TARGET ${gen_target})
       set(${var_FOUND_VAR} "${gen_target}")
     endif()
+  elseif(library MATCHES "\\$<LINK_LIBRARY:[^>]+>")
+    # Generator expression specifying link method found. Consider parameter following the link method to be a CMake
+    # target.
+    string(REGEX REPLACE "\\$<LINK_LIBRARY:[^,]+,([^>]+)>" "\\1" gen_linkspec "${library}")
+    
+    set(${var_FOUND_VAR} "${var_FOUND_VAR}-SKIP")
+    
+    if(TARGET ${gen_linkspec})
+      set(${var_FOUND_VAR} "${gen_linkspec}")
+    endif()
   else()
     # Unknown or unimplemented generator expression found. Abort script run to either add to ignore list or implement
     # detection.

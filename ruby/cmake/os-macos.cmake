@@ -32,11 +32,27 @@ target_link_libraries(
     "$<LINK_LIBRARY:FRAMEWORK,QuartzCore.framework>"
     "$<LINK_LIBRARY:FRAMEWORK,OpenAL.framework>"
     "$<LINK_LIBRARY:FRAMEWORK,OpenGL.framework>"
-    "$<LINK_LIBRARY:FRAMEWORK,Metal.framework>"
-    "$<LINK_LIBRARY:FRAMEWORK,MetalKit.framework>"
-    $<$<BOOL:${SDL_FOUND}>:SDL::SDL>
-    $<$<BOOL:TRUE>:librashader::librashader>
+    "$<LINK_LIBRARY:WEAK_FRAMEWORK,Metal.framework>"
+    "$<LINK_LIBRARY:WEAK_FRAMEWORK,MetalKit.framework>"
 )
+
+if(SDL_FOUND)
+  target_link_libraries(
+    ruby
+    PRIVATE
+      "$<LINK_LIBRARY:WEAK_LIBRARY,SDL::SDL>"
+      # "$<$<BOOL:${SDL_FOUND}>:SDL::SDL>"
+  )
+endif()
+
+if(librashader_FOUND)
+  target_link_libraries(
+    ruby
+    PRIVATE
+      "$<LINK_LIBRARY:WEAK_LIBRARY,librashader::librashader>"
+      # "$<$<BOOL:TRUE>:librashader::librashader>"
+  )
+endif()
 
 target_enable_feature(ruby "OpenGL video driver" VIDEO_CGL)
 target_enable_feature(ruby "Metal video driver" VIDEO_METAL)

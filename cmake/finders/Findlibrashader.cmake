@@ -122,7 +122,7 @@ unset(librashader_ERROR_REASON)
 
 if(librashader_FOUND AND ARES_ENABLE_LIBRASHADER)
   if(NOT TARGET librashader::librashader)
-    add_library(librashader::librashader MODULE IMPORTED)
+    add_library(librashader::librashader UNKNOWN IMPORTED)
     set_property(TARGET librashader::librashader PROPERTY IMPORTED_LOCATION "${librashader_LIBRARY}")
 
     librashader_set_soname()
