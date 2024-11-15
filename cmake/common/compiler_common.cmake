@@ -6,9 +6,9 @@ option(ARES_COMPILE_DEPRECATION_AS_WARNING "Downgrade deprecation warnings to ac
 mark_as_advanced(ARES_COMPILE_DEPRECATION_AS_WARNING)
 
 include(CheckIPOSupported)
-option(CHECK_IPO "Check for interprocedural optimization support" YES)
+option(ENABLE_IPO "Enable interprocedural optimization (LTO)" YES)
 message(STATUS "Checking if interprocedural optimization is supported")
-if(CHECK_IPO)
+if(ENABLE_IPO)
   check_ipo_supported(RESULT ipo_supported OUTPUT output)
   if(ipo_supported)
     set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE)
