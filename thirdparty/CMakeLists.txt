@@ -47,7 +47,6 @@ target_compile_options(chdr-static PRIVATE
   $<$<CXX_COMPILER_ID:Clang,AppleClang>:-Wno-unreachable-code -Wno-unused-function>
 )
 
-
 add_library(tzxfile STATIC
     TZXFile/TZXAudioGenerator.cpp
     TZXFile/TZXBlock.cpp

@@ -5,6 +5,8 @@ add_library(ares::ares ALIAS ares)
 option(ARES_PROFILE_ACCURACY "Build to prefer emulation accuracy over performance in certain specific areas" OFF)
 option(ARES_PRECOMPILE_HEADERS "Precompile ares/ares.hpp header for performance" ON)
 
+add_sourcery_command(ares ares/resource)
+
 if(ARES_PRECOMPILE_HEADERS)
   target_precompile_headers(ares PRIVATE "$<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/ares/ares.hpp>")
 endif()
@@ -289,5 +291,3 @@ set_source_files_properties(ares ares/ares.cpp ares/memory/fixed-allocator.cpp P
 target_include_directories(ares INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${ares_SOURCES})
-
-add_sourcery_command(ares ares/resource)
