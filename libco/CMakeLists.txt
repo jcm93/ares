@@ -28,6 +28,12 @@ get_target_property(libco_SOURCES libco SOURCES)
 
 target_include_directories(libco INTERFACE ..)
 
+target_compile_options(
+  libco
+  PRIVATE
+    $<$<CXX_COMPILER_ID:Clang,AppleClang>:-Wno-strict-prototypes>
+)
+
 set_source_files_properties(libco ${libco_SOURCES} PROPERTIES HEADER_FILE_ONLY TRUE)
 
 set_source_files_properties(libco libco.c PROPERTIES HEADER_FILE_ONLY FALSE)

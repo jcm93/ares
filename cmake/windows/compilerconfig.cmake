@@ -48,6 +48,10 @@ add_compile_definitions(_WIN32_WINNT=0x0601) #global
 set(
   _ares_msvc_cxx_options
   /W2
+  /wd4146 # unary minus applied to unsigned type
+  /wd4244 # loss of data converting float to integer
+  /wd4804 # unsafe use of bool in operation
+  /wd4805 # unsafe mix of types in operation
   /MP
   /Zc:__cplusplus
   /utf-8

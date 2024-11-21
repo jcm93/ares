@@ -43,7 +43,6 @@ set(
   -Wno-deprecated-literal-operator
   -Wno-switch
   -Wno-parentheses
-  -Wno-empty-body
   -Wbool-conversion
   -Wconstant-conversion
   # -Wshorten-64-to-32
