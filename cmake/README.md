@@ -37,7 +37,7 @@ The recursive dependency resolver and platform helper functions then take over t
 
 Unfortunately, the only way to handle these problems effectively and correctly (considering all platforms) is to recursively crawl the entire tree of dependencies for our targets and consider for each one what the appropriate course is with our final build product in mind.
 
-The complexity of this code means that it makes up a non-trivial portion of the build system. However, these parts are quite important, as they enable our target-level build code to be completely platform-agnostic and unconcerned with the details of packaging and bundle construction. If we need to bundle another library, it's a simple matter of defining it and linking it to the appropriate target, and the build system handles the rest.
+The complexity of this code means that it makes up a non-trivial portion of the build system. However, these parts are quite important, as they enable our target-level build code to be completely platform-agnostic and unconcerned with the details of packaging and bundle construction. If we need to bundle another library, it's a simple matter of defining it and linking it to the appropriate target, so that the build system may handle the rest.
 
 > [!NOTE]
 > This overview simplifies or omits certain CMake and platform implementation details to deliver a more concise overview of the build system. For the nitty-gritty of why all of this is actually necessary, see [Dependencies.md].
