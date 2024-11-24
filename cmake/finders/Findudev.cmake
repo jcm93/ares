@@ -29,8 +29,8 @@ Cache Variables
 ^^^^^^^^^^^^^^^
 
 The following cache variables may also be set:
-.
-``GTK_LIBRARY``
+
+``udev_LIBRARY``
   The path to the udev library.
 
 #]=======================================================================]

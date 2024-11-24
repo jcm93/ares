@@ -5,10 +5,10 @@
             "baseUrl": "https://github.com/jcm93/ares-deps/releases/download",
             "label": "Pre-Built ares-deps",
             "hashes": {
-                "linux-universal": "1e3d15f0c3ec75968a6f523b2bface2866a3feda9f270af372e21d15513a2086",
-                "macos-universal": "354a9ee43f26a2d0fbfb65a6ddc0650df4178d46e5dcaee47ae4a342cbaabb8a",
-                "windows-arm64": "a60f90e3d092b2125d7644720e4e73dc281bc85f3b51c7380fa4f40abdca79ae",
-                "windows-x64": "91bcf9493a91b060cd8b23e30b33eac3e864596244f325f6749201ecefa74765"
+                "linux-universal": "f194097b1cec6cc0b073edc800c685d3e601bc7167804379b787559b13ae3db3",
+                "macos-universal": "366b0049ead8f61db3398ec07aa33268912afde27ce9ac007ef57a6a8207eb80",
+                "windows-arm64": "e9e0746bc74bbfa48c152ffea23edc644086c7c979a70c5d49010c982cb36840",
+                "windows-x64": "c27eeb7624b34e7549305f2691a74ffea0a7985f22d37e5f13916ec0eaaea458"
             }
         }
     },
