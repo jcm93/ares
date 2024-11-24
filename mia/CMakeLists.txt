@@ -110,20 +110,39 @@ target_compile_definitions(mia PRIVATE MIA_LIBRARY)
 
 target_link_libraries(mia PUBLIC ares::nall ares::ares ares::hiro PRIVATE tzxfile)
 
-add_executable(mia-ui mia.cpp resource/resource.cpp)
+if(ARES_BUILD_OPTIONAL_TARGETS)
+  add_executable(mia-ui mia.cpp resource/resource.cpp)
 
-target_link_libraries(
-  mia-ui
-  PUBLIC ares::hiro ares::ares
-  PRIVATE
-    tzxfile
-    "$<$<PLATFORM_ID:Darwin>:$<LINK_LIBRARY:FRAMEWORK,Carbon.framework>>"
-    "$<$<PLATFORM_ID:Darwin>:$<LINK_LIBRARY:FRAMEWORK,IOKit.framework>>"
-    "$<$<PLATFORM_ID:Darwin>:$<LINK_LIBRARY:FRAMEWORK,Security.framework>>"
-)
+  target_link_libraries(
+    mia-ui
+    PUBLIC ares::hiro ares::ares
+    PRIVATE
+      tzxfile
+      "$<$<PLATFORM_ID:Darwin>:$<LINK_LIBRARY:FRAMEWORK,Carbon.framework>>"
+      "$<$<PLATFORM_ID:Darwin>:$<LINK_LIBRARY:FRAMEWORK,IOKit.framework>>"
+      "$<$<PLATFORM_ID:Darwin>:$<LINK_LIBRARY:FRAMEWORK,Security.framework>>"
+  )
 
-if(WIN32)
-  target_sources(mia-ui PRIVATE resource/mia.rc resource/mia.Manifest)
+  if(WIN32)
+    target_sources(mia-ui PRIVATE resource/mia.rc resource/mia.Manifest)
+  endif()
+  
+  set_target_properties(
+    mia-ui
+    PROPERTIES
+      OUTPUT_NAME mia
+      MACOSX_BUNDLE TRUE
+      MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/resource/mia.plist"
+      XCODE_EMBED_FRAMEWORKS_REMOVE_HEADERS_ON_COPY YES
+      XCODE_EMBED_FRAMEWORKS_CODE_SIGN_ON_COPY YES
+      XCODE_EMBED_PLUGINS_REMOVE_HEADERS_ON_COPY YES
+      XCODE_EMBED_PLUGINS_CODE_SIGN_ON_COPY YES
+  )
+  ares_configure_executable(mia-ui)
+  target_enable_subproject(mia-ui "mia (manifest generator) standalone frontend")
+  set_target_properties(mia-ui PROPERTIES FOLDER tools PREFIX "")
+else()
+  target_disable_subproject(mia-ui "mia (manifest generator) standalone frontend")
 endif()
 
 get_target_property(mia_SOURCES mia SOURCES)
@@ -133,19 +152,3 @@ set_source_files_properties(mia ${mia_SOURCES} PROPERTIES HEADER_FILE_ONLY TRUE)
 set_source_files_properties(mia mia.cpp resource/resource.cpp PROPERTIES HEADER_FILE_ONLY FALSE)
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${mia_SOURCES})
-
-set_target_properties(
-  mia-ui
-  PROPERTIES
-    OUTPUT_NAME mia
-    MACOSX_BUNDLE TRUE
-    MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/resource/mia.plist"
-    XCODE_EMBED_FRAMEWORKS_REMOVE_HEADERS_ON_COPY YES
-    XCODE_EMBED_FRAMEWORKS_CODE_SIGN_ON_COPY YES
-    XCODE_EMBED_PLUGINS_REMOVE_HEADERS_ON_COPY YES
-    XCODE_EMBED_PLUGINS_CODE_SIGN_ON_COPY YES
-)
-
-ares_configure_executable(mia-ui)
-target_enable_subproject(mia-ui "mia (manifest generator)")
-set_target_properties(mia-ui PROPERTIES FOLDER tools PREFIX "")
