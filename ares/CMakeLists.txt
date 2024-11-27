@@ -8,7 +8,7 @@ option(ARES_PRECOMPILE_HEADERS "Precompile ares/ares.hpp header for performance"
 add_sourcery_command(ares ares/resource)
 
 if(ARES_PRECOMPILE_HEADERS)
-  target_precompile_headers(ares PRIVATE "$<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/ares/ares.hpp>")
+  target_precompile_headers(ares PRIVATE "$<$<COMPILE_LANGUAGE:CXX>:ares/ares.hpp>")
 endif()
 
 target_link_libraries(ares PUBLIC libco sljit nall)

@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+set -euo pipefail
 
 # temp: add dummy tag since downstream
 git tag v142
@@ -16,9 +17,9 @@ pushd build
 cmake --build . --config RelWithDebInfo
 
 if [ "$CROSS_COMPILE" = true ]; then
-  cp ../ares-deps-windows-arm64/lib/*.pdb desktop-ui/rundir/
+  cp ../.deps/ares-deps-windows-arm64/lib/*.pdb desktop-ui/rundir/
 else
-  cp ../ares-deps-windows-x64/lib/*.pdb desktop-ui/rundir/
+  cp ../.deps/ares-deps-windows-x64/lib/*.pdb desktop-ui/rundir/
 fi
 
 mkdir PDBs
