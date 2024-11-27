@@ -74,6 +74,7 @@ find_package_handle_standard_args(
   REASON_FAILURE_MESSAGE "${MoltenVK_ERROR_REASON}"
 )
 unset(MoltenVK_ERROR_REASON)
+mark_as_advanced(MoltenVK_LIBRARY)
 
 if(MoltenVK_FOUND)
   if(NOT TARGET MoltenVK::MoltenVK)

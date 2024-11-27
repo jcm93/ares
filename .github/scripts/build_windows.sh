@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+set -euo pipefail
 
 # temp: add dummy tag since downstream
 git tag v142
@@ -22,5 +23,5 @@ else
 fi
 
 mkdir PDBs
-mv desktop-ui/rundir/*.pdb PDBs/
+mv "desktop-ui/rundir/*.pdb" PDBs/
 popd

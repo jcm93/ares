@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+set -euo pipefail
 
 # temp: add dummy tag since downstream
 git tag v140
