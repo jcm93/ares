@@ -12,7 +12,7 @@ function(_check_dependencies_macos)
   file(READ "${CMAKE_CURRENT_SOURCE_DIR}/deps.json" deps)
 
   set(dependencies_dir "${CMAKE_CURRENT_SOURCE_DIR}/.deps")
-  set(prebuilt_filename "ares-deps-macos-ARCH-REVISION.tar.xz")
+  set(prebuilt_filename "ares-deps-macos-ARCH.tar.xz")
   set(prebuilt_destination "ares-deps-macos-ARCH")
   set(dependencies_list prebuilt)
 
