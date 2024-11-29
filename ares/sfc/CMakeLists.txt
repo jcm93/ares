@@ -10,6 +10,11 @@ ares_components(
 target_sources(
   ares
   PRIVATE
+    sfc.cpp
+)
+
+ares_add_header_sources(
+  sfc
     system/system.cpp
     controller/controller.cpp
     cartridge/cartridge.cpp

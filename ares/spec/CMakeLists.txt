@@ -3,6 +3,11 @@ ares_components(z80 ay38910)
 target_sources(
   ares
   PRIVATE
+    spec.cpp
+)
+
+ares_add_header_sources(
+  spec
     keyboard/keyboard.cpp
     expansion/expansion.cpp
     system/system.cpp

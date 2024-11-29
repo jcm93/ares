@@ -3,6 +3,11 @@ ares_components(m68hc05)
 target_sources(
   ares
   PRIVATE
+    ps1.cpp
+)
+
+ares_add_header_sources(
+  ps1
     memory/memory.cpp
     system/system.cpp
     disc/disc.cpp

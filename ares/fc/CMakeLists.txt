@@ -11,14 +11,19 @@ target_link_libraries(ares PRIVATE ymfm)
 target_sources(
   ares
   PRIVATE
-    system/system.cpp
-    controller/controller.cpp
-    expansion/expansion.cpp
-    cartridge/cartridge.cpp
-    cpu/cpu.cpp
-    apu/apu.cpp
-    ppu/ppu.cpp
-    fds/fds.cpp
+    fc.cpp
+)
+
+ares_add_header_sources(
+  fc
+  system/system.cpp
+  controller/controller.cpp
+  expansion/expansion.cpp
+  cartridge/cartridge.cpp
+  cpu/cpu.cpp
+  apu/apu.cpp
+  ppu/ppu.cpp
+  fds/fds.cpp
 )
 
 ares_add_header_sources(fc fc.hpp CMakeLists.txt)

@@ -3,6 +3,11 @@ ares_components(mos6502)
 target_sources(
   ares
   PRIVATE
+    a26.cpp
+)
+
+ares_add_header_sources(
+  a26
     system/system.cpp
     controller/controller.cpp
     cartridge/cartridge.cpp

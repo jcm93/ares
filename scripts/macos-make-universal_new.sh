@@ -13,17 +13,23 @@ if [ "${MACOS_NOTARIZATION_TEAMID:-}" != "" ]; then
   otherArgs+=("-DARES_CODESIGN_TEAM=${MACOS_NOTARIZATION_TEAMID}")
 fi
 
-cmake --preset macos "${@:-}" "${otherArgs:-}"
+if ! command -v xcodebuild >/dev/null; then
+  cmake --preset macos "${@:-}" "${otherArgs:-}"
 
-pushd build_macos
+  pushd build_macos
 
-if ! command -v xcbeautify >/dev/null; then
-    xcodebuild build -quiet -configuration RelWithDebInfo \
-              DEBUG_INFORMATION_FORMAT="dwarf-with-dsym"
+  if ! command -v xcbeautify >/dev/null; then
+      xcodebuild build -quiet -configuration RelWithDebInfo \
+                DEBUG_INFORMATION_FORMAT="dwarf-with-dsym"
+  else
+      xcodebuild -configuration RelWithDebInfo \
+                DEBUG_INFORMATION_FORMAT="dwarf-with-dsym" \
+                2>&1 | xcbeautify --renderer terminal
+  fi
 else
-    xcodebuild -configuration RelWithDebInfo \
-              DEBUG_INFORMATION_FORMAT="dwarf-with-dsym" \
-              2>&1 | xcbeautify --renderer terminal
+  pushd build_macos
+  cmake .. -DARES_BUILD_OPTIONAL_TARGETS=NO -DCMAKE_OSX_DEPLOYMENT_TARGET="10.13" "${otherArgs:-}"
+  cmake --build . -j3
 fi
 
 open ./desktop-ui/RelWithDebInfo

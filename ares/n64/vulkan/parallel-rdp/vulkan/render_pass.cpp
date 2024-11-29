@@ -78,7 +78,7 @@ void RenderPass::setup_subpasses(const VkRenderPassCreateInfo2 &create_info)
 	}
 }
 
-RenderPass::RenderPass(Hash hash, Device *device_, const VkRenderPassCreateInfo2 &create_info)
+RenderPass::RenderPass(Util::Hash hash, Device *device_, const VkRenderPassCreateInfo2 &create_info)
 	: IntrusiveHashMapEnabled<RenderPass>(hash)
 	, device(device_)
 {
@@ -113,7 +113,7 @@ RenderPass::RenderPass(Hash hash, Device *device_, const VkRenderPassCreateInfo2
 #endif
 }
 
-RenderPass::RenderPass(Hash hash, Device *device_, const RenderPassInfo &info)
+RenderPass::RenderPass(Util::Hash hash, Device *device_, const RenderPassInfo &info)
 	: IntrusiveHashMapEnabled<RenderPass>(hash)
 	, device(device_)
 {

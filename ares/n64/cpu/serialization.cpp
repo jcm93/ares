@@ -17,6 +17,7 @@ auto CPU::serialize(serializer& s) -> void {
     s(line.tag);
     s(line.index);
     s(line.words);
+    print("poop");
   }
 
   for(auto& line : dcache.lines) {

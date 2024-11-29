@@ -3,6 +3,11 @@ ares_components(v30mz m93lcx6)
 target_sources(
   ares
   PRIVATE
+    ws.cpp
+)
+
+ares_add_header_sources(
+  ws
     system/system.cpp
     memory/memory.cpp
     eeprom/eeprom.cpp

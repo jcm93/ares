@@ -5,6 +5,11 @@ target_link_libraries(ares PRIVATE ymfm)
 target_sources(
   ares
   PRIVATE
+    ng.cpp
+)
+
+ares_add_header_sources(
+  ng
     system/system.cpp
     cpu/cpu.cpp
     apu/apu.cpp

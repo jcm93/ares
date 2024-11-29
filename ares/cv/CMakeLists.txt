@@ -3,6 +3,11 @@ ares_components(z80 tms9918 sn76489)
 target_sources(
   ares
   PRIVATE
+    cv.cpp
+)
+
+ares_add_header_sources(
+  cv
     cpu/cpu.cpp
     vdp/vdp.cpp
     psg/psg.cpp

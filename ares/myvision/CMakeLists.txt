@@ -3,6 +3,11 @@ ares_components(z80 tms9918 ay38910)
 target_sources(
   ares
   PRIVATE
+    myvision.cpp
+)
+
+ares_add_header_sources(
+  myvision
     cpu/cpu.cpp
     vdp/vdp.cpp
     psg/psg.cpp

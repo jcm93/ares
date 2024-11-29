@@ -3,6 +3,11 @@ ares_components(sm5k)
 target_sources(
   ares
   PRIVATE
+    n64.cpp
+)
+
+ares_add_header_sources(
+  n64
     memory/memory.cpp
     system/system.cpp
     cartridge/cartridge.cpp
@@ -264,6 +269,7 @@ target_sources(
     vulkan/parallel-rdp/util/environment.cpp
     vulkan/parallel-rdp/volk/volk.c
 )
+
 target_sources(
   ares
   PRIVATE

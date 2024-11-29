@@ -3,6 +3,11 @@ ares_components(tlcs900h z80 t6w28)
 target_sources(
   ares
   PRIVATE
+    ngp.cpp
+)
+
+ares_add_header_sources(
+  ngp
     system/system.cpp
     cartridge/cartridge.cpp
     cpu/cpu.cpp

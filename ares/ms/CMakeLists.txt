@@ -3,6 +3,11 @@ ares_components(z80 sn76489 ym2413)
 target_sources(
   ares
   PRIVATE
+    ms.cpp
+)
+
+ares_add_header_sources(
+  ms
     cpu/cpu.cpp
     vdp/vdp.cpp
     psg/psg.cpp

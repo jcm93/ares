@@ -9,6 +9,11 @@ ares_components(
 target_sources(
   ares
   PRIVATE
+    msx.cpp
+)
+
+ares_add_header_sources(
+  msx
     system/system.cpp
     keyboard/keyboard.cpp
     cartridge/cartridge.cpp
