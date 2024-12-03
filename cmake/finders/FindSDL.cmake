@@ -47,17 +47,7 @@ endif()
 
 # SDL_set_soname: Set SONAME on imported library target
 macro(SDL_set_soname)
-  if(CMAKE_HOST_SYSTEM_NAME MATCHES "Darwin")
-    execute_process(
-      COMMAND sh -c "otool -D '${SDL_LIBRARY}' | grep -v '${SDL_LIBRARY}'"
-      OUTPUT_VARIABLE _output
-      RESULT_VARIABLE _result
-    )
-
-    if(_result EQUAL 0 AND _output MATCHES "^@rpath/")
-      set_property(TARGET SDL::SDL PROPERTY IMPORTED_SONAME "${_output}")
-    endif()
-  elseif(CMAKE_HOST_SYSTEM_NAME MATCHES "Linux|FreeBSD")
+  if(CMAKE_HOST_SYSTEM_NAME MATCHES "Linux|FreeBSD")
     execute_process(
       COMMAND sh -c "objdump -p '${SDL_LIBRARY}' | grep SONAME"
       OUTPUT_VARIABLE _output
@@ -85,12 +75,6 @@ find_path(
 
 if(PC_SDL_VERSION VERSION_GREATER 0)
   set(SDL_VERSION ${PC_SDL_VERSION})
-elseif(EXISTS "${SDL_INCLUDE_DIR}/version.h")
-  file(STRINGS "${_VERSION_FILE}" _VERSION_STRING REGEX "^.*VERSION_(MAJOR|MINOR|PATCH)[ \t]+[0-9]+[ \t]*$")
-  string(REGEX REPLACE ".*VERSION_MAJOR[ \t]+([0-9]+).*" "\\1" _VERSION_MAJOR "${_VERSION_STRING}")
-  string(REGEX REPLACE ".*VERSION_MINOR[ \t]+([0-9]+).*" "\\1" _VERSION_MINOR "${_VERSION_STRING}")
-  string(REGEX REPLACE ".*VERSION_PATCH[ \t]+([0-9]+).*" "\\1" _VERSION_PATCH "${_VERSION_STRING}")
-  set(SDL_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_MICRO}")
 else()
   if(NOT SDL_FIND_QUIETLY)
     message(AUTHOR_WARNING "Failed to find SDL version.")
@@ -100,7 +84,7 @@ endif()
 
 find_library(
   SDL_LIBRARY
-  NAMES SDL2-2.0.0 SDL2-2.0 SDL2
+  NAMES SDL2 SDL2-2.0.0 SDL2-2.0
   HINTS ${PC_SDL_LIBRARY_DIRS}
   PATHS ${CMAKE_SOURCE_DIR}/.deps /usr/lib /usr/local/lib
   DOC "SDL location"

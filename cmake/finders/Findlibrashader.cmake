@@ -42,22 +42,12 @@ include(FindPackageHandleStandardArgs)
 
 find_package(PkgConfig QUIET)
 if(PKG_CONFIG_FOUND)
-  pkg_search_module(PC_librashader rashader)
+  pkg_search_module(PC_librashader librashader)
 endif()
 
 # librashader_set_soname: Set SONAME on imported library target
 macro(librashader_set_soname)
-  if(CMAKE_HOST_SYSTEM_NAME MATCHES "Darwin")
-    execute_process(
-      COMMAND sh -c "otool -D '${librashader_LIBRARY}' | grep -v '${librashader_LIBRARY}'"
-      OUTPUT_VARIABLE _output
-      RESULT_VARIABLE _result
-    )
-
-    if(_result EQUAL 0 AND _output MATCHES "^@rpath/")
-      set_property(TARGET librashader::librashader PROPERTY IMPORTED_SONAME "${_output}")
-    endif()
-  elseif(CMAKE_HOST_SYSTEM_NAME MATCHES "Linux|FreeBSD")
+  if(CMAKE_HOST_SYSTEM_NAME MATCHES "Linux|FreeBSD")
     execute_process(
       COMMAND sh -c "objdump -p '${librashader_LIBRARY}' | grep SONAME"
       OUTPUT_VARIABLE _output
@@ -84,12 +74,6 @@ find_path(
 
 if(PC_librashader_VERSION VERSION_GREATER 0)
   set(librashader_VERSION ${PC_librashader_VERSION})
-elseif(EXISTS "${librashader_INCLUDE_DIR}/version.h")
-  file(STRINGS "${_VERSION_FILE}" _VERSION_STRING REGEX "^.*VERSION_(MAJOR|MINOR|PATCH)[ \t]+[0-9]+[ \t]*$")
-  string(REGEX REPLACE ".*VERSION_MAJOR[ \t]+([0-9]+).*" "\\1" _VERSION_MAJOR "${_VERSION_STRING}")
-  string(REGEX REPLACE ".*VERSION_MINOR[ \t]+([0-9]+).*" "\\1" _VERSION_MINOR "${_VERSION_STRING}")
-  string(REGEX REPLACE ".*VERSION_PATCH[ \t]+([0-9]+).*" "\\1" _VERSION_PATCH "${_VERSION_STRING}")
-  set(librashader_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_MICRO}")
 else()
   if(NOT librashader_FIND_QUIETLY)
     message(AUTHOR_WARNING "Failed to find librashader version.")
@@ -122,7 +106,7 @@ unset(librashader_ERROR_REASON)
 
 if(librashader_FOUND AND ARES_ENABLE_LIBRASHADER)
   if(NOT TARGET librashader::librashader)
-    add_library(librashader::librashader MODULE IMPORTED)
+    add_library(librashader::librashader UNKNOWN IMPORTED)
     set_property(TARGET librashader::librashader PROPERTY IMPORTED_LOCATION "${librashader_LIBRARY}")
 
     librashader_set_soname()

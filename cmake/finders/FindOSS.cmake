@@ -20,7 +20,7 @@ This will define the following variables:
   True if the system has OSS.
 ``OSS_VERSION``
   The version of OSS which was found.
-``GTK_INCLUDE_DIR``
+``OSS_INCLUDE_DIR``
   Include directories needed to use OSS.
 
 #]=======================================================================]
@@ -30,7 +30,6 @@ include(FindPackageHandleStandardArgs)
 find_path(
   OSS_INCLUDE_DIR
   NAMES sys/soundcard.h
-  HINTS ${PC_OSS_INCLUDE_DIRS}
   PATHS /usr/include /usr/local/include
   DOC "OSS include directory"
 )

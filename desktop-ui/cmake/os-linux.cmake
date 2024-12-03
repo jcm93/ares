@@ -7,9 +7,10 @@ if(ARES_ENABLE_LIBRASHADER)
     add_custom_command(
       TARGET desktop-ui
       POST_BUILD
+      COMMAND "${CMAKE_COMMAND}" -E make_directory "${ARES_BUILD_OUTPUT_DIR}/${ARES_INSTALL_DATA_DESTINATION}/Shaders"
       COMMAND
         cp -R "${slang_shaders_LOCATION}/."
-        "${ARES_BUILD_OUTPUT_DIR}/$<CONFIG>/Shaders"
+        "${ARES_BUILD_OUTPUT_DIR}/${ARES_INSTALL_DATA_DESTINATION}/Shaders"
       COMMENT "Copying slang shaders to staging directory"
     )
     if(ARES_BUNDLE_SHADERS)
@@ -27,10 +28,10 @@ endif()
 add_custom_command(
   TARGET desktop-ui
   POST_BUILD
-  COMMAND "${CMAKE_COMMAND}" -E make_directory "${ARES_BUILD_OUTPUT_DIR}/$<CONFIG>/Database"
+  COMMAND "${CMAKE_COMMAND}" -E make_directory "${ARES_BUILD_OUTPUT_DIR}/${ARES_INSTALL_DATA_DESTINATION}/Database"
   COMMAND
     cp -R "${CMAKE_SOURCE_DIR}/mia/Database/."
-    "${ARES_BUILD_OUTPUT_DIR}/$<CONFIG>/Database/"
+    "${ARES_BUILD_OUTPUT_DIR}/${ARES_INSTALL_DATA_DESTINATION}/Database/"
   COMMENT "Copying mia database to staging directory"
 )
 
@@ -47,10 +48,10 @@ add_custom_command(
   POST_BUILD
   COMMAND
     cp "${CMAKE_CURRENT_SOURCE_DIR}/resource/ares.desktop"
-    "${ARES_BUILD_OUTPUT_DIR}/$<CONFIG>/ares.desktop"
+    "${ARES_BUILD_OUTPUT_DIR}/${ARES_INSTALL_DATA_DESTINATION}/ares.desktop"
   COMMAND
     cp "${CMAKE_CURRENT_SOURCE_DIR}/resource/ares.png"
-    "${ARES_BUILD_OUTPUT_DIR}/$<CONFIG>/ares.png"
+    "${ARES_BUILD_OUTPUT_DIR}/${ARES_INSTALL_DATA_DESTINATION}/ares.png"
   COMMENT "Copying icon to staging directory"
 )
 

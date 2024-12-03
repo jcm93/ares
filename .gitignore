@@ -29,6 +29,8 @@
 
 thirdparty/SDL/SDL
 thirdparty/SDL/libSDL2-2.0.0.dylib
+desktop-ui/out
+desktop-ui/obj
 ruby/video/metal/shaders.metallib
 ruby/video/metal/shaders.ir
 # ares/ares/resource/resource.cpp

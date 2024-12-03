@@ -77,7 +77,6 @@ target_sources(
     shared-pointer.hpp
     stdint.hpp
     string.hpp
-    stringize.hpp
     suffix-array.hpp
     terminal.cpp
     terminal.hpp

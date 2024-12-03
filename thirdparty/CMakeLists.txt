@@ -10,6 +10,9 @@ add_subdirectory(libchdr/deps/lzma-24.05 EXCLUDE_FROM_ALL)
   list(APPEND CHDR_LIBS lzma)
   list(APPEND CHDR_INCLUDES lzma)
 
+if(OS_MACOS)
+  option(WITH_SYSTEM_ZLIB "Use system zlib" ON)
+endif()
 # zlib
 if (WITH_SYSTEM_ZLIB)
   find_package(ZLIB REQUIRED)
@@ -44,9 +47,8 @@ add_library(chdr-static STATIC ${CHDR_SOURCES})
 target_include_directories(chdr-static PUBLIC ${CHDR_INCLUDES} PUBLIC libchdr/include)
 target_link_libraries(chdr-static PRIVATE ${CHDR_LIBS} ${PLATFORM_LIBS})
 target_compile_options(chdr-static PRIVATE
-  $<$<CXX_COMPILER_ID:Clang>:-Wno-unreachable-code -Wno-unused-function>
+  $<$<CXX_COMPILER_ID:Clang,AppleClang>:-Wno-unreachable-code -Wno-unused-function>
 )
-
 
 add_library(tzxfile STATIC
     TZXFile/TZXAudioGenerator.cpp
@@ -90,12 +92,14 @@ target_include_directories(ymfm PUBLIC
     ../thirdparty/ymfm/src
 )
 
-target_compile_options(ymfm PRIVATE $<$<CXX_COMPILER_ID:Clang>:-Wno-unreachable-code>)
+target_compile_options(ymfm PRIVATE $<$<CXX_COMPILER_ID:Clang,AppleClang>:-Wno-unreachable-code>)
 
 set_target_properties(ymfm PROPERTIES FOLDER thirdparty PREFIX "")
 set_target_properties(tzxfile PROPERTIES FOLDER thirdparty PREFIX "")
 set_target_properties(chdr-static PROPERTIES FOLDER thirdparty PREFIX "")
 set_target_properties(sljit PROPERTIES FOLDER thirdparty PREFIX "")
-set_target_properties(zlib PROPERTIES FOLDER thirdparty PREFIX "")
+if(NOT WITH_SYSTEM_ZLIB)
+  set_target_properties(zlib PROPERTIES FOLDER thirdparty PREFIX "")
+endif()
 set_target_properties(lzma PROPERTIES FOLDER thirdparty PREFIX "")
 set_target_properties(libzstd_static PROPERTIES FOLDER thirdparty PREFIX "")

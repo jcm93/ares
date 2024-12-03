@@ -1,10 +1,17 @@
 find_package(SDL)
 find_package(librashader)
 
+if(XCODE AND WITH_SYSTEM_ZLIB)
+  set_target_properties(ruby PROPERTIES OUTPUT_NAME "ruby-but-not-the-scripting-language")
+endif()
+
 target_sources(
   ruby
   PRIVATE video/cgl.cpp video/metal/metal.cpp video/metal/metal.hpp video/metal/Shaders.metal video/metal/ShaderTypes.h
 )
+
+# todo address
+target_compile_options(ruby PRIVATE $<$<CXX_COMPILER_ID:Clang,AppleClang>:-Wno-unguarded-availability>)
 
 target_sources(ruby PRIVATE audio/openal.cpp audio/sdl.cpp)
 
@@ -29,11 +36,27 @@ target_link_libraries(
     "$<LINK_LIBRARY:FRAMEWORK,QuartzCore.framework>"
     "$<LINK_LIBRARY:FRAMEWORK,OpenAL.framework>"
     "$<LINK_LIBRARY:FRAMEWORK,OpenGL.framework>"
-    "$<LINK_LIBRARY:FRAMEWORK,Metal.framework>"
-    "$<LINK_LIBRARY:FRAMEWORK,MetalKit.framework>"
-    $<$<BOOL:${SDL_FOUND}>:SDL::SDL>
-    $<$<BOOL:TRUE>:librashader::librashader>
+    "$<LINK_LIBRARY:WEAK_FRAMEWORK,Metal.framework>"
+    "$<LINK_LIBRARY:WEAK_FRAMEWORK,MetalKit.framework>"
 )
+
+if(SDL_FOUND)
+  target_link_libraries(
+    ruby
+    PRIVATE
+      "$<LINK_LIBRARY:WEAK_LIBRARY,SDL::SDL>"
+      # "$<$<BOOL:${SDL_FOUND}>:SDL::SDL>"
+  )
+endif()
+
+if(librashader_FOUND)
+  target_link_libraries(
+    ruby
+    PRIVATE
+      "$<LINK_LIBRARY:WEAK_LIBRARY,librashader::librashader>"
+      # "$<$<BOOL:TRUE>:librashader::librashader>"
+  )
+endif()
 
 target_enable_feature(ruby "OpenGL video driver" VIDEO_CGL)
 target_enable_feature(ruby "Metal video driver" VIDEO_METAL)

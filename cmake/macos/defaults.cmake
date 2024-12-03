@@ -2,6 +2,8 @@
 
 include_guard(GLOBAL)
 
+set(CMAKE_FIND_FRAMEWORK LAST)
+
 # Set empty codesigning team if not specified as cache variable
 if(NOT ARES_CODESIGN_TEAM)
   set(ARES_CODESIGN_TEAM "" CACHE STRING "ares code signing team for macOS" FORCE)
@@ -24,6 +26,3 @@ set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
 set(CMAKE_INSTALL_RPATH "@executable_path/../Frameworks")
 # Use build tree as the install prefix
 set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR})
-
-# configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake/macos/resources/package.applescript"
-#                "${CMAKE_CURRENT_BINARY_DIR}/package.applescript" @ONLY)

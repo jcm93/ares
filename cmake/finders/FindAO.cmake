@@ -25,14 +25,6 @@ This will define the following variables:
 ``AO_LIBRARIES``
   Libraries needed to link to AO.
 
-Cache Variables
-^^^^^^^^^^^^^^^
-
-The following cache variables may also be set:
-.
-``GTK_LIBRARY``
-  The path to the SDL library.
-
 #]=======================================================================]
 
 include(FindPackageHandleStandardArgs)

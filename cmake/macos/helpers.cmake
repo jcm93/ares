@@ -58,12 +58,11 @@ endfunction()
 function(_bundle_dependencies target)
   message(DEBUG "Discover dependencies of target ${target}...")
   set(found_dependencies)
-  find_dependencies(TARGET ${target} FOUND_VAR found_dependencies)
+  find_dependencies(TARGET ${target} DEPS_LIST found_dependencies)
   list(REMOVE_DUPLICATES found_dependencies)
 
   set(library_paths)
   set(bundled_targets)
-  set(plugins_list)
   file(GLOB sdk_library_paths /Applications/Xcode*.app)
   set(system_library_path "/usr/lib/")
 
@@ -102,6 +101,11 @@ function(_bundle_dependencies target)
       else()
         continue()
       endif()
+      
+      if(XCODE AND ${target} STREQUAL mia-ui AND ${library} STREQUAL "MoltenVK::MoltenVK")
+        message(DEBUG "Working around https://gitlab.kitware.com/cmake/cmake/-/issues/23675")
+        continue()
+      endif()
 
       list(APPEND bundled_targets ${library})
 
@@ -114,8 +118,8 @@ function(_bundle_dependencies target)
   list(REMOVE_DUPLICATES library_paths)
 
   if(UNUSED)
-    # One of these would be nice, but we cannot install IMPORTed targets (librashader, SDL, MoltenVK).
-    # We could use install(FILES ...), but that wouldn't fixup rpaths, which obviates the need for
+    # One of these would be nice, but we cannot install IMPORTed targets (librashader, SDL, MoltenVK). We
+    # could use install(FILES ...), but that wouldn't fixup rpaths, which defeats the purpose of using
     # install() in the first place.
     install(
       TARGETS ${target} ${bundled_targets}

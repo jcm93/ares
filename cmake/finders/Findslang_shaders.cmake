@@ -46,6 +46,7 @@ find_package_handle_standard_args(
   REQUIRED_VARS slang_shaders_LOCATION
   REASON_FAILURE_MESSAGE "${SLANG_ERROR_REASON}"
 )
+mark_as_advanced(slang_shaders_LOCATION)
 
 if(NOT TARGET libretro::slang_shaders)
   if(slang_shaders_LOCATION)

@@ -17,7 +17,6 @@ function(_check_dependencies)
     string(JSON hash GET ${data} hashes ${platform})
     string(JSON url GET ${data} baseUrl)
     string(JSON label GET ${data} label)
-    string(JSON revision ERROR_VARIABLE error GET ${data} revision ${platform})
 
     message(STATUS "Setting up ${label} (${arch})")
 
@@ -27,14 +26,6 @@ function(_check_dependencies)
     string(REPLACE "VERSION" "${version}" destination "${destination}")
     string(REPLACE "ARCH" "${arch}" file "${file}")
     string(REPLACE "ARCH" "${arch}" destination "${destination}")
-    if(revision)
-      string(REPLACE "_REVISION" "_v${revision}" file "${file}")
-      string(REPLACE "-REVISION" "-v${revision}" file "${file}")
-    else()
-      string(REPLACE "_REVISION" "" file "${file}")
-      string(REPLACE "-REVISION" "" file "${file}")
-    endif()
-
     if(EXISTS "${dependencies_dir}/.dependency_${dependency}_${arch}.sha256")
       file(
         READ

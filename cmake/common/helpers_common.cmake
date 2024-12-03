@@ -144,126 +144,101 @@ function(target_disable_feature target feature_description)
   endif()
 endfunction()
 
-# _handle_generator_expression_dependency: Helper function to yield dependency from a generator expression
-function(_handle_generator_expression_dependency library)
-  set(oneValueArgs FOUND_VAR)
+
+# Find all direct and transitive dependencies of a target
+function(find_dependencies)
+  set(oneValueArgs TARGET DEPS_LIST)
   set(multiValueArgs)
-  cmake_parse_arguments(var "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+  cmake_parse_arguments(arg_fd "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+  
+  get_target_property(linked_libraries ${arg_fd_TARGET} LINK_LIBRARIES)
+  get_target_property(interface_link_libraries ${arg_fd_TARGET} INTERFACE_LINK_LIBRARIES)
+  
+  list(APPEND linked_libraries ${interface_link_libraries})
+  list(REMOVE_DUPLICATES linked_libraries)
+  
+  foreach(library IN LISTS linked_libraries)
+    set(found_target_name "")
+    _extract_target_from_link_expression(
+      LIBRARY
+        ${library}
+      TARGET_VAR
+        found_target_name
+    )
+    if(found_target_name)
+      if(NOT ${found_target_name} IN_LIST ${arg_fd_DEPS_LIST})
+        list(APPEND ${arg_fd_DEPS_LIST} ${found_target_name})
+        message(DEBUG "adding ${found_target_name}")
+        find_dependencies(
+          TARGET
+            ${found_target_name}
+          DEPS_LIST
+           ${arg_fd_DEPS_LIST}
+        )
+        set(${arg_fd_DEPS_LIST} ${${arg_fd_DEPS_LIST}} PARENT_SCOPE)
+      endif()
+    endif()
+  endforeach()
+  set(${arg_fd_DEPS_LIST} ${${arg_fd_DEPS_LIST}} PARENT_SCOPE)
+endfunction()
 
-  set(${var_FOUND_VAR} "${var_FOUND_VAR}-NOTFOUND")
-
-  message(DEBUG "Checking ${library}...")
-
-  if(library MATCHES "\\$<\\$<PLATFORM_ID:[^>]+>:.+>" OR library MATCHES "\\$<\\$<NOT:\\$<PLATFORM_ID:[^>]+>>:.+>")
+# Extract a CMake target name, if there is one that is applicable, from a target_link_libraries argument
+function(_extract_target_from_link_expression)
+  set(oneValueArgs LIBRARY TARGET_VAR)
+  set(multiValueArgs)
+  cmake_parse_arguments(arg_dt "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+  
+  message(DEBUG "arg target is ${arg_dt_LIBRARY}, evaluation is ${${arg_dt_LIBRARY}}")
+  
+  if(NOT library MATCHES ".+::.+")
+    return()
+  endif()
+  
+  if(TARGET ${library})
+    set(${arg_dt_TARGET_VAR} ${library})
+  elseif(arg_dt_LIBRARY MATCHES "\\$<LINK_LIBRARY:[^>]+>")
+    # Generator expression specifying link method found. Consider parameter following the link method to be a CMake
+    # target.
+    string(REGEX REPLACE "\\$<LINK_LIBRARY:[^,]+,([^>]+)>" "\\1" gen_linkspec "${arg_dt_LIBRARY}")
+    
+    message(DEBUG "gen_linkspec is ${gen_linkspec}")
+    
+    if(TARGET ${gen_linkspec})
+      message(DEBUG "setting arg_dt_TARGET_VAR to ${gen_linkspec}")
+      set(${arg_dt_TARGET_VAR} ${gen_linkspec})
+    endif()
+  elseif(arg_dt_LIBRARY MATCHES "\\$<\\$<BOOL:[^>]+>:.+>")
+    # Boolean generator expression found. Consider the parameter following the boolean a CMake target, and if true,
+    # propagate it upward.
+    string(REGEX REPLACE "\\$<\\$<BOOL:([^>]+)>:([^>]+)>" "\\1;\\2" gen_expression "${arg_dt_LIBRARY}")
+    list(GET gen_expression 0 gen_boolean)
+    list(GET gen_expression 1 gen_library)
+    if(${gen_boolean})
+      set(${arg_dt_TARGET_VAR} "${gen_library}")
+    endif()
+  elseif(arg_dt_LIBRARY MATCHES "\\$<\\$<PLATFORM_ID:[^>]+>:.+>" OR arg_dt_LIBRARY MATCHES "\\$<\\$<NOT:\\$<PLATFORM_ID:[^>]+>>:.+>")
     # Platform-dependent generator expression found. Platforms are a comma-separated list of CMake host OS identifiers.
     # Convert to CMake list and check if current host OS is contained in list.
-    string(REGEX REPLACE "\\$<.*\\$<PLATFORM_ID:([^>]+)>>?:([^>]+)>" "\\1;\\2" gen_expression "${library}")
+    string(REGEX REPLACE "\\$<.*\\$<PLATFORM_ID:([^>]+)>>?:([^>]+)>" "\\1;\\2" gen_expression "${arg_dt_LIBRARY}")
     list(GET gen_expression 0 gen_platform)
     list(GET gen_expression 1 gen_library)
     string(REPLACE "," ";" gen_platform "${gen_platform}")
 
-    set(${var_FOUND_VAR} "${var_FOUND_VAR}-SKIP")
-
-    if(library MATCHES "\\$<\\$<NOT:.+>.+>")
+    if(arg_dt_LIBRARY MATCHES "\\$<\\$<NOT:.+>.+>")
       if(NOT CMAKE_SYSTEM_NAME IN_LIST gen_platform)
-        set(${var_FOUND_VAR} "${gen_library}")
+        set(${arg_dt_TARGET_VAR} "${gen_library}")
       endif()
     else()
       if(CMAKE_SYSTEM_NAME IN_LIST gen_platform)
-        set(${var_FOUND_VAR} "${gen_library}")
+        set(${arg_dt_TARGET_VAR} "${gen_library}")
       endif()
-    endif()
-  elseif(library MATCHES "\\$<\\$<BOOL:[^>]+>:.+>")
-    # Boolean generator expression found. Consider parameter a CMake variable that resolves into a CMake-like boolean
-    # value for a simple conditional check.
-    string(REGEX REPLACE "\\$<\\$<BOOL:([^>]+)>:([^>]+)>" "\\1;\\2" gen_expression "${library}")
-    list(GET gen_expression 0 gen_boolean)
-    list(GET gen_expression 1 gen_library)
-
-    set(${var_FOUND_VAR} "${var_FOUND_VAR}-SKIP")
-
-    if(${gen_boolean})
-      set(${var_FOUND_VAR} "${gen_library}")
-    endif()
-  elseif(library MATCHES "\\$<TARGET_NAME_IF_EXISTS:[^>]+>")
-    # Target-dependent generator expression found. Consider parameter to be a CMake target identifier and check for
-    # target existence.
-    string(REGEX REPLACE "\\$<TARGET_NAME_IF_EXISTS:([^>]+)>" "\\1" gen_target "${library}")
-
-    set(${var_FOUND_VAR} "${var_FOUND_VAR}-SKIP")
-
-    if(TARGET ${gen_target})
-      set(${var_FOUND_VAR} "${gen_target}")
     endif()
   else()
     # Unknown or unimplemented generator expression found. Abort script run to either add to ignore list or implement
     # detection.
-    message(AUTHOR_WARNING "${library} is an unsupported generator expression for linked libraries.")
+    message(FATAL_ERROR "${arg_dt_LIBRARY} is an unsupported generator expression for linked libraries.")
+    set(${arg_dt_TARGET_VAR} "" PARENT_SCOPE)
   endif()
-
-  if(CMAKE_VERSION VERSION_LESS 3.25)
-    set(${var_FOUND_VAR} ${var_FOUND_VAR} PARENT_SCOPE)
-  else()
-    return(PROPAGATE ${var_FOUND_VAR})
-  endif()
+  return(PROPAGATE ${arg_dt_TARGET_VAR})
 endfunction()
-
-# find_dependencies: Check linked interface and direct dependencies of target
-function(find_dependencies)
-  set(oneValueArgs TARGET FOUND_VAR)
-  set(multiValueArgs)
-  cmake_parse_arguments(var "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
-
-  if(NOT DEFINED is_root)
-    # Root of recursive dependency resolution
-    set(is_root TRUE)
-    set(nested_depth 0)
-  else()
-    # Branch of recursive dependency resolution
-    set(is_root FALSE)
-    math(EXPR nested_depth "${nested_depth}+1")
-  endif()
-
-  # * LINK_LIBRARIES are direct dependencies
-  # * INTERFACE_LINK_LIBRARIES are transitive dependencies
-  get_target_property(linked_libraries ${var_TARGET} LINK_LIBRARIES)
-  get_target_property(interface_libraries ${var_TARGET} INTERFACE_LINK_LIBRARIES)
-  message(DEBUG "[${nested_depth}] Linked libraries in target ${var_TARGET}: ${linked_libraries}")
-  message(DEBUG "[${nested_depth}] Linked interface libraries in target ${var_TARGET}: ${interface_libraries}")
-
-  # Consider CMake targets only
-  list(FILTER linked_libraries INCLUDE REGEX ".+::.+")
-  list(FILTER interface_libraries INCLUDE REGEX ".+::.+")
-
-  foreach(library IN LISTS linked_libraries interface_libraries)
-    if(NOT library)
-      continue()
-    elseif(library MATCHES "\\$<.*:[^>]+>")
-      # Generator expression found
-      _handle_generator_expression_dependency(${library} FOUND_VAR found_library)
-      if(found_library STREQUAL found_library-SKIP)
-        continue()
-      elseif(found_library)
-        set(library ${found_library})
-      endif()
-    endif()
-
-    message(DEBUG "[${nested_depth}] Found ${library}...")
-
-    if(NOT library IN_LIST ${var_FOUND_VAR})
-      list(APPEND found_libraries ${library})
-      # Enter recursive branch
-      find_dependencies(TARGET ${library} FOUND_VAR ${var_FOUND_VAR})
-    endif()
-  endforeach()
-
-  if(NOT is_root)
-    set(found_libraries ${found_libraries} PARENT_SCOPE)
-    # Exit recursive branch
-    return()
-  endif()
-
-  list(REMOVE_DUPLICATES found_libraries)
-  list(APPEND ${var_FOUND_VAR} ${found_libraries})
-  set(${var_FOUND_VAR} ${${var_FOUND_VAR}} PARENT_SCOPE)
-endfunction()
+# endif()

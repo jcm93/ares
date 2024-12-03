@@ -11,5 +11,7 @@ set(CMAKE_FIND_PACKAGE_TARGETS_GLOBAL TRUE)
 
 # todo, fix: under MSYS2, CMake looks for .dll.a files rather than .lib files; tell it to also look for .lib files
 set(CMAKE_FIND_LIBRARY_SUFFIXES .lib ${CMAKE_FIND_LIBRARY_SUFFIXES})
+# similarly; tell it to look for un-prefixed libraries on MSYS2
+set(CMAKE_FIND_LIBRARY_PREFIXES ";lib" ${CMAKE_FIND_LIBRARY_SUFFIXES})
 
 include(dependencies)

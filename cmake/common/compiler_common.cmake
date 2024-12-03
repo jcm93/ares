@@ -5,6 +5,24 @@ include_guard(GLOBAL)
 option(ARES_COMPILE_DEPRECATION_AS_WARNING "Downgrade deprecation warnings to actual warnings" FALSE)
 mark_as_advanced(ARES_COMPILE_DEPRECATION_AS_WARNING)
 
+include(CheckIPOSupported)
+option(ENABLE_IPO "Enable interprocedural optimization (LTO)" YES)
+message(STATUS "Checking if interprocedural optimization is supported")
+if(ENABLE_IPO)
+  check_ipo_supported(RESULT ipo_supported OUTPUT output)
+  if(ipo_supported)
+    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE)
+    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELWITHDEBINFO TRUE)
+    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_MINSIZEREL TRUE)
+    message(STATUS "Checking if interprocedural optimization is supported - done")
+  else()
+    message(STATUS "Checking if interprocedural optimization is supported - failure")
+    message(DEBUG "IPO support failure reason: ${output}")
+  endif()
+else()
+  message(STATUS "Checking if interprocedural optimization is supported - skipped")
+endif()
+
 # Set C and C++ language standards to C17 and C++17
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_C_STANDARD_REQUIRED TRUE)
@@ -21,8 +39,10 @@ set(
   _ares_clang_common_options
   -Wblock-capture-autoreleasing
   # -Wswitch
-  # -Wdeprecated
-  -Wempty-body
+  -Wdeprecated
+  -Wno-deprecated-literal-operator
+  -Wno-switch
+  -Wno-parentheses
   -Wbool-conversion
   -Wconstant-conversion
   # -Wshorten-64-to-32
@@ -43,27 +63,19 @@ set(
   -Wuninitialized
   -Wunreachable-code
   # -Wunused
+  -Wno-unused
   -Wvla
   -Wformat-security
   -Wno-error=strict-prototypes
-  -Wno-error=shorten-64-to-32
-  -Wno-error=sign-compare
-  -Wno-error=comma
-  -Wno-error=parentheses
-  -Wno-error=unused-parameter
-  -Wno-error=unused-variable
-  -Wno-error=unused-but-set-variable
-  -Wno-error=deprecated-declarations
-  -Wno-error=deprecated-literal-operator
-  -Wno-error=newline-eof
-  -Wno-error=protocol
-  -Wno-error=comma
-  -Wno-error=deprecated-copy-with-user-provided-copy
-  -Wno-error=deprecated-copy
-  -Wno-error=anon-enum-enum-conversion
-  -Wno-error=deprecated-copy-with-user-provided-dtor
-  -Wno-error=unused-local-typedef
-  -Wno-error=unused-private-field
+  -Wno-shorten-64-to-32
+  -Wno-sign-compare
+  -Wno-comma
+  -Wno-protocol
+  -Wno-comma
+  -Wno-deprecated-copy-with-user-provided-copy
+  -Wno-deprecated-copy
+  -Wno-anon-enum-enum-conversion
+  -Wno-deprecated-copy-with-user-provided-dtor
 )
 
 set(_ares_clang_c_options ${_ares_clang_common_options})

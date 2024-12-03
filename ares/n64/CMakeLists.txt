@@ -22,6 +22,9 @@ target_sources(
     rdp/rdp.cpp
 )
 
+target_enable_feature(ares "N64 Vulkan rendering with paraLLEl-RDP" VULKAN)
+target_compile_definitions(ares PUBLIC VULKAN)
+
 if(OS_WINDOWS)
   include(cmake/os-windows.cmake)
 elseif(OS_MACOS)
@@ -313,7 +316,7 @@ target_include_directories(
 )
 
 target_compile_options(ares PRIVATE
-  $<$<CXX_COMPILER_ID:Clang>:-Wno-newline-eof>
+  $<$<CXX_COMPILER_ID:Clang,AppleClang>:-Wno-newline-eof>
 )
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)

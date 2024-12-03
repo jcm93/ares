@@ -49,5 +49,6 @@ if(NOT XCODE)
   add_compile_options(
     "$<$<COMPILE_LANGUAGE:C>:${_ares_clang_c_options}>"
     "$<$<COMPILE_LANGUAGE:CXX>:${_ares_clang_cxx_options}>"
+    -mmacos-version-min=10.9
   )
 endif()

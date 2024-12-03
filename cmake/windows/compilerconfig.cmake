@@ -32,7 +32,7 @@ if(CMAKE_GENERATOR_PLATFORM)
   set(arch ${CMAKE_GENERATOR_PLATFORM})
   set(platform windows-${arch})
 else()
-  if(CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL ARM64)
+  if(CMAKE_SYSTEM_PROCESSOR STREQUAL ARM64)
     set(arch arm64)
     set(platform windows-${arch})
   else()
@@ -46,6 +46,10 @@ add_compile_definitions(_WIN32_WINNT=0x0601) #global
 set(
   _ares_msvc_cxx_options
   /W2
+  /wd4146 # unary minus applied to unsigned type
+  /wd4244 # loss of data converting float to integer
+  /wd4804 # unsafe use of bool in operation
+  /wd4805 # unsafe mix of types in operation
   /MP
   /Zc:__cplusplus
   /utf-8
@@ -56,37 +60,31 @@ set(
   $<$<NOT:$<CONFIG:Debug>>:/Ot>
 )
 
-if(MSVC)
-  if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-    add_compile_options(
-      "$<$<COMPILE_LANGUAGE:C,CXX>:${_ares_msvc_cxx_options}>"
-    )
-    add_link_options(
-      $<$<NOT:$<CONFIG:Debug>>:/LTCG>
-      $<$<NOT:$<CONFIG:Debug>>:/INCREMENTAL:NO>
-      /Debug
-    )
-    if(CMAKE_COMPILE_WARNING_AS_ERROR)
-      add_link_options(/WX)
-    endif()
-  elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    add_compile_options(
-      "$<$<COMPILE_LANGUAGE:C>:${_ares_clang_c_options}>"
-      "$<$<COMPILE_LANGUAGE:CXX>:${_ares_clang_cxx_options}>"
-      -Wno-reorder-ctor
-      -Wno-unused
-    )
-  endif()
-  set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT ProgramDatabase)
-else()
-  # msys2
-  if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    add_compile_options(
-      "$<$<COMPILE_LANGUAGE:C>:${_ares_clang_c_options}>"
-      "$<$<COMPILE_LANGUAGE:CXX>:${_ares_clang_cxx_options}>"
-      -Wno-reorder-ctor
-      -Wno-unused
-    )
+set(
+  _ares_clang_cl_c_cxx_options
+  -Wno-unused-function
+  -Wno-reorder-ctor
+  -Wno-missing-braces
+  -Wno-char-subscripts
+  -Wno-misleading-indentation
+  -Wno-bitwise-instead-of-logical
+  -Wno-self-assign-overloaded
+  -Wno-overloaded-virtual
+)
+
+# add compiler flags
+if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+  # we are on either msys2/mingw clang, or clang-cl
+  # add common options
+  add_compile_options(
+    "$<$<COMPILE_LANGUAGE:C>:${_ares_clang_c_options}>"
+    "$<$<COMPILE_LANGUAGE:CXX>:${_ares_clang_cxx_options}>"
+    "$<$<COMPILE_LANGUAGE:C,CXX>:${_ares_clang_cl_c_cxx_options}>"
+  )
+  if(NOT MSVC)
+    # statically link libstdc++ if compiling under msys2/mingw
+    add_link_options(-static-libstdc++)
+    # msys2/mingw-specific invocations to make clang emit debug symbols
     set(
       _ares_mingw_clang_debug_compile_options
       -g
@@ -100,15 +98,32 @@ else()
     )
     add_compile_options("$<$<CONFIG:Debug,RelWithDebInfo>:${_ares_mingw_clang_debug_compile_options}>")
     add_link_options("$<$<CONFIG:Debug,RelWithDebInfo>:${_ares_mingw_clang_debug_link_options}>")
+  else()
+    # generate PDBs rather than embed debug symbols
+    set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT ProgramDatabase)
+    add_compile_options("$<$<COMPILE_LANGUAGE:CXX>:${_ares_msvc_cxx_options}>")
+    add_link_options(
+      $<$<NOT:$<CONFIG:Debug>>:/LTCG>
+      $<$<NOT:$<CONFIG:Debug>>:/INCREMENTAL:NO>
+      /Debug
+    )
   endif()
-endif()
-
-if(ARES_BUILD_LOCAL)
-  if(NOT MSVC)
+  
+  # optimizations
+  if(ARES_BUILD_LOCAL)
     add_compile_options(-march=native)
+  else()
+    if(${arch} STREQUAL x64)
+      add_compile_options("$<$<COMPILE_LANGUAGE:C,CXX>:-march=x86-64-v2>")
+    endif()
   endif()
-else()
-  # todo
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+  add_compile_options(
+    "$<$<COMPILE_LANGUAGE:C,CXX>:${_ares_msvc_cxx_options}>"
+  )
+  if(CMAKE_COMPILE_WARNING_AS_ERROR)
+    add_link_options(/WX)
+  endif()
 endif()
 
 

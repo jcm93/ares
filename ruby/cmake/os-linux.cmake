@@ -92,7 +92,7 @@ if(ARES_ENABLE_PULSEAUDIO)
   find_package(PulseAudio)
 endif()
 if(PulseAudio_FOUND)
-  target_enable_feature(ruby "PulseAudio audio driver" AUDIO_PULSEAUDIO)
+  target_enable_feature(ruby "PulseAudio audio driver" AUDIO_PULSEAUDIO AUDIO_PULSEAUDIOSIMPLE)
 else()
   target_disable_feature(ruby "PulseAudio audio driver")
 endif()
@@ -107,6 +107,26 @@ else()
   target_disable_feature(ruby "AO audio driver")
 endif()
 
+option(ARES_ENABLE_UDEV "Enable the udev input driver" ON)
+if(ARES_ENABLE_UDEV)
+  find_package(udev)
+endif()
+if(udev_FOUND)
+  target_enable_feature(ruby "udev input driver" INPUT_UDEV)
+else()
+  target_disable_feature(ruby "udev input driver")
+endif()
+
+option(ARES_ENABLE_UHID "Enable the uhid input driver" ON)
+if(ARES_ENABLE_UHID)
+  find_package(uhid)
+endif()
+if(uhid_FOUND)
+  target_enable_feature(ruby "uhid input driver" INPUT_UHID)
+else()
+  target_disable_feature(ruby "uhid input driver")
+endif()
+
 target_link_libraries(
   ruby
   PRIVATE
@@ -116,5 +136,8 @@ target_link_libraries(
     $<$<BOOL:${OSS_FOUND}>:OSS::OSS>
     $<$<BOOL:${ALSA_FOUND}>:ALSA::ALSA>
     $<$<BOOL:${PulseAudio_FOUND}>:PulseAudio::PulseAudio>
+    $<$<BOOL:${PulseAudio_FOUND}>:PulseAudio::PulseAudioSimple>
     $<$<BOOL:${AO_FOUND}>:AO::AO>
+    $<$<BOOL:${udev_FOUND}>:udev::udev>
+    $<$<BOOL:${uhid_FOUND}>:uhid::uhid>
 )
