@@ -63,12 +63,10 @@ jobs:
     - name: "macOS: Import Certificate"
       if: runner.os == 'macOS' && github.event_name != 'pull_request'
       continue-on-error: ${{ github.repository != 'ares-emulator/ares' }}
-      uses: wpilibsuite/import-signing-certificate@2ac4f44d28045073d23153256efbb4c4b2d8aa22    # Don't use rolling branch for security reasons
+      uses: apple-actions/import-codesign-certs@v3
       with:
-        certificate-data: ${{ secrets.MACOS_CERTIFICATE_DATA }}
-        certificate-passphrase: ${{ secrets.MACOS_CERTIFICATE_PASSPHRASE }}
-        keychain-name: ares-macos-keychain
-        keychain-password: ${{ secrets.MACOS_KEYCHAIN_PASSWORD }}
+        p12-file-base64: ${{ secrets.MACOS_CERTIFICATE_DATA }}
+        p12-password: ${{ secrets.MACOS_CERTIFICATE_PASSPHRASE }}
     - name: Checkout source code
       uses: actions/checkout@v4
     - name: Install macOS Dependencies
