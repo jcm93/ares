@@ -12,8 +12,8 @@ pushd build
 
 # build; pipe output to render warnings neatly
 xcodebuild -configuration RelWithDebInfo \
-            DEBUG_INFORMATION_FORMAT="dwarf-with-dsym" \
-            2>&1 | xcbeautify --renderer github-actions
+            DEBUG_INFORMATION_FORMAT="dwarf-with-dsym"
+            # 2>&1 | xcbeautify --renderer github-actions
 
 popd
 
