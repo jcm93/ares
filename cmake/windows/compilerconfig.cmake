@@ -55,6 +55,7 @@ set(
   /utf-8
   /permissive-
   $<$<NOT:$<CONFIG:Debug>>:/GL>
+  $<$<NOT:$<CONFIG:Debug>>:/GS->
   $<$<NOT:$<CONFIG:Debug>>:/Oi>
   $<$<NOT:$<CONFIG:Debug>>:/Ob2>
   $<$<NOT:$<CONFIG:Debug>>:/Ot>
