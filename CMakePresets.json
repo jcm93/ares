@@ -160,6 +160,24 @@
       "cacheVariables": {
         "ARES_CROSSCOMPILING": true
       }
+    },
+    {
+      "name": "windows-ci-msvc-native",
+      "displayName": "Windows for CI (x64 MSVC)",
+      "description": "Single-arch binary for building on Github Actions",
+      "generator": "Visual Studio 17 2022",
+      "inherits": ["windows-ci-base"]
+    },
+    {
+      "name": "windows-ci-msvc-cross",
+      "displayName": "Windows for CI (arm64 MSVC)",
+      "description": "Single-arch binary for building on Github Actions",
+      "generator": "Visual Studio 17 2022",
+      "architecture": "arm64",
+      "inherits": ["windows-ci-base"],
+      "cacheVariables": {
+        "ARES_CROSSCOMPILING": true
+      }
     }
   ],
   "buildPresets": [

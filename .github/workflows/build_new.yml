@@ -38,12 +38,23 @@ jobs:
           shell: bash
           target-cmake-preset: windows-ci-cl-cross
           native-cmake-preset: windows-ci-cl-native
-        - name: macos-compat
-          os: macos-12
-          compiler: clang++
-          shell: sh
-          install: cmake ccache
-          target-cmake-preset: macos-ci-compat
+#        - name: macos-compat
+#          os: macos-12
+#          compiler: clang++
+#          shell: sh
+#          install: cmake ccache
+#          target-cmake-preset: macos-ci-compat
+        - name: windows-msvc-x64
+          os: windows-latest
+          windres: rc
+          shell: bash
+          target-cmake-preset: windows-ci-msvc-native
+        - name: windows-msvc-arm64
+          os: windows-latest
+          windres: rc
+          shell: bash
+          target-cmake-preset: windows-ci-msvc-cross
+          native-cmake-preset: windows-ci-msvc-native
         - name: macos-latest
           os: macos-latest
           compiler: clang++
