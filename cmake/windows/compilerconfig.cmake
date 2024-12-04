@@ -7,7 +7,7 @@ include_guard(GLOBAL)
 include(ccache)
 include(compiler_common)
 
-if(ENABLE_CCACHE AND CCACHE_PROGRAM)
+if(MSVC AND ENABLE_CCACHE AND CCACHE_PROGRAM)
   if(CMAKE_C_COMPILER_ID STREQUAL "MSVC")
     file(COPY_FILE ${CCACHE_PROGRAM} "${CMAKE_CURRENT_BINARY_DIR}/cl.exe")
     set(
@@ -71,6 +71,12 @@ set(
   -Wno-self-assign-overloaded
   -Wno-overloaded-virtual
 )
+
+if(MSVC)
+  # work around https://gitlab.kitware.com/cmake/cmake/-/issues/20812
+  string(REPLACE "/Ob1" "/Ob2" CMAKE_CXX_FLAGS_RELWITHDEBINFO ${CMAKE_CXX_FLAGS_RELWITHDEBINFO})
+  string(REPLACE "/Ob1" "/Ob2" CMAKE_C_FLAGS_RELWITHDEBINFO ${CMAKE_C_FLAGS_RELWITHDEBINFO})
+endif()
 
 # add compiler flags
 if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
