@@ -5,7 +5,7 @@ mark_as_advanced(ARES_BUNDLE_SHADERS)
 if(ARES_ENABLE_LIBRASHADER)
   if(TARGET libretro::slang_shaders)
     add_custom_command(
-      TARGET desktop-ui
+      OUTPUT "${ARES_BUILD_OUTPUT_DIR}/${ARES_INSTALL_DATA_DESTINATION}/Shaders/bilinear.slangp"
       POST_BUILD
       COMMAND "${CMAKE_COMMAND}" -E make_directory "${ARES_BUILD_OUTPUT_DIR}/${ARES_INSTALL_DATA_DESTINATION}/Shaders"
       COMMAND
@@ -13,6 +13,8 @@ if(ARES_ENABLE_LIBRASHADER)
         "${ARES_BUILD_OUTPUT_DIR}/${ARES_INSTALL_DATA_DESTINATION}/Shaders"
       COMMENT "Copying slang shaders to staging directory"
     )
+    add_custom_target(bundled_shaders DEPENDS "${ARES_BUILD_OUTPUT_DIR}/${ARES_INSTALL_DATA_DESTINATION}/Shaders/bilinear.slangp")
+    add_dependencies(desktop-ui bundled_shaders)
     if(ARES_BUNDLE_SHADERS)
       install(
         DIRECTORY "${slang_shaders_LOCATION}"

@@ -121,7 +121,8 @@
         "CMAKE_BUILD_TYPE": {"type": "STRING", "value": "RelWithDebInfo"},
         "ENABLE_CCACHE": true,
         "ARES_BUILD_LOCAL": false,
-        "ARES_BUILD_OPTIONAL_TARGETS": true
+        "ARES_BUILD_OPTIONAL_TARGETS": true,
+        "ARES_PRECOMPILE_HEADERS": true
       }
     },
     {

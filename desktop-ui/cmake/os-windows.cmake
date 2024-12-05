@@ -5,7 +5,7 @@ set_property(DIRECTORY ${CMAKE_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT desktop-u
 if(ARES_ENABLE_LIBRASHADER)
   if(TARGET libretro::slang_shaders)
     add_custom_command(
-      TARGET desktop-ui
+      OUTPUT "${ARES_EXECUTABLE_DESTINATION}/desktop-ui/rundir/Shaders/bilinear.slangp"
       POST_BUILD
       COMMAND "${CMAKE_COMMAND}" -E make_directory "${ARES_EXECUTABLE_DESTINATION}/desktop-ui/rundir/Shaders/"
       COMMAND "${CMAKE_COMMAND}" -E copy_directory "${slang_shaders_LOCATION}"
@@ -13,6 +13,8 @@ if(ARES_ENABLE_LIBRASHADER)
       WORKING_DIRECTORY "."
       COMMENT "Copying slang shaders to rundir"
     )
+    add_custom_target(bundled_shaders DEPENDS "${ARES_EXECUTABLE_DESTINATION}/desktop-ui/rundir/Shaders/bilinear.slangp")
+    add_dependencies(desktop-ui bundled_shaders)
   endif()
 endif()
 

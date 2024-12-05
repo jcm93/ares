@@ -73,7 +73,7 @@ endfunction()
 if(ARES_ENABLE_LIBRASHADER)
   if(TARGET libretro::slang_shaders)
     add_custom_command(
-      TARGET desktop-ui
+      OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/$<IF:$<BOOL:${XCODE}>,$<CONFIG>,>/ares.app/Contents/Resources/Shaders/bilinear.slangp"
       POST_BUILD
       COMMAND
         ditto "${slang_shaders_LOCATION}"
@@ -81,6 +81,8 @@ if(ARES_ENABLE_LIBRASHADER)
       WORKING_DIRECTORY "$<TARGET_BUNDLE_CONTENT_DIR:desktop-ui>"
       COMMENT "Copying slang shaders to app bundle"
     )
+    add_custom_target(bundled_shaders DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/$<IF:$<BOOL:${XCODE}>,$<CONFIG>,>/ares.app/Contents/Resources/Shaders/bilinear.slangp")
+    add_dependencies(desktop-ui bundled_shaders)
   endif()
 endif()
 

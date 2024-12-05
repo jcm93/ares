@@ -3,7 +3,7 @@ add_library(ares STATIC ares/ares.cpp ares/memory/fixed-allocator.cpp)
 add_library(ares::ares ALIAS ares)
 
 option(ARES_PROFILE_ACCURACY "Build to prefer emulation accuracy over performance in certain specific areas" OFF)
-option(ARES_PRECOMPILE_HEADERS "Precompile ares/ares.hpp header for performance" ON)
+option(ARES_PRECOMPILE_HEADERS "Precompile ares/ares.hpp header for performance" OFF)
 
 add_sourcery_command(ares ares/resource)
 
