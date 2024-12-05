@@ -73,8 +73,7 @@ if(udev_FOUND)
   if(NOT TARGET udev::udev)
     add_library(udev::udev UNKNOWN IMPORTED)
     set_property(TARGET udev::udev PROPERTY IMPORTED_LOCATION "${udev_LIBRARIES}")
-
-    message(AUTHOR_WARNING "udev libraries are ${udev_LIBRARIES}")
+    
     set_target_properties(
       udev::udev
       PROPERTIES

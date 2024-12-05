@@ -49,7 +49,33 @@ function(target_add_resource target resource)
     set(subpath ${ARGN})
     set_property(SOURCE "${resource}" PROPERTY MACOSX_PACKAGE_LOCATION "Resources/${subpath}")
   else()
-    set_property(SOURCE "${resource}" PROPERTY MACOSX_PACKAGE_LOCATION Resources)
+    if(UNUSED) # ${resource} MATCHES ".+\\.xcassets")
+      # todo: asset archive compilation on non-Xcode; very annoying
+      add_custom_command(
+          OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/Assets.car
+                 ${CMAKE_CURRENT_BINARY_DIR}/AppIcon.icns
+          BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/ac_generated_info.plist
+          MAIN_DEPENDENCY ${resource}/Contents.json
+          COMMAND actool --output-format human-readable-text --notices --warnings
+                      --target-device mac --platform macosx --minimum-deployment-target ${CMAKE_OSX_DEPLOYMENT_TARGET}
+                      --app-icon AppIcon --output-partial-info-plist ${CMAKE_CURRENT_BINARY_DIR}/ac_generated_info.plist
+                      --development-region en --enable-on-demand-resources NO
+                      --compile ${CMAKE_CURRENT_BINARY_DIR} ${resource}
+      )
+      target_sources(${target} PRIVATE
+          ${CMAKE_CURRENT_BINARY_DIR}/Assets.car
+          ${CMAKE_CURRENT_BINARY_DIR}/AppIcon.icns
+      )
+      set_source_files_properties(
+          ${CMAKE_CURRENT_BINARY_DIR}/Assets.car
+          ${CMAKE_CURRENT_BINARY_DIR}/AppIcon.icns
+          PROPERTIES
+          HEADER_FILE_ONLY TRUE
+          MACOSX_PACKAGE_LOCATION Resources
+      )
+    else()
+      set_property(SOURCE "${resource}" PROPERTY MACOSX_PACKAGE_LOCATION Resources)
+    endif()
   endif()
   source_group("Resources" FILES "${resource}")
 endfunction()
