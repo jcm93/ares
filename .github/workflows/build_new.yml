@@ -74,8 +74,7 @@ jobs:
         msystem: ${{ matrix.platform.msystem }}
         install: make git cmake ccache ninja ${{ matrix.platform.install }}
     - name: "macOS: Import Certificate"
-      if: runner.os == 'macOS' && github.event_name != 'pull_request'
-      continue-on-error: ${{ github.repository != 'ares-emulator/ares' }}
+      if: runner.os == 'macOS'
       uses: apple-actions/import-codesign-certs@v3
       with:
         p12-file-base64: ${{ secrets.MACOS_CERTIFICATE_DATA }}
@@ -171,7 +170,7 @@ jobs:
       id: create_release
       uses: softprops/action-gh-release@c062e08bd532815e2082a85e87e3ef29c3e6d191
       with:
-        draft: true
+        draft: ${{ github.ref != 'refs/heads/master' }}
         tag_name: ${{ steps.check.outputs.version }}
         name: ares ${{ steps.check.outputs.version }}
         files: |
