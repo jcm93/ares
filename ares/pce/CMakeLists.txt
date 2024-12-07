@@ -3,9 +3,14 @@ ares_components(huc6280 msm5205)
 target_sources(
   ares
   PRIVATE
-    cpu/cpu.cpp
-    vdp/vdp.cpp
+    pce.cpp
     vdp-performance/vdp.cpp
+    vdp/vdp.cpp
+)
+
+ares_add_header_sources(
+  pce
+    cpu/cpu.cpp
     psg/psg.cpp
     pcd/pcd.cpp
     system/system.cpp

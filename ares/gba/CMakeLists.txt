@@ -3,6 +3,11 @@ ares_components(arm7tdmi)
 target_sources(
   ares
   PRIVATE
+    gba.cpp
+)
+
+ares_add_header_sources(
+  gba
     memory/memory.cpp
     system/system.cpp
     cartridge/cartridge.cpp

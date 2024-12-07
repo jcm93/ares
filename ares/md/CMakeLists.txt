@@ -11,6 +11,11 @@ ares_components(
 target_sources(
   ares
   PRIVATE
+    md.cpp
+)
+
+ares_add_header_sources(
+  md
     bus/bus.cpp
     cpu/cpu.cpp
     apu/apu.cpp

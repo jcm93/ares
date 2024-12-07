@@ -3,6 +3,11 @@ ares_components(sm83 m93lcx6)
 target_sources(
   ares
   PRIVATE
+    gb.cpp
+)
+
+ares_add_header_sources(
+  gb
     system/system.cpp
     cartridge/cartridge.cpp
     bus/bus.cpp

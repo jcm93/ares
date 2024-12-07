@@ -29,7 +29,7 @@ using namespace Util;
 
 namespace Vulkan
 {
-DescriptorSetAllocator::DescriptorSetAllocator(Hash hash, Device *device_, const DescriptorSetLayout &layout,
+DescriptorSetAllocator::DescriptorSetAllocator(Util::Hash hash, Device *device_, const DescriptorSetLayout &layout,
                                                const uint32_t *stages_for_binds,
                                                const ImmutableSampler * const *immutable_samplers)
 	: IntrusiveHashMapEnabled<DescriptorSetAllocator>(hash)

@@ -53,7 +53,7 @@ void ImmutableSamplerBank::hash(Util::Hasher &h, const ImmutableSamplerBank *sam
 	}
 }
 
-PipelineLayout::PipelineLayout(Hash hash, Device *device_, const CombinedResourceLayout &layout_,
+PipelineLayout::PipelineLayout(Util::Hash hash, Device *device_, const CombinedResourceLayout &layout_,
                                const ImmutableSamplerBank *immutable_samplers)
 	: IntrusiveHashMapEnabled<PipelineLayout>(hash)
 	, device(device_)
@@ -588,7 +588,7 @@ bool Shader::reflect_resource_layout(ResourceLayout &, const uint32_t *, size_t)
 }
 #endif
 
-Shader::Shader(Hash hash, Device *device_, const uint32_t *data, size_t size,
+Shader::Shader(Util::Hash hash, Device *device_, const uint32_t *data, size_t size,
                const ResourceLayout *resource_layout)
 	: IntrusiveHashMapEnabled<Shader>(hash)
 	, device(device_)
@@ -656,13 +656,13 @@ Program::Program(Device *device_, Shader *compute_shader, const ImmutableSampler
 	device->bake_program(*this, sampler_bank);
 }
 
-Pipeline Program::get_pipeline(Hash hash) const
+Pipeline Program::get_pipeline(Util::Hash hash) const
 {
 	auto *ret = pipelines.find(hash);
 	return ret ? ret->get() : Pipeline{};
 }
 
-Pipeline Program::add_pipeline(Hash hash, const Pipeline &pipeline)
+Pipeline Program::add_pipeline(Util::Hash hash, const Pipeline &pipeline)
 {
 	return pipelines.emplace_yield(hash, pipeline)->get();
 }

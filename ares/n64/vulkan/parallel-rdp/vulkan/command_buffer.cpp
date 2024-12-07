@@ -1020,7 +1020,7 @@ void CommandBuffer::end_render_pass()
 	begin_compute();
 }
 
-static void log_compile_time(const char *tag, Hash hash,
+static void log_compile_time(const char *tag, Util::Hash hash,
                              int64_t time_ns, VkResult result,
                              CommandBuffer::CompileMode mode)
 {

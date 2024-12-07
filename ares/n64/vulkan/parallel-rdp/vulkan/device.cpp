@@ -377,7 +377,7 @@ Shader *Device::request_shader(const uint32_t *data, size_t size, const Resource
 	return ret;
 }
 
-Shader *Device::request_shader_by_hash(Hash hash)
+Shader *Device::request_shader_by_hash(Util::Hash hash)
 {
 	LOCK_CACHE();
 	return shaders.find(hash);
