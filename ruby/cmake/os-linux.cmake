@@ -117,14 +117,14 @@ else()
   target_disable_feature(ruby "udev input driver")
 endif()
 
-option(ARES_ENABLE_UHID "Enable the uhid input driver" ON)
-if(ARES_ENABLE_UHID)
-  find_package(uhid)
+option(ARES_ENABLE_USBHID "Enable the usbhid input driver" ON)
+if(ARES_ENABLE_USBHID)
+  find_package(usbhid)
 endif()
-if(uhid_FOUND)
-  target_enable_feature(ruby "uhid input driver" INPUT_UHID)
+if(usbhid_FOUND)
+  target_enable_feature(ruby "usbhid input driver" INPUT_UHID)
 else()
-  target_disable_feature(ruby "uhid input driver")
+  target_disable_feature(ruby "usbhid input driver")
 endif()
 
 target_link_libraries(
@@ -139,5 +139,5 @@ target_link_libraries(
     $<$<BOOL:${PulseAudio_FOUND}>:PulseAudio::PulseAudioSimple>
     $<$<BOOL:${AO_FOUND}>:AO::AO>
     $<$<BOOL:${udev_FOUND}>:udev::udev>
-    $<$<BOOL:${uhid_FOUND}>:uhid::uhid>
+    $<$<BOOL:${usbhid_FOUND}>:usbhid::usbhid>
 )
