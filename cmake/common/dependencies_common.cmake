@@ -46,6 +46,7 @@ function(_check_dependencies)
 
     if(skip)
       message(STATUS "Setting up ${label} (${arch}) - skipped")
+      list(APPEND CMAKE_PREFIX_PATH "${dependencies_dir}/${destination}")
       continue()
     else()
       file(REMOVE "${dependencies_dir}/${file}")

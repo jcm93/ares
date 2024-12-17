@@ -7,13 +7,25 @@ endif()
 
 target_sources(
   ruby
-  PRIVATE video/cgl.cpp video/metal/metal.cpp video/metal/metal.hpp video/metal/Shaders.metal video/metal/ShaderTypes.h
+  PRIVATE
+    video/cgl.cpp
+    video/metal/metal.cpp
+    video/metal/metal.hpp
+    video/metal/Shaders.metal
+    video/metal/ShaderTypes.h
 )
 
 # todo address
 target_compile_options(ruby PRIVATE $<$<CXX_COMPILER_ID:Clang,AppleClang>:-Wno-unguarded-availability>)
 
-target_sources(ruby PRIVATE audio/openal.cpp audio/sdl.cpp)
+target_sources(
+  ruby
+  PRIVATE
+    audio/openal.cpp
+    audio/sdl.cpp
+    audio/coreaudio.cpp
+    audio/coreaudio.hpp
+)
 
 target_sources(
   ruby
@@ -32,6 +44,7 @@ target_link_libraries(
   ruby
   PRIVATE
     "$<LINK_LIBRARY:FRAMEWORK,CoreAudio.framework>"
+    "$<LINK_LIBRARY:FRAMEWORK,AudioToolbox.framework>"
     "$<LINK_LIBRARY:FRAMEWORK,IOKit.framework>"
     "$<LINK_LIBRARY:FRAMEWORK,QuartzCore.framework>"
     "$<LINK_LIBRARY:FRAMEWORK,OpenAL.framework>"
@@ -61,6 +74,7 @@ endif()
 target_enable_feature(ruby "OpenGL video driver" VIDEO_CGL)
 target_enable_feature(ruby "Metal video driver" VIDEO_METAL)
 target_enable_feature(ruby "OpenAL audio driver" AUDIO_OPENAL)
+target_enable_feature(ruby "CoreAudio audio driver" AUDIO_COREAUDIO)
 if(SDL_FOUND)
   target_enable_feature(ruby "SDL input driver" INPUT_SDL)
   target_enable_feature(ruby "SDL audio driver" AUDIO_SDL)

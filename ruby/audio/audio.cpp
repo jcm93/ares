@@ -43,7 +43,11 @@
 #endif
 
 #if defined(AUDIO_SDL)
-#include <ruby/audio/sdl.cpp>
+  #include <ruby/audio/sdl.cpp>
+#endif
+
+#if defined(AUDIO_COREAUDIO)
+  #include <ruby/audio/coreaudio.cpp>
 #endif
 
 namespace ruby {
@@ -200,9 +204,13 @@ auto Audio::create(string driver) -> bool {
   if(driver == "XAudio 2.1") self.instance = new AudioXAudio2(*this);
   #endif
 
-#if defined(AUDIO_SDL)
+  #if defined(AUDIO_SDL)
   if(driver == "SDL") self.instance = new AudioSDL(*this);
-#endif
+  #endif
+  
+  #if defined(AUDIO_COREAUDIO)
+  if(driver == "CoreAudio") self.instance = new AudioCoreAudio(*this);
+  #endif
 
   if(!self.instance) self.instance = new AudioDriver(*this);
 
@@ -224,9 +232,13 @@ auto Audio::hasDrivers() -> vector<string> {
   "XAudio 2.1",
   #endif
 
-#if defined(AUDIO_SDL)
+  #if defined(AUDIO_SDL)
   "SDL",
-#endif
+  #endif
+    
+  #if defined(AUDIO_COREAUDIO)
+  "CoreAudio",
+  #endif
 
   #if defined(AUDIO_DIRECTSOUND)
   "DirectSound 7.0",
@@ -270,6 +282,8 @@ auto Audio::optimalDriver() -> string {
   return "ASIO";
   #elif defined(AUDIO_XAUDIO2)
   return "XAudio 2.1";
+  #elif defined(AUDIO_COREAUDIO)
+  return "CoreAudio";
   #elif defined(AUDIO_SDL)
   return "SDL";
   #elif defined(AUDIO_DIRECTSOUND)
@@ -302,6 +316,8 @@ auto Audio::safestDriver() -> string {
   return "WASAPI";
   #elif defined(AUDIO_XAUDIO2)
   return "XAudio 2.1";
+  #elif defined(AUDIO_COREAUDIO)
+  return "CoreAudio";
   #elif defined(AUDIO_SDL)
   return "SDL";
   #elif defined(AUDIO_ALSA)
