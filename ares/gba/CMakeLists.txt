@@ -8,6 +8,7 @@ target_sources(
     cartridge/cartridge.cpp
     player/player.cpp
     cpu/cpu.cpp
+    display/display.cpp
     ppu/ppu.cpp
     apu/apu.cpp
 )
@@ -53,6 +54,13 @@ ares_add_header_sources(
   cpu/prefetch.cpp
   cpu/serialization.cpp
   cpu/timer.cpp
+)
+
+ares_add_header_sources(
+  gba
+  display/display.hpp
+  display/io.cpp
+  display/serialization.cpp
 )
 
 ares_add_header_sources(gba memory/memory.hpp)
