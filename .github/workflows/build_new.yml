@@ -5,6 +5,7 @@ permissions:
   contents: write
 jobs:
   build:
+    continue-on-error: true
     strategy:
       fail-fast: false
       matrix:
@@ -96,7 +97,7 @@ jobs:
         MACOS_KEYCHAIN_NAME: ares-macos-keychain
         MACOS_KEYCHAIN_PASSWORD: ${{ secrets.MACOS_KEYCHAIN_PASSWORD }}
     - name: "Windows: sign"
-      if: runner.os == 'Windows' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/'))
+      if: runner.os == 'Windows' && (github.ref == 'refs/heads/nightly-test' || startsWith(github.ref, 'refs/tags/'))
       uses: DanaBear/code-sign-action@98c79121b376beab8d6a9484f445089db4461bca
       with:
         certificate: '${{ secrets.WIN_CERTIFICATE }}'
@@ -106,7 +107,7 @@ jobs:
         folder: 'build/desktop-ui/rundir/'
         timestampUrl: 'http://timestamp.digicert.com'
     - name: "macOS: notarize"
-      if: runner.os == 'macOS' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/'))
+      if: runner.os == 'macOS' && (github.ref == 'refs/heads/nightly-test' || startsWith(github.ref, 'refs/tags/'))
       run: |
         ditto -c -k --keepParent ${{ github.workspace }}/build/desktop-ui/RelWithDebInfo/ares.app /tmp/ares.zip
         xcrun notarytool submit /tmp/ares.zip --apple-id "$MACOS_NOTARIZATION_USERNAME" --password "$MACOS_NOTARIZATION_PASSWORD" --team-id "$MACOS_NOTARIZATION_TEAMID" --wait
@@ -141,7 +142,7 @@ jobs:
         path: build/dSYMs/*
         
   release:
-    if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/')
+    if: github.ref == 'refs/heads/nightly-test' || startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     needs:
     - build
@@ -158,15 +159,26 @@ jobs:
     - name: Check Release Tag ☑️
       id: check
       run: |
-          echo "version=${GITHUB_REF_NAME}" >> $GITHUB_OUTPUT
+          if [[ ${GITHUB_REF_NAME} == nightly-test ]];
+          then
+            echo "tag=nightly" >> $GITHUB_OUTPUT
+            now=$(date +'%Y-%m-%d')
+            echo $now
+            versionName="nightly ${now}"
+            echo $versionName
+            echo "versionName=${versionName}" >> $GITHUB_OUTPUT
+          else
+            echo "tag=${GITHUB_REF_NAME}" >> $GITHUB_OUTPUT
+            echo "versionName=${GITHUB_REF_NAME}" >> $GITHUB_OUTPUT
+          fi
           
     - name: Create Release 🛫
       id: create_release
       uses: softprops/action-gh-release@c062e08bd532815e2082a85e87e3ef29c3e6d191
       with:
-        draft: true # ${{ github.ref != 'refs/heads/master' }}
-        tag_name: ${{ steps.check.outputs.version }}
-        name: ares ${{ steps.check.outputs.version }}
+        draft: ${{ github.ref != 'refs/heads/master' }}
+        tag_name: ${{ steps.check.outputs.tag }}
+        name: ares ${{ steps.check.outputs.versionName }}
         files: |
           ${{ github.workspace }}/ares-macos-universal.zip
           ${{ github.workspace }}/ares-macos-universal-dSYMs.zip
