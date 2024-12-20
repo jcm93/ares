@@ -97,7 +97,7 @@
       "inherits": ["baseCacheVars"],
       "binaryDir": "${sourceDir}/build",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": {"type": "STRING", "value": "RelWithDebInfo"},
+        "CMAKE_BUILD_TYPE": {"type": "STRING", "value": "Release"},
         "ENABLE_CCACHE": true,
         "ARES_BUILD_LOCAL": false,
         "ARES_BUILD_OPTIONAL_TARGETS": true,
