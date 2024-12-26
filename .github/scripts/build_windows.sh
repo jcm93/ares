@@ -9,7 +9,8 @@ if [ "$CROSS_COMPILE" = true ]; then
   popd
 fi
 
-cmake --preset $TARGET_PRESET
+rm -rf .deps
+cmake --preset $TARGET_PRESET --fresh --debug-find
 pushd build
 cmake --build . --config RelWithDebInfo
 

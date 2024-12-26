@@ -1,6 +1,6 @@
 # the name of the target operating system
 set(CMAKE_SYSTEM_NAME Windows)
-set(CMAKE_SYSTEM_PROCESSOR arm64)
+set(CMAKE_SYSTEM_PROCESSOR ARM64)
 
 set(ENV{PATH} "/opt/aarch64-w64-mingw32/bin:$ENV{PATH}")
 
@@ -18,5 +18,5 @@ set(CMAKE_FIND_ROOT_PATH /clangarm64)
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 
 # search headers and libraries in the target environment
-set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
-set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
+set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE BOTH)

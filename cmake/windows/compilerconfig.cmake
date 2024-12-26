@@ -22,6 +22,7 @@ if(CMAKE_GENERATOR_PLATFORM)
   set(arch ${CMAKE_GENERATOR_PLATFORM})
   set(platform windows-${arch})
 else()
+  message(AUTHOR_WARNING "cmake system processor is ${CMAKE_SYSTEM_PROCESSOR}")
   if(CMAKE_SYSTEM_PROCESSOR STREQUAL ARM64)
     set(arch arm64)
     set(platform windows-${arch})
@@ -53,6 +54,7 @@ set(
 
 set(
   _ares_clang_cl_c_cxx_options
+  -Wno-c++11-narrowing
   -Wno-unused-function
   -Wno-reorder-ctor
   -Wno-missing-braces

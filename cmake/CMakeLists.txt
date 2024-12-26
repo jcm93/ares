@@ -27,6 +27,7 @@ target_sources(
     macos/defaults.cmake
     macos/helpers.cmake
     macos/xcode.cmake
+    windows/aarch64-cross-toolchain.cmake
     windows/compilerconfig.cmake
     windows/defaults.cmake
     windows/dependencies.cmake
