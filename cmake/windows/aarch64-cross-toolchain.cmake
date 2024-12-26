@@ -2,6 +2,12 @@
 set(CMAKE_SYSTEM_NAME Windows)
 set(CMAKE_SYSTEM_PROCESSOR arm64)
 
+set(ENV{PATH} "/opt/aarch64-w64-mingw32/bin:$ENV{PATH}")
+
+# Specify the cross-compilation toolchain
+set(CMAKE_C_COMPILER aarch64-w64-mingw32-clang)
+set(CMAKE_CXX_COMPILER aarch64-w64-mingw32-clang++)
+
 set(CMAKE_C_FLAGS --target=aarch64-w64-windows-gnu) # --sysroot=/clangarm64/ -resource-dir=/clangarm64/lib/clang/18)
 set(CMAKE_CXX_FLAGS --target=aarch64-w64-windows-gnu) # --sysroot=/clangarm64/ -resource-dir=/clangarm64/lib/clang/18)
 
