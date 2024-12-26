@@ -126,9 +126,12 @@
       "name": "windows-ci-cl-native",
       "displayName": "Windows for CI (x64 ClangCL)",
       "description": "Single-arch binary for building on Github Actions",
-      "generator": "Visual Studio 17 2022",
+      "generator": "Ninja",
       "inherits": ["windows-ci-base"],
-      "toolset": "ClangCL"
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "clang-cl",
+        "CMAKE_CXX_COMPILER": "clang-cl"
+      }
     },
     {
       "name": "windows-ci-cl-cross",

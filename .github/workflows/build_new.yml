@@ -80,6 +80,9 @@ jobs:
       if: runner.os == 'macOS'
       run: |
         brew install ${{ matrix.platform.install }}
+    - name: Set up MSVC environment
+      if: runner.os != 'macOS' && matrix.platform.shell != 'msys2 {0}'
+      uses: ilammy/msvc-dev-cmd@v1
     - name: "Build: Windows"
       if: runner.os != 'macOS'
       run: .github/scripts/build_windows.sh

@@ -11,7 +11,7 @@ fi
 
 cmake --preset $TARGET_PRESET
 pushd build
-cmake --build . --config RelWithDebInfo
+cmake --build . --config RelWithDebInfo -v
 
 if [ "$CROSS_COMPILE" = true ]; then
   cp ../.deps/ares-deps-windows-arm64/lib/*.pdb desktop-ui/rundir/
