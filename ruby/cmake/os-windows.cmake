@@ -46,6 +46,12 @@ endif()
 
 if(OpenAL_FOUND)
   target_enable_feature(ruby "OpenAL audio driver" AUDIO_OPENAL)
+  set_target_properties(
+    OpenAL::OpenAL
+    PROPERTIES
+    NAME_HINTS
+      libopenal-1.dll
+  )
 endif()
 
 if(librashader_FOUND AND ARES_ENABLE_LIBRASHADER)
