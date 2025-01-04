@@ -20,6 +20,13 @@ jobs:
           msystem: clang64
           install: mingw-w64-clang-x86_64-clang
           target-cmake-preset: windows-ci-mingw-native
+        - name: windows-x64-gcc
+          os: windows-latest
+          compiler: g++
+          shell: 'msys2 {0}'
+          msystem: mingw64
+          install: mingw-w64-x86_64-toolchain
+          target-cmake-preset: windows-ci-mingw-native
         - name: windows-clang-cl-x64
           os: windows-latest
           windres: rc

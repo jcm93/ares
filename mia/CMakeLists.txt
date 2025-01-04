@@ -122,6 +122,15 @@ if(ARES_BUILD_OPTIONAL_TARGETS)
       "$<$<PLATFORM_ID:Darwin>:$<LINK_LIBRARY:FRAMEWORK,IOKit.framework>>"
       "$<$<PLATFORM_ID:Darwin>:$<LINK_LIBRARY:FRAMEWORK,Security.framework>>"
   )
+  
+  if(OS_WINDOWS)
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+      target_link_libraries(
+        mia-ui
+        PRIVATE ares::nall
+      )
+    endif()
+  endif()
 
   if(WIN32)
     target_sources(mia-ui PRIVATE resource/mia.rc resource/mia.Manifest)
