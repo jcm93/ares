@@ -1,4 +1,4 @@
-add_library(nall OBJECT main.cpp nall.cpp sljitAllocator.cpp)
+add_library(nall OBJECT main.cpp sljitAllocator.cpp)
 add_library(ares::nall ALIAS nall)
 
 include(cmake/sources.cmake)
@@ -31,7 +31,9 @@ get_target_property(nall_SOURCES nall SOURCES)
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${nall_SOURCES})
 set_source_files_properties(${nall_SOURCES} PROPERTIES HEADER_FILE_ONLY TRUE)
 
-set_source_files_properties(nall nall.cpp main.cpp sljitAllocator.cpp PROPERTIES HEADER_FILE_ONLY FALSE)
+set_source_files_properties(nall nall.cpp PROPERTIES HEADER_FILE_ONLY TRUE)
+
+set_source_files_properties(nall main.cpp sljitAllocator.cpp PROPERTIES HEADER_FILE_ONLY FALSE)
 
 # global compiler flags
 target_compile_features(nall PUBLIC c_std_11)
