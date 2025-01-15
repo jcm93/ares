@@ -1,8 +1,6 @@
 name: Build (New)
 on:
   push
-permissions:
-  contents: write
 jobs:
   build:
     strategy:
