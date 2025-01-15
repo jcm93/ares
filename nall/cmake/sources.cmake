@@ -52,7 +52,6 @@ target_sources(
     memory.cpp
     memory.hpp
     merge-sort.hpp
-    nall.cpp
     nall.hpp
     path.cpp
     path.hpp
