@@ -5,7 +5,6 @@ case ${GITHUB_REF} in
   *) suffix="" ;;
 esac
 
-srcdir="${GITHUB_WORKSPACE}/src"
 bindir="${GITHUB_WORKSPACE}/bin"
 
 # Hack: Workaround for GitHub artifacts losing attributes.

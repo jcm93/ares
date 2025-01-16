@@ -1,0 +1,15 @@
+name: Push
+on:
+  push:
+    branches: [ master ]
+    tags: [ 'v*' ]
+jobs:
+  build:
+    name: Build ares
+    uses: ./.github/workflows/build-new.yml
+    secrets: inherit
+    with:
+      codesign: true
+  release:
+    name: Release
+    needs: build
