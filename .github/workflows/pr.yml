@@ -1,4 +1,5 @@
-name: PR Run
+name: Pull Request
+run-name: ${{ github.event.pull_request.title }} PR run
 on:
   pull_request:
     branches: [ '*' ]

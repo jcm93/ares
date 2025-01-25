@@ -1,4 +1,5 @@
 name: Push
+run-name: ${{ github.ref_name }} push run
 on:
   push:
     branches: [ master ]
@@ -15,10 +16,13 @@ jobs:
     secrets: inherit
     with:
       codesign: true
-  release:
-    name: Release
+  release_job:
+    runs-on: macos-latest
+    name: Release Action
     needs: build
     secrets: inherit
-    uses: ./.github/workflows/release.yml
-    with:
-      notarize: true
+    steps:
+      - id: release_action
+        uses: ./.github/actions/release
+        with:
+          notarize: true
