@@ -9,6 +9,7 @@ namespace ruby {
 auto locate(const string& name) -> string {
   // First check each path for the presence of the file we are looking for in the following order
   // allowing users to override the default resources if they wish to do so.
+  print("test");
 
   // 1. The application directory
   string location = {Path::program(), name};
