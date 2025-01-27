@@ -109,6 +109,7 @@ auto TIA::scanline() -> void {
     scheduler.exit(Event::Frame);
     io.vcounter = 0;
   }
+  screen->scanline();
 }
 
 auto TIA::frame() -> void {

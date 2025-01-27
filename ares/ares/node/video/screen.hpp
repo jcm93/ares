@@ -59,8 +59,10 @@ struct Screen : Video {
   auto detach(Node::Video::Sprite) -> void;
 
   auto colors(u32 colors, function<n64 (n32)> color) -> void;
+  auto scanline() -> void;
   auto frame() -> void;
   auto refresh() -> void;
+  auto scanlineRefresh() -> void;
 
   auto serialize(string& output, string depth) -> void override;
   auto unserialize(Markup::Node node) -> void override;
@@ -101,8 +103,10 @@ protected:
   recursive_mutex _mutex;
   mutex _frameMutex;
   condition_variable _frameCondition;
+  condition_variable _scanlineCondition;
   atomic<bool> _kill = false;
   atomic<bool> _frame = false;
+  atomic<bool> _scanline = false;
   function<void ()> _refresh;
   bool _progressive = false;
   bool _progressiveDouble = false;

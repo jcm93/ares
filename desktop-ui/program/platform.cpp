@@ -60,7 +60,7 @@ auto Program::status(string_view message) -> void {
 auto Program::video(ares::Node::Video::Screen node, const u32* data, u32 pitch, u32 width, u32 height) -> void {
   if(!screens) return;
 
-  if(requestScreenshot) {
+  /*if(requestScreenshot) {
     requestScreenshot = false;
     captureScreenshot(data, pitch, width, height);
   }
@@ -70,12 +70,12 @@ auto Program::video(ares::Node::Video::Screen node, const u32* data, u32 pitch, 
     emulator->latch.height = node->height();
     emulator->latch.rotation = node->rotation();
     emulator->latch.changed = true;  //signal Program::main() to potentially resize the presentation window
-  }
+  }*/
 
   u32 videoWidth = node->width() * node->scaleX();
   u32 videoHeight = node->height() * node->scaleY();
-  if(settings.video.aspectCorrection) videoWidth = videoWidth * node->aspectX() / node->aspectY();
-  if(node->rotation() == 90 || node->rotation() == 270) swap(videoWidth, videoHeight);
+  /*if(settings.video.aspectCorrection) videoWidth = videoWidth * node->aspectX() / node->aspectY();
+  if(node->rotation() == 90 || node->rotation() == 270) swap(videoWidth, videoHeight);*/
 
   ruby::video.lock();
   auto [viewportWidth, viewportHeight] = ruby::video.size();

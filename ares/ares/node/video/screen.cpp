@@ -32,6 +32,11 @@ auto Screen::main(uintptr_t) -> void {
       refresh();
       _frame = false;
     }
+    auto scanlineTimeout = std::chrono::milliseconds(10);
+    if(_scanlineCondition.wait_for(lock, scanlineTimeout, [&] { return _scanline.load(); })) {
+      scanlineRefresh();
+      _scanline = false;
+    }
 
     if(_kill) break;
   }
@@ -203,7 +208,22 @@ auto Screen::frame() -> void {
   }
 }
 
-auto Screen::refresh() -> void {
+auto Screen::scanline() -> void {
+  if(runAhead()) return;
+  while(_scanline) spinloop();
+
+  lock_guard<recursive_mutex> lock(_mutex);
+  _inputA.swap(_inputB);
+  if constexpr(!ares::Video::Threaded) {
+    refresh();
+    _frame = false;
+  } else {
+    _scanline = true;
+    _scanlineCondition.notify_one();
+  }
+}
+
+auto Screen::scanlineRefresh() -> void {
   lock_guard<recursive_mutex> lock(_mutex);
   if(runAhead()) return;
 
@@ -330,7 +350,137 @@ auto Screen::refresh() -> void {
   }
 
   platform->video(shared(), output + viewX + viewY * width, width * sizeof(u32), viewWidth, viewHeight);
-  memory::fill<u32>(_inputB.data(), width * height, _fillColor);
+  //memory::fill<u32>(_inputB.data(), width * height, _fillColor);
+}
+
+auto Screen::refresh() -> void {
+  /*lock_guard<recursive_mutex> lock(_mutex);
+  if(runAhead()) return;
+
+  refreshPalette();
+  if(_refresh) _refresh();
+
+  auto viewX = _viewportX;
+  auto viewY = _viewportY;
+  auto viewWidth  = _viewportWidth;
+  auto viewHeight = _viewportHeight;
+
+  auto pitch  = _canvasWidth;
+  auto width  = _canvasWidth;
+  auto height = _canvasHeight;
+  auto input  = _inputB.data();
+  auto output = _output.data();
+
+  for(u32 y : range(height)) {
+    auto source = input  + y * pitch;
+    auto target = output + y * width;
+
+    if(_interlace) {
+      if((_interlaceField & 1) == (y & 1)) {
+        for(u32 x : range(width)) {
+          auto color = _palette[*source++];
+          *target++ = color;
+        }
+      }
+    } else if(_progressive && _progressiveDouble) {
+      source = input + (y & ~1) * pitch;
+      for(u32 x : range(width)) {
+        auto color = _palette[*source++];
+        *target++ = color;
+      }
+    } else if(_interframeBlending) {
+      n32 mask = 1 << 24 | 1 << 16 | 1 << 8 | 1 << 0;
+      for(u32 x : range(width)) {
+        auto a = *target;
+        auto b = _palette[*source++];
+        *target++ = (a + b - ((a ^ b) & mask)) >> 1;
+      }
+    } else {
+      for(u32 x : range(width)) {
+        auto color = _palette[*source++];
+        *target++ = color;
+      }
+    }
+  }
+
+  if (_colorBleed) {
+    n32 mask = 1 << 24 | 1 << 16 | 1 << 8 | 1 << 0;
+    for (u32 y : range(height)) {
+      auto target = output + y * width;
+      for (u32 x : range(0, width, _colorBleedWidth)) {
+        for (u32 offset = 0; offset < _colorBleedWidth && (x + offset) < width; ++offset) {
+          u32 next = x + _colorBleedWidth;
+          if (next + offset >= width) next = x;
+          auto a = target[x + offset];
+          auto b = target[next + offset];
+          target[x + offset] = (a + b - ((a ^ b) & mask)) >> 1;
+        }
+      }
+    }
+  }
+
+  for(auto& sprite : _sprites) {
+    if(!sprite->visible()) continue;
+
+    n32 alpha = 255u << 24;
+    for(int y : range(sprite->height())) {
+      s32 pixelY = sprite->y() + y;
+      if(pixelY < 0 || pixelY >= height) continue;
+
+      auto source = sprite->image().data() + y * sprite->width();
+      auto target = &output[pixelY * width];
+      for(s32 x : range(sprite->width())) {
+        s32 pixelX = sprite->x() + x;
+        if(pixelX < 0 || pixelX >= width) continue;
+
+        auto pixel = source[x];
+        if(pixel >> 24) target[pixelX] = alpha | pixel;
+      }
+    }
+  }
+
+  if(_rotation == 90) {
+    //rotate left
+    for(u32 y : range(height)) {
+      auto source = output + y * width;
+      for(u32 x : range(width)) {
+        auto target = _rotate.data() + (width - 1 - x) * height + y;
+        *target = *source++;
+      }
+    }
+    output = _rotate.data();
+    swap(width, height);
+    swap(viewWidth, viewHeight);
+  }
+
+  if(_rotation == 180) {
+    //rotate upside down
+    for(u32 y : range(height)) {
+      auto source = output + y * width;
+      for(u32 x : range(width)) {
+        auto target = _rotate.data() + (height - 1 - y) * width + (width - 1 - x);
+        *target = *source++;
+      }
+    }
+    output = _rotate.data();
+  }
+
+  if(_rotation == 270) {
+    //rotate right
+    for(u32 y : range(height)) {
+      auto source = output + y * width;
+      for(u32 x : range(width)) {
+        auto target = _rotate.data() + x * height + (height - 1 - y);
+        *target = *source++;
+      }
+    }
+    output = _rotate.data();
+    swap(width, height);
+    swap(viewWidth, viewHeight);
+  }
+
+  platform->video(shared(), output + viewX + viewY * width, width * sizeof(u32), viewWidth, viewHeight);
+  memory::fill<u32>(_inputB.data(), width * height, _fillColor);*/
 }
 
 auto Screen::refreshPalette() -> void {

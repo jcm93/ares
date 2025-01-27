@@ -9,12 +9,15 @@
 
 struct VideoMetal;
 
-@interface RubyVideoMetal : MTKView <MTKViewDelegate> {
+@interface RubyVideoMetal : MTKView <CAMetalDisplayLinkDelegate> {
 @public
   VideoMetal* video;
+  CAMetalDisplayLink *_displayLink;
+  CFTimeInterval _previousTargetPresentationTimestamp;
 }
 -(id) initWith:(VideoMetal*)video frame:(NSRect)frame device:(id<MTLDevice>)metalDevice;
 -(void) mtkView:(MTKView *)view drawableSizeWillChange:(CGSize) size;
+-(void) metalDisplayLink:(CAMetalDisplayLink *)link needsUpdate:(CAMetalDisplayLinkUpdate *)update;
 -(BOOL) acceptsFirstResponder;
 @end
 
@@ -229,6 +232,8 @@ struct VideoMetal : VideoDriver, Metal {
         buffer = nullptr;
       }
       
+      //id<MTLBuffer> newBuffer = [_device newBufferWithLength:(width * height) options:(MTLResourceStorageModeShared)];
+      
       buffer = new u32[width * height]();
       
       bytesPerRow = sourceWidth * sizeof(u32);
@@ -297,10 +302,10 @@ struct VideoMetal : VideoDriver, Metal {
     /// Synchronously copy the current framebuffer to a Metal texture, then call into the render dispatch queue
     /// either synchronously or asynchronously depending on whether blocking is on and VRR is supported.
 
-    if (depth >= kMaxSourceBuffersInFlight) {
+    /*if (depth >= kMaxSourceBuffersInFlight) {
       //if we are running very behind, drop this frame
       return;
-    }
+    }*/
     
     //can we do this outside of the output function?
     //currently no, because in theory framebuffer size can change during runtime
@@ -322,11 +327,15 @@ struct VideoMetal : VideoDriver, Metal {
         depth++;
       }
       
+    }
+    drawing = true;
+    return;
+      
       /// Only block with `dispatch_sync` if blocking enabled and VRR not supported, or if the threaded renderer
       /// is explicitly disabled. if VRR is supported, we should try to not _literally_ block, because we'll be making a best
       /// effort to synchronize to the guest and host refresh rate at the same time. It's easier to do that if we have
       /// assurances that we won't block the emulation thread in the worst case system conditions.
-      if ((_blocking && !_vrrIsSupported) || !_threaded) {
+      /*if ((_blocking && !_vrrIsSupported) || !_threaded) {
         dispatch_sync(_renderQueue, ^{
           outputHelper(width, height, sourceTexture);
         });
@@ -334,9 +343,113 @@ struct VideoMetal : VideoDriver, Metal {
         dispatch_async(_renderQueue, ^{
           outputHelper(width, height, sourceTexture);
         });
-      }
-    }
+      }*/
   }
+  
+  auto alternateDrawPath(CAMetalDisplayLinkUpdate *update) -> void {
+    
+    if(!drawing) return;
+
+     @autoreleasepool {
+       
+       id<CAMetalDrawable> currentDrawable = update.drawable;
+
+       _drawableRenderPassDescriptor.colorAttachments[0].texture = currentDrawable.texture;
+
+       auto width = outputWidth;
+       auto height = outputHeight;
+       
+       frameCount++;
+       
+       auto index = frameCount % kMaxSourceBuffersInFlight;
+       
+       auto sourceTexture = _sourceTextures[index];
+
+       dispatch_semaphore_wait(_semaphore, DISPATCH_TIME_FOREVER);
+
+       id<MTLCommandBuffer> commandBuffer = [_commandQueue commandBuffer];
+
+       if (commandBuffer != nil) {
+         __block dispatch_semaphore_t block_sema = _semaphore;
+
+         [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> buffer) {
+          dispatch_semaphore_signal(block_sema);
+         }];
+
+         _renderToTextureRenderPassDescriptor.colorAttachments[0].texture = _renderTargetTexture;
+
+         if (_renderToTextureRenderPassDescriptor != nil) {
+
+           id<MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:_renderToTextureRenderPassDescriptor];
+
+           _renderToTextureRenderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
+
+           [sourceTexture replaceRegion:MTLRegionMake2D(0, 0, sourceWidth, sourceHeight) mipmapLevel:0 withBytes:buffer bytesPerRow:bytesPerRow];
+
+           [renderEncoder setRenderPipelineState:_renderToTextureRenderPipeline];
+
+           [renderEncoder setViewport:(MTLViewport){0, 0, (double)width, (double)height, -1.0, 1.0}];
+
+           [renderEncoder setVertexBuffer:_vertexBuffer
+                                   offset:0
+                                  atIndex:0];
+
+           [renderEncoder setVertexBytes:&_viewportSize
+                                  length:sizeof(_viewportSize)
+                                 atIndex:MetalVertexInputIndexViewportSize];
+
+           [renderEncoder setFragmentTexture:sourceTexture atIndex:0];
+
+           [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:0 vertexCount:6];
+
+           [renderEncoder endEncoding];
+
+           if (_filterChain) {
+             _libra.mtl_filter_chain_frame(&_filterChain, commandBuffer, frameCount, sourceTexture, _renderTargetTexture, nil, nil, nil);
+           }
+
+           /*MTLRenderPassDescriptor *drawableRenderPassDescriptor = _drawableRenderPassDescriptor;
+           
+           drawableRenderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionClear;
+           drawableRenderPassDescriptor.colorAttachments[0].texture = drawable.texture;*/
+
+           if (_drawableRenderPassDescriptor != nil) {
+
+             id<MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:_drawableRenderPassDescriptor];
+
+             [renderEncoder setRenderPipelineState:_drawableRenderPipeline];
+
+             [renderEncoder setViewport:(MTLViewport){_outputX, _outputY, (double)width, (double)height, -1.0, 1.0}];
+
+             [renderEncoder setVertexBuffer:_vertexBuffer
+                                     offset:0
+                                    atIndex:0];
+
+             [renderEncoder setVertexBytes:&_viewportSize
+                                    length:sizeof(_viewportSize)
+                                   atIndex:MetalVertexInputIndexViewportSize];
+
+             [renderEncoder setFragmentTexture:_renderTargetTexture atIndex:0];
+
+             [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:0 vertexCount:6];
+
+             [renderEncoder endEncoding];
+
+             id<CAMetalDrawable> drawable = update.drawable;
+
+             [commandBuffer presentDrawable:drawable];
+
+           }
+
+           [commandBuffer commit];
+
+           if (_flush) {
+             [commandBuffer waitUntilCompleted];
+           }
+         }
+       }
+     }
+   }
 
 private:
   auto outputHelper(u32 width, u32 height, id<MTLTexture> sourceTexture) -> void {
@@ -509,6 +622,11 @@ private:
     _renderToTextureRenderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0, 0, 0, 1);
     _renderToTextureRenderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
     
+    _drawableRenderPassDescriptor = [MTLRenderPassDescriptor new];
+    _drawableRenderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionClear;
+    _drawableRenderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
+    _drawableRenderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0, 1, 1, 1);
+    
     ///We compile shaders at runtime so we do not need to add the `xcrun` Metal compiler toolchain to the ares build process.
     ///Metal frame capture does not get along with runtime-compiled shaders in my testing, however. If you are debugging ares
     ///and need GPU captures, run `scripts/macos-metal-debug.sh` and then compile ares in debug mode.
@@ -644,7 +762,23 @@ private:
   //self.paused = NO;
   //[self setDelegate:self];
   
+  CAMetalLayer *layer = (CAMetalLayer *)self.layer;
+  _displayLink = [[CAMetalDisplayLink alloc] initWithMetalLayer:layer];
+  _displayLink.preferredFrameRateRange = CAFrameRateRangeMake(120.0, 120.0, 120.0);
+  _displayLink.preferredFrameLatency = 2;
+  _displayLink.paused = false;
+  
+  _displayLink.delegate = self;
+
+  _previousTargetPresentationTimestamp = CACurrentMediaTime();
+  [_displayLink addToRunLoop:[NSRunLoop currentRunLoop]
+                     forMode:NSDefaultRunLoopMode];
+
   return self;
+}
+
+-(void)metalDisplayLink:(CAMetalDisplayLink *)link needsUpdate:(CAMetalDisplayLinkUpdate *)update {
+  video->alternateDrawPath(update);
 }
 
 -(void) drawInMTKView:(MTKView *)view {

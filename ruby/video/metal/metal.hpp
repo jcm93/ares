@@ -7,6 +7,8 @@
 
 #include <Metal/Metal.h>
 #include <MetalKit/MTKView.h>
+#import <QuartzCore/CAMetalLayer.h>
+#import <QuartzCore/CAMetalDisplayLink.h>
 
 #include <librashader/librashader_ld.h>
 #include "ShaderTypes.h"
@@ -51,6 +53,7 @@ struct Metal {
   auto render(u32 sourceWidth, u32 sourceHeight, u32 targetX, u32 targetY, u32 targetWidth, u32 targetHeight) -> void;
   
   u32 *buffer = nullptr;
+  //id<MTLBuffer> newBuffer = nullptr;
   
   u32 sourceWidth = 0;
   u32 sourceHeight = 0;
@@ -86,12 +89,16 @@ struct Metal {
   id<MTLCommandQueue> _commandQueue;
   id<MTLLibrary> _library;
   dispatch_semaphore_t _semaphore;
+  bool drawing = false;
+
+  CAMetalDisplayLink *_displayLink;
   
   id<MTLBuffer> _vertexBuffer;
   id<MTLTexture> _sourceTextures[kMaxSourceBuffersInFlight];
   MTLVertexDescriptor *_mtlVertexDescriptor;
   
   MTLRenderPassDescriptor *_renderToTextureRenderPassDescriptor;
+  MTLRenderPassDescriptor *_drawableRenderPassDescriptor;
   id<MTLRenderPipelineState> _renderToTextureRenderPipeline;
   id<MTLRenderPipelineState> _drawableRenderPipeline;
   id<MTLTexture> _renderTargetTexture;
