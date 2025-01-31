@@ -6,6 +6,7 @@
   #include <nall/windows/windows.hpp>
 #endif
 
+#include <nall/pragma.hpp>
 #include <nall/directory.cpp>
 #include <nall/dl.cpp>
 #include <nall/file-map.cpp>
@@ -33,3 +34,4 @@
 #endif
 
 #endif
+#include <nall/pragma.hpp>

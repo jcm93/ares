@@ -59,6 +59,8 @@ target_sources(
     platform.cpp
     platform.hpp
     pointer.hpp
+    pragma.hpp
+    pragma.hpp.in
     primitives.hpp
     priority-queue.hpp
     property.hpp

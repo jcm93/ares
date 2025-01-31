@@ -3,6 +3,7 @@
 //include the most common nall headers with one statement
 //does not include the most obscure components with high cost and low usage
 
+#include <nall/pragma.hpp>
 #include <nall/platform.hpp>
 
 #include <nall/algorithm.hpp>
@@ -91,3 +92,5 @@
 #if defined(API_POSIX)
   #include <nall/serial.hpp>
 #endif
+
+#include <nall/pragma.hpp>

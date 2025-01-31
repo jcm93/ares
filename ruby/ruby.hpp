@@ -1,5 +1,6 @@
 #pragma once
 
+#include <nall/pragma.hpp>
 #include <nall/platform.hpp>
 #include <nall/chrono.hpp>
 #include <nall/directory.hpp>
@@ -19,6 +20,7 @@
 #include <nall/vector.hpp>
 #include <nall/dsp/resampler/cubic.hpp>
 #include <nall/hash/crc32.hpp>
+#include <nall/pragma.hpp>
 
 using nall::atomic;
 using nall::function;

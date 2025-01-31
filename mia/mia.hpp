@@ -1,3 +1,4 @@
+#include <nall/pragma.hpp>
 #include <nall/nall.hpp>
 #include <nall/cd.hpp>
 #include <nall/ips.hpp>
@@ -6,6 +7,7 @@
 #include <nall/decode/cue.hpp>
 #include <nall/decode/chd.hpp>
 #include <nall/decode/wav.hpp>
+#include <nall/pragma.hpp>
 using namespace nall;
 
 #if !defined(MIA_LIBRARY)

@@ -1,8 +1,10 @@
 #pragma once
 
+#include <nall/pragma.hpp>
 #include <nall/platform.hpp>
 #include <nall/arguments.hpp>
 #include <nall/string.hpp>
+#include <nall/pragma.hpp>
 
 namespace nall {
   auto main(Arguments arguments) -> void;

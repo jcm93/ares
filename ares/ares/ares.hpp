@@ -3,6 +3,7 @@
 #include <libco/libco.h>
 #include <sljit.h>
 
+#include <nall/pragma.hpp>
 #include <nall/platform.hpp>
 #include <nall/adaptive-array.hpp>
 #include <nall/any.hpp>
@@ -37,6 +38,7 @@
 #include <nall/dsp/resampler/cubic.hpp>
 #include <nall/hash/crc32.hpp>
 #include <nall/hash/sha256.hpp>
+#include <nall/pragma.hpp>
 using namespace nall;
 using namespace nall::primitives;
 
