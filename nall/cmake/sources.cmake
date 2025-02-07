@@ -19,6 +19,7 @@ target_sources(
     counting-sort.hpp
     directory.cpp
     directory.hpp
+    nall-dummy.cpp
     dl.cpp
     dl.hpp
     endian.hpp

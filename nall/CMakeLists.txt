@@ -5,17 +5,17 @@ include(cmake/sources.cmake)
 
 target_link_libraries(nall PUBLIC sljit chdr-static)
 target_compile_definitions(nall PUBLIC CMAKE)
-target_compile_options(
-  nall
-  PRIVATE
-    $<$<COMPILE_LANG_AND_ID:CXX,AppleClang,Clang,GNU>:-Wno-switch
-    -Wno-parentheses
-    -Wno-shorten-64-to-32
-    -Wno-comma
-    -Wno-sign-compare
-    -Wno-deprecated-literal-operator
-    -Wno-unused>
-)
+# target_compile_options(
+#   nall
+#   PRIVATE
+#     $<$<COMPILE_LANG_AND_ID:CXX,AppleClang,Clang,GNU>:-Wno-switch
+#     -Wno-parentheses
+#     -Wno-shorten-64-to-32
+#     -Wno-comma
+#     -Wno-sign-compare
+#     -Wno-deprecated-literal-operator
+#     -Wno-unused>
+# )
 
 if(OS_WINDOWS)
   include(cmake/os-windows.cmake)
@@ -54,3 +54,9 @@ if(ARES_BUILD_LOCAL)
 endif()
 
 target_include_directories(nall PRIVATE ${CMAKE_SOURCE_DIR})
+
+add_executable(nall_test nall-dummy.cpp)
+target_link_libraries(nall_test PUBLIC nall)
+target_include_directories(nall_test PRIVATE ${CMAKE_SOURCE_DIR})
+set_source_files_properties(nall_test nall-dummy.cpp PROPERTIES HEADER_FILE_ONLY FALSE)
+ares_configure_executable(nall_test)
