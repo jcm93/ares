@@ -53,12 +53,18 @@ jobs:
           shell: bash
           target-cmake-preset: windows-ci-msvc-cross
           native-cmake-preset: windows-ci-msvc-native
-        - name: macos-universal
+        - name: macos-compat
           os: macos-15
           compiler: clang++
           shell: sh
           install: cmake ccache xcbeautify
-          target-cmake-preset: macos-ci-universal
+          target-cmake-preset: macos-ci-compat
+        - name: macos-latest
+          os: macos-15
+          compiler: clang++
+          shell: sh
+          install: cmake ccache xcbeautify
+          target-cmake-preset: macos-ci-latest
         - name: ubuntu
           os: ubuntu-latest
           compiler: g++
