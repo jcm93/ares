@@ -9,8 +9,6 @@ if [ "$CROSS_COMPILE" = true ]; then
   popd
 fi
 
-git config core.autocrlf true
-
 git status
 git diff
 cmake --preset $TARGET_PRESET
