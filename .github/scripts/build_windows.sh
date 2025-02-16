@@ -9,6 +9,8 @@ if [ "$CROSS_COMPILE" = true ]; then
   popd
 fi
 
+git status
+git diff
 cmake --preset $TARGET_PRESET
 pushd build
 cmake --build . --config RelWithDebInfo
@@ -22,3 +24,6 @@ fi
 mkdir PDBs
 mv desktop-ui/rundir/*.pdb PDBs/
 popd
+
+git status
+git diff
