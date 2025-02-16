@@ -71,6 +71,11 @@ jobs:
       run:
         shell: ${{ matrix.platform.shell }}
     steps:
+    - name: Setup Windows Git Environment
+      if: matrix.platform.shell == 'msys2 {0}'
+      run: |
+        /c/Program\ Files/Git/bin/git.exe config --global core.autocrlf false
+        /c/Program\ Files/Git/bin/git.exe config --global core.eol lf
     - name: Install MSYS2 Dependencies
       if: matrix.platform.shell == 'msys2 {0}'
       uses: msys2/setup-msys2@v2

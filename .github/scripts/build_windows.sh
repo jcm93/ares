@@ -9,6 +9,9 @@ if [ "$CROSS_COMPILE" = true ]; then
   popd
 fi
 
+git status
+git diff
+
 cmake --preset $TARGET_PRESET
 pushd build
 cmake --build . --config RelWithDebInfo
