@@ -1,0 +1,3 @@
+[submodule "thirdparty/dispatch"]
+	path = thirdparty/dispatch
+	url = https://github.com/swiftlang/swift-corelibs-libdispatch/

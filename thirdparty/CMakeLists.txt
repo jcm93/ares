@@ -98,6 +98,10 @@ target_include_directories(ymfm PUBLIC ../thirdparty/ymfm/src)
 
 target_compile_options(ymfm PRIVATE $<$<CXX_COMPILER_ID:Clang,AppleClang>:-Wno-unreachable-code>)
 
+if(NOT OS_MACOS)
+  add_subdirectory(dispatch)
+endif()
+
 set_target_properties(ymfm PROPERTIES FOLDER thirdparty PREFIX "")
 set_target_properties(tzxfile PROPERTIES FOLDER thirdparty PREFIX "")
 set_target_properties(chdr-static PROPERTIES FOLDER thirdparty PREFIX "")
