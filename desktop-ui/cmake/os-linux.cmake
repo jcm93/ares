@@ -56,6 +56,39 @@ add_custom_command(
   COMMENT "Copying icon to staging directory"
 )
 
+if(NOT DEFINED APPDATA_RELEASE_DATE)
+  if(EXISTS "${CMAKE_SOURCE_DIR}/.git")
+    execute_process(
+      COMMAND git log --tags -1 --pretty=%cd --date=short
+      OUTPUT_VARIABLE APPDATA_RELEASE_DATE
+      WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+  else()
+    string(TIMESTAMP APPDATA_RELEASE_DATE "%Y-%m-%d")
+  endif()
+endif()
+
+if(NOT DEFINED GIT_HASH)
+  if(EXISTS "${CMAKE_SOURCE_DIR}/.git")
+    execute_process(
+      COMMAND git rev-parse HEAD
+      OUTPUT_VARIABLE GIT_HASH
+      WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+  else()
+    set(GIT_HASH "master")
+  endif()
+endif()
+
+configure_file(resource/dev.ares.ares.metainfo.xml.in dev.ares.ares.metainfo.xml)
+
+install(
+  FILES "${CMAKE_CURRENT_BINARY_DIR}/dev.ares.ares.metainfo.xml"
+  DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/metainfo"
+)
+
 install(
   FILES "${CMAKE_CURRENT_SOURCE_DIR}/resource/ares.desktop"
   DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/applications"

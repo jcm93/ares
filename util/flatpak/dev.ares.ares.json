@@ -1,0 +1,56 @@
+{
+  "id": "dev.ares.ares",
+  "runtime": "org.freedesktop.Platform",
+  "runtime-version": "24.08",
+  "sdk": "org.freedesktop.Sdk",
+  "sdk-extensions": [
+    "org.freedesktop.Sdk.Extension.rust-stable",
+    "org.freedesktop.Sdk.Extension.llvm19"
+  ],
+  "command": "ares",
+  "rename-desktop-file": "ares.desktop",
+  "rename-icon": "ares",
+  "finish-args": [
+    "--share=ipc",
+    "--share=network",
+    "--socket=pulseaudio",
+    "--socket=x11",
+    "--device=input",
+    "--device=dri",
+    "--device=usb",
+    "--filesystem=host",
+    "--require-version=1.16.0"
+  ],
+  "modules": [
+    "modules/10-librashader.json",
+    "modules/20-slang-shaders.json",
+    "modules/30-sdl3.json",
+    {
+      "name": "ares",
+      "buildsystem": "cmake-ninja",
+      "builddir": true,
+      "build-options": {
+        "append-path": "/usr/lib/sdk/llvm19/bin",
+        "prepend-ld-library-path": "/usr/lib/sdk/llvm19/lib"
+      },
+      "config-opts": [
+        "-DCMAKE_BUILD_TYPE=RelWithDebInfo",
+        "-DARES_UNITY_CORES=ON",
+        "-DCMAKE_INSTALL_PREFIX=/app",
+        "-DCMAKE_PREFIX_PATH=/app",
+        "-DARES_BUILD_LOCAL=OFF",
+        "-DARES_UNITY_CORES=ON",
+        "-DARES_BUNDLE_SHADERS=OFF",
+        "-DARES_SKIP_DEPS=ON",
+        "-DCMAKE_C_COMPILER=clang",
+        "-DCMAKE_CXX_COMPILER=clang++"
+      ],
+      "sources": [
+        {
+          "type": "dir",
+          "path": "../../"
+        }
+      ]
+    }
+  ]
+}

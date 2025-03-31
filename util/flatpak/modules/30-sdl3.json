@@ -1,0 +1,15 @@
+{
+  "name": "SDL",
+  "buildsystem": "cmake-ninja",
+  "builddir": true,
+  "config-opts": [
+    "-DCMAKE_BUILD_TYPE=RelWithDebInfo"
+  ],
+  "sources": [
+    {
+      "type": "git",
+      "url": "https://github.com/libsdl-org/SDL",
+      "commit": "877399b2b2cf21e67554ed9046410f268ce1d1b2"
+    }
+  ]
+}
