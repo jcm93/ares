@@ -1,0 +1,120 @@
+name: Build (Auxiliary)
+on:
+  workflow_call:
+    inputs:
+      codesign:
+        description: Enable codesigning
+        required: false
+        default: false
+        type: boolean
+jobs:
+  flatpak-setup:
+    name: Flatpak Setup 🔨
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+          set-safe-directory: ${{ env.GITHUB_WORKSPACE }}
+          path: ares
+          
+      - name: Clone librashader
+        uses: actions/checkout@v4
+        with:
+          repository: SnowflakePowered/librashader
+          ref: '029cd36cdf4963e8d9501d912689549254f50f0c'
+          fetch-depth: 0
+          path: librashader
+          
+      - name: Set up Flatpak Builder Tools
+        uses: actions/checkout@v4
+        with:
+          repository: flatpak/flatpak-builder-tools
+          fetch-depth: 0
+          path: flatpak-builder-tools
+          
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: pip install aiohttp toml
+          
+      - name: Create librashader Manifest
+        run: |
+          set -euo pipefail
+          cd ares/packaging
+          python3 ${{ github.workspace }}/flatpak-builder-tools/cargo/flatpak-cargo-generator.py ${{ github.workspace }}/librashader/Cargo.lock -o ${{ github.workspace }}/cargo-sources.json
+          
+      - name: Upload cargo-sources.json
+        uses: actions/upload-artifact@v4
+        with:
+          name: librashader-manifest
+          path: cargo-sources.json
+          
+  flatpak-build:
+    name: Flatpak Build 📦
+    needs: flatpak-setup
+    runs-on: ubuntu-24.04
+    container:
+      image: bilelmoussaoui/flatpak-github-actions:freedesktop-24.08
+      options: --privileged
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+          set-safe-directory: ${{ env.GITHUB_WORKSPACE }}
+          path: ares
+          
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: 'librashader-manifest'
+        
+      - name: Set Up Cache 🔧
+        id: setup
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          : Set Up Cache 🔧
+          ls librashader-manifest/**
+          mv librashader-manifest/librashader-manifest/cargo-sources.json ares/packaging/cargo-sources.json
+#          if [[ "${RUNNER_DEBUG}" ]]; then set -x; fi
+#
+#          git config --global --add safe.directory "${GITHUB_WORKSPACE}/ares"
+#          git config --global --add safe.directory "${GITHUB_WORKSPACE}/librashader"
+#          git config --global --add safe.directory "${GITHUB_WORKSPACE}/flatpak-builder-tools"
+#
+#          echo '::group::Install actions/gh-actions-cache'
+#          gh extension install actions/gh-actions-cache
+#          echo '::endgroup::'
+#
+#          cache_key='flatpak-builder-${{ hashFiles('packaging/*.json') }}'
+#          cache_ref='master'
+#          read -r key size unit _ ref _ <<< \
+#            "$(gh actions-cache list -B ${cache_ref} --key "${cache_key}-x86_64" | head -1)"
+#
+#          if [[ "${key}" ]]; then
+#            echo "cacheHit=true" >> $GITHUB_OUTPUT
+#          else
+#            echo "cacheHit=false" >> $GITHUB_OUTPUT
+#          fi
+#
+#          echo "cacheKey=${cache_key}" >> $GITHUB_OUTPUT
+#          
+#      - name: Install Extra Flatpak Dependencies❓
+#        run: |
+#           flatpak install --user org.freedesktop.Sdk.Extension.rust-stable/x86_64/24.08
+#           flatpak install --user org.freedesktop.Sdk.Extension.llvm19/x86_64/24.08
+           
+      - name: Build Flatpak Manifest 🧾
+        uses: flathub-infra/flatpak-github-actions/flatpak-builder@42d281a5cf2ad1d0882a66af700a62cdad7686c6
+        with:
+          bundle: ares-flatpak-${{ github.sha }}.flatpak
+          manifest-path: ${{ github.workspace }}/ares/packaging/dev.ares.ares.yaml
+#          cache: ${{ fromJSON(steps.setup.outputs.cacheHit) || (github.event_name == 'push' && github.ref_name == 'master')}}
+#          restore-cache: ${{ fromJSON(steps.setup.outputs.cacheHit) }}
+#          cache-key: ${{ steps.setup.outputs.cacheKey }}
