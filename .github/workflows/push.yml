@@ -13,6 +13,10 @@ jobs:
     secrets: inherit
     with:
       codesign: true
+  build-flatpak:
+    name: Build ares (Flatpak)
+    uses: ./.github/workflows/build-flatpak.yml
+    secrets: inherit
   build-aux:
     name: Build ares (auxiliary)
     uses: ./.github/workflows/build-aux.yml
