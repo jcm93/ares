@@ -249,7 +249,7 @@ function(_extract_target_from_link_expression)
   else()
     # Unknown or unimplemented generator expression found. Abort script run to either add to ignore list or implement
     # detection.
-    message(FATAL_ERROR "${arg_dt_LIBRARY} is an unsupported generator expression for linked libraries.")
+    message(AUTHOR_WARNING "${arg_dt_LIBRARY} is an unsupported generator expression for linked libraries.")
     set(${arg_dt_TARGET_VAR} "" PARENT_SCOPE)
   endif()
   return(PROPAGATE ${arg_dt_TARGET_VAR})

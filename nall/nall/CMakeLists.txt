@@ -1,7 +1,10 @@
 add_library(nall OBJECT main.cpp nall.cpp sljitAllocator.cpp)
 add_library(ares::nall ALIAS nall)
 
-find_package(chd-rs)
+if(ARES_ENABLE_CHD)
+  find_package(chd-rs)
+  target_link_libraries(nall PRIVATE chd-rs::chd-rs)
+endif()
 
 include(cmake/sources.cmake)
 

@@ -3,11 +3,12 @@ add_library(ares::mia ALIAS mia)
 
 add_sourcery_command(mia resource)
 
+option(ARES_ENABLE_CHD "Enable CHD format support via libchdr" ON)
+
 if(ARES_ENABLE_CHD)
+  find_package(chd-rs)
   target_compile_definitions(mia PUBLIC ARES_ENABLE_CHD)
-  target_enable_feature(mia "CHD format support via libchdr")
-else()
-  target_disable_feature(mia "CHD format support via libchdr")
+  target_link_libraries(mia PRIVATE chd-rs::chd-rs)
 endif()
 
 target_sources(

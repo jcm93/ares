@@ -53,7 +53,13 @@ auto PlayStation::analyze(string location) -> string {
   if(location.iendsWith(".cue") || location.iendsWith(".chd")) {
     vector<u8> sector;
 
-    sector = readDataSector(location, 4);
+    if(location.iendsWith(".cue")) {
+      sector = readDataSectorCUE(location, 4);
+    } else if (location.iendsWith(".chd")) {
+#if defined(ARES_ENABLE_CHD)
+      sector = readDataSectorCHD(location, 4);
+#endif
+    }
 
     if(!sector) return CompactDisc::manifestAudio(location);
 

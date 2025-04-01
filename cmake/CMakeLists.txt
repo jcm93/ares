@@ -12,6 +12,7 @@ target_sources(
     common/helpers_common.cmake
     common/osconfig.cmake
     common/versionconfig.cmake
+    finders/Findchd-rs.cmake
     finders/Findlibrashader.cmake
     finders/Findslang_shaders.cmake
     finders/FindMoltenVK.cmake
