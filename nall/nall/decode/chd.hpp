@@ -3,7 +3,8 @@
 #include <nall/file.hpp>
 #include <nall/maybe.hpp>
 #include <nall/string.hpp>
-#include <libchdr/chd.h>
+#include <chd-rs/chd.h>
+#include <chd-rs/chdcorefile.h>
 
 namespace nall::Decode {
 

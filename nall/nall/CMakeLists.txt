@@ -1,6 +1,8 @@
 add_library(nall OBJECT main.cpp nall.cpp sljitAllocator.cpp)
 add_library(ares::nall ALIAS nall)
 
+find_package(chd-rs)
+
 include(cmake/sources.cmake)
 
 find_package(Threads REQUIRED)
