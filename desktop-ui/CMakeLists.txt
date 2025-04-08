@@ -15,6 +15,8 @@ target_sources(desktop-ui PRIVATE cmake/sources.cmake cmake/os-macos.cmake cmake
 
 include(cmake/sources.cmake)
 
+configure_file(settings/settings.hpp.in settings/settings.hpp @ONLY)
+
 get_target_property(desktop-ui_SOURCES desktop-ui SOURCES)
 
 set_source_files_properties(desktop-ui ${desktop-ui_SOURCES} PROPERTIES HEADER_FILE_ONLY TRUE)

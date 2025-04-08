@@ -1,3 +1,10 @@
+string homeDefaultLocation = "@ARES_DEFAULT_HOME_DIRECTORY@";
+string firmwareDefaultLocation = "@ARES_DEFAULT_FIRMWARE_DIRECTORY@";
+string savesDefaultLocation = "@ARES_DEFAULT_SAVES_DIRECTORY@";
+string screenshotsDefaultLocation = "@ARES_DEFAULT_SCREENSHOTS_DIRECTORY@";
+string debuggingDefaultLocation = "@ARES_DEFAULT_DEBUGGING_DIRECTORY@";
+string arcadeRomsDefaultLocation = "@ARES_DEFAULT_ARCADE_ROMS_DIRECTORY@";
+
 struct Settings : Markup::Node {
   using string = nall::string;
 
@@ -78,12 +85,12 @@ struct Settings : Markup::Node {
   } rewind;
 
   struct Paths {
-    string home;
-    string firmware;
-    string saves;
-    string screenshots;
-    string debugging;
-    string arcadeRoms;
+    string home = homeDefaultLocation;
+    string firmware = firmwareDefaultLocation;
+    string saves = savesDefaultLocation;
+    string screenshots = screenshotsDefaultLocation;
+    string debugging = debuggingDefaultLocation;
+    string arcadeRoms = arcadeRomsDefaultLocation;
     struct SuperFamicom {
       string gameBoy;
       string bsMemory;

@@ -38,6 +38,7 @@ target_sources(
     settings/options.cpp
     settings/paths.cpp
     settings/settings.hpp
+    settings/settings.hpp.in
     settings/video.cpp
 )
 

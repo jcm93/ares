@@ -18,7 +18,7 @@ auto PathSettings::construct() -> void {
     }
   });
   homeReset.setText("Reset").onActivate([&] {
-    settings.paths.home = "";
+    settings.paths.home = homeDefaultLocation;
     refresh();
   });
 
@@ -36,7 +36,7 @@ auto PathSettings::construct() -> void {
     }
   });
   firmwareReset.setText("Reset").onActivate([&] {
-    settings.paths.firmware = "";
+    settings.paths.firmware = firmwareDefaultLocation;
     refresh();
   });
 
@@ -108,7 +108,7 @@ auto PathSettings::construct() -> void {
     }
   });
   arcadeRomsReset.setText("Reset").onActivate([&] {
-    settings.paths.arcadeRoms = "";
+    settings.paths.arcadeRoms = arcadeRomsDefaultLocation;
     refresh();
   });
 
