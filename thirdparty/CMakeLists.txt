@@ -4,6 +4,14 @@ target_include_directories(sljit PUBLIC ../thirdparty)
 target_compile_definitions(sljit PUBLIC SLJIT_HAVE_CONFIG_PRE=1 SLJIT_HAVE_CONFIG_POST=1)
 target_compile_options(sljit PRIVATE $<$<COMPILE_LANG_AND_ID:C,AppleClang,Clang,GNU>:-Wno-conditional-uninitialized>)
 
+option(ARES_ENABLE_RCHEEVOS "Enable RetroAchievements support" ON)
+
+if(ARES_ENABLE_RCHEEVOS)
+  find_package(CURL REQUIRED)
+  add_subdirectory(rcheevos)
+  target_enable_feature(rcheevos "RetroAchievements support")
+endif()
+
 option(ARES_ENABLE_CHD "Enable CHD format support via libchdr" ON)
 
 if(ARES_ENABLE_CHD)

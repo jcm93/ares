@@ -47,7 +47,7 @@ endif()
 
 target_link_libraries(
   desktop-ui
-  PRIVATE ares::ruby ares::hiro ares::ares mia sljit
+  PRIVATE ares::ruby ares::hiro ares::ares CURL::libcurl libretro::rcheevos mia sljit
 )
 
 if(ARES_ENABLE_CHD)

@@ -1,6 +1,7 @@
-#include <ruby/ruby.hpp>
-//using namespace ruby;
+#include <curl/curl.h>
+#include <rcheevos/rcheevos/include/rc_api_runtime.h>
 
+#include <ruby/ruby.hpp>
 #include <hiro/hiro.hpp>
 using namespace hiro;
 

@@ -1,7 +1,7 @@
 find_package(SDL)
 find_package(librashader)
 
-if(XCODE AND WITH_SYSTEM_ZLIB)
+if(XCODE)
   set_target_properties(ruby PROPERTIES OUTPUT_NAME "ruby-but-not-the-scripting-language")
 endif()
 
