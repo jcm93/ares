@@ -1,5 +1,7 @@
 target_sources(desktop-ui PRIVATE resource/ares.rc resource/ares.Manifest)
 
+# target_link_libraries(desktop-ui PRIVATE userenv ntdll)
+
 set_property(DIRECTORY ${CMAKE_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT desktop-ui)
 
 if(ARES_ENABLE_LIBRASHADER)

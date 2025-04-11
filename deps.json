@@ -1,14 +1,14 @@
 {
     "dependencies": {
         "prebuilt": {
-            "version": "chdrs-dev-2",
+            "version": "chdrs-dev",
             "baseUrl": "https://github.com/jcm93/ares-deps-2/releases/download",
             "label": "Pre-Built ares-deps",
             "hashes": {
-                "linux-universal": "0d611be4334dd5acb6ef05daedc10d6a0da415eb73289413a5749ef2d8565b37",
-                "macos-universal": "da90c6b3268d5da1dbbebd10ca04b09de248b8fa3bde893ae65d06e21c091b56",
-                "windows-arm64": "052f91554676b677acc5e5ec48d27511beb012903888fcdc1a490b3d8c4c54bc",
-                "windows-x64": "d1da7f7e499ccab5a28db9e5be81da17da1491cdbc25dc5f3ef0d628ddbbcbbf"
+                "linux-universal": "4960bbbdf224df72d98d662630ff9a4af62ad7cd50381fa4bc6ac46ff31a35f4",
+                "macos-universal": "c39042599390294efc3dbd26ca88cb922de12699208707e61a1bc08caee1e9c3",
+                "windows-arm64": "a34b1f7b3cd257309b8d121e0650267b5bb3f90fa9ddca07d1a2a946542f73a5",
+                "windows-x64": "97ed1f4c5da1227a312e58a55fde541656a0bd5527a1d6f098038ca8509757da"
             }
         }
     },

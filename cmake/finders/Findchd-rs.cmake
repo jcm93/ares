@@ -100,6 +100,13 @@ if(chd-rs_FOUND)
         INTERFACE_INCLUDE_DIRECTORIES "${chd-rs_INCLUDE_DIR}"
         VERSION ${chd-rs_VERSION}
     )
+#    if(CMAKE_HOST_SYSTEM_NAME MATCHES "Windows")
+#      set_target_properties(
+#        chd-rs::chd-rs
+#        PROPERTIES
+#          INTERFACE_LINK_LIBRARIES "userenv;ntdll"
+#      )
+#    endif()
   endif()
 endif()
 
