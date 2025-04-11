@@ -8,7 +8,7 @@ target_link_libraries(nall PRIVATE Threads::Threads)
 
 target_link_libraries(nall PUBLIC sljit)
 if(ARES_ENABLE_CHD)
-  target_link_libraries(nall PUBLIC chdr-static)
+  target_link_libraries(nall PUBLIC chd-rs::chd-rs)
   target_compile_definitions(nall PUBLIC ARES_ENABLE_CHD)
 endif()
 target_compile_definitions(nall PUBLIC CMAKE)

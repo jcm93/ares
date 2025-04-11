@@ -5,9 +5,9 @@ add_sourcery_command(mia resource)
 
 if(ARES_ENABLE_CHD)
   target_compile_definitions(mia PUBLIC ARES_ENABLE_CHD)
-  target_enable_feature(mia "CHD format support via libchdr")
+  target_enable_feature(mia "CHD format support via chd-rs")
 else()
-  target_disable_feature(mia "CHD format support via libchdr")
+  target_disable_feature(mia "CHD format support via chd-rs")
 endif()
 
 target_sources(

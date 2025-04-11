@@ -51,7 +51,7 @@ target_link_libraries(
 )
 
 if(ARES_ENABLE_CHD)
-  target_link_libraries(desktop-ui PRIVATE chdr-static)
+  target_link_libraries(desktop-ui PRIVATE chd-rs::chd-rs)
 endif()
 
 set_target_properties(desktop-ui PROPERTIES OUTPUT_NAME ares)

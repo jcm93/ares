@@ -16,6 +16,7 @@ target_sources(
     finders/Findslang_shaders.cmake
     finders/FindMoltenVK.cmake
     finders/FindSDL.cmake
+    finders/Findchd-rs.cmake
     finders/FindGTK.cmake
     finders/FindAO.cmake
     finders/FindOSS.cmake
