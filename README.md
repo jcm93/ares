@@ -1,17 +1,21 @@
-<img src="https://github.com/ares-emulator/ares/blob/master/ares/ares/resource/logo@2x.png" width="350"/>
+[<img src="https://github.com/ares-emulator/ares/blob/master/ares/ares/resource/logo@2x.png" width="350"/>](https://ares-emu.net)
 
-[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://github.com/higan-emu/ares/blob/master/LICENSE)
+[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://github.com/ares-emulator/ares/blob/master/LICENSE)
+![master branch build status](https://github.com/ares-emulator/ares/actions/workflows/push.yml/badge.svg?branch=master)
 
 **ares** is a multi-system emulator that began development on October 14th, 2004.
 It is a descendant of [higan](https://github.com/higan-emu/higan) and [bsnes](https://github.com/bsnes-emu/bsnes/), and focuses on accuracy and preservation.
 
-It's worth noting that ares takes some uncommon design approaches that essentially trade speed for code clarity. We avoid state machines and bitmasks (when possible). Most cores end up being half the amount of code, but slower. The code is clearer and less spaghettified, especially for systems with lots of processors. C bitfields being non-portable incurs a speedhit. Windows also has a speedhit over Linux due to its ABI needing more instructions to switch contexts.
-
 Official Releases
 -----------------
 
-Official releases are available from
+Official releases for macOS and Windows are available from
 [the ares website](https://ares-emu.net).
+
+The ares team does not currently distribute Linux or BSD builds directly. Linux and BSD users are encouraged to either 
+[build from source](https://github.com/ares-emulator/ares/wiki/Build-Instructions), 
+or else obtain a build from one of several 
+[unofficial channels](https://github.com/ares-emulator/ares/wiki/Install-Instructions#linux).
 
 Nightly Builds
 --------------
