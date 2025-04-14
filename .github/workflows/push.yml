@@ -22,3 +22,7 @@ jobs:
     uses: ./.github/workflows/release.yml
     with:
       notarize: true
+  push-subtrees:
+    name: Update subtrees
+    secrets: inherit
+    uses: ./.github/workflows/subtrees.yml

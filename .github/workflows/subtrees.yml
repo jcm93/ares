@@ -1,0 +1,18 @@
+name: Update Subtrees
+on:
+  workflow_call
+jobs:
+  update:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.ARES_SUBTREES_TOKEN }}
+    - name: "Set up Remotes 📡"
+      run: |
+        git remote add libco-remote https://github.com/jcm93/libco.git
+        git fetch libco-remote
+    - name: "Push Remotes🫸"
+      run: |
+        git push libco-remote $(git subtree split --prefix=libco --onto=libco-remote/master):master
