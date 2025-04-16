@@ -5,9 +5,9 @@
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>ISC</project_license>
   <name>ares</name>
-  <summary>multi-system console emulation suite</summary>
+  <summary>Multi-system console emulation suite</summary>
   <description>
-    <p>ares is a multi-system emulator with the following features:</p>
+    <p>ares is a cross-platform, open source, multi-system emulator, focusing on accuracy and preservation. ares includes the following features:</p>
     <ul>
       <li>Native multi-platform UI</li>
       <li>Adaptive sync</li>
@@ -141,7 +141,9 @@
     </screenshot>
   </screenshots>
   <url type="homepage">https://ares-emu.net</url>
-  <developer_name>ares team</developer_name>
+  <developer id="dev.ares">
+    <name>ares team</name>
+  </developer>
   <provides>
     <binary>ares</binary>
   </provides>
