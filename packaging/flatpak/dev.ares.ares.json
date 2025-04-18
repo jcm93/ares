@@ -49,19 +49,6 @@
           "path": "../../"
         }
       ]
-    },
-    {
-      "name": "ares-metadata",
-      "buildsystem": "simple",
-      "build-commands": [
-        "install -D -m 644 -t /app/share/metainfo dev.ares.ares.metainfo.xml"
-      ],
-      "sources": [
-        {
-          "type": "file",
-          "path": "dev.ares.ares.metainfo.xml"
-        }
-      ]
     }
   ]
 }

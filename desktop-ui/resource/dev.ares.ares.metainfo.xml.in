@@ -5,30 +5,26 @@
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>ISC</project_license>
   <name>ares</name>
-  <summary>multi-system console emulation suite</summary>
+  <summary>Multi-system console emulation suite</summary>
   <description>
-    <p>ares is a multi-system emulator with the following features:</p>
+    <p>ares is a cross-platform, open source, multi-system emulator, focusing on accuracy and preservation.</p>
+    <p>Features:</p>
     <ul>
-      <li>Native multi-platform UI</li>
-      <li>Adaptive sync</li>
-      <li>Dynamic rate control</li>
-      <li>Save states</li>
-      <li>Run-ahead</li>
-      <li>Rewind and fast-forward</li>
-      <li>Pixel shaders</li>
-      <li>Color correction</li>
-      <li>6th-order IIR audio filtering</li>
-      <li>Input multi-mapping</li>
-      <li>Built-in games database</li>
-      <li>Debugger</li>
+      <li>Highly accurate, state-of-the-art emulation of numerous retro systems.</li>
+      <li>Support for the RetroArch family of 'slang' shaders via librashader. Enjoy advanced shaders from multiple families of CRTs, handhelds, and more.</li>
+      <li>Rewind and fast-forward.</li>
+      <li>Exacting pixel accuracy modes to faithfully reproduce original console color output.</li>
+      <li>Full support for savestates; easily save your progress and pick up where you left off.</li>
+      <li>Advanced latency reduction via "Run-Ahead".</li>
+      <li>Support for multiple input drivers, including SDL3 for optimal controller compatibility.</li>
+      <li>Complete game databases and smart heuristics for "plug-and-play;" no lengthy up-front system configuration required.</li>
     </ul>
-    <p>ares currently emulates the following hardware devices:</p>
+    <p>ares currently emulates the following systems:</p>
     <ul>
-      <li>Famicom + Famicom Disk System</li>
-      <li>Super Famicom</li>
+      <li>Super Famicom (SNES) </li>
+      <li>Famicom + Famicom Disk System (NES)</li>
       <li>Nintendo 64</li>
-      <li>Game Boy + Super Game Boy</li>
-      <li>Game Boy Color</li>
+      <li>Game Boy + Game Boy Color</li>
       <li>Game Boy Advance</li>
       <li>SG-1000</li>
       <li>Master System</li>
@@ -43,6 +39,7 @@
       <li>ColecoVision</li>
       <li>Neo Geo Pocket + Neo Geo Pocket Color</li>
       <li>WonderSwan + WonderSwan Color + Pocket Challenge V2</li>
+      <li>Aleck 64</li>
     </ul>
   </description>
   <launchable type="desktop-id">dev.ares.ares.desktop</launchable>
@@ -141,46 +138,17 @@
     </screenshot>
   </screenshots>
   <url type="homepage">https://ares-emu.net</url>
-  <developer_name>ares team</developer_name>
+  <developer_name>Near, ares team</developer_name>
   <provides>
     <binary>ares</binary>
   </provides>
   <releases>
-    <release version="143" date="2025-02-16">
-      <description></description>
-    </release>
-    <release version="142" date="2025-02-05">
-      <description/>
-    </release>
-    <release version="141" date="2024-11-04">
-      <description/>
-    </release>
-    <release version="140" date="2024-08-27">
-      <description/>
-    </release>
-    <release version="139" date="2024-06-19">
-      <description/>
-    </release>
-    <release version="138" date="2024-05-02"/>
-    <release version="137" date="2024-03-31"/>
-    <release version="136" date="2024-02-23"/>
-    <release version="135" date="2024-01-23"/>
-    <release version="134" date="2023-11-22"/>
-    <release version="133" date="2023-07-21"/>
-    <release version="132" date="2023-03-08"/>
-    <release version="131" date="2022-12-27"/>
-    <release version="130.1" date="2022-10-03"/>
-    <release version="130" date="2022-09-30"/>
-    <release version="129" date="2022-07-13"/>
-    <release version="128" date="2022-05-17"/>
-    <release version="127" date="2022-03-03"/>
-    <release version="126" date="2021-11-28"/>
-    <release version="125.1" date="2021-11-11"/>
-    <release version="125" date="2021-11-10"/>
-    <release version="124" date="2021-10-15"/>
-    <release version="123" date="2021-08-22">
-      <url>https://github.com/higan-emu/ares/releases/tag/v123</url>
+    <release version="@ARES_VERSION@" date="@APPDATA_RELEASE_DATE@">
+      <url type="details">https://github.com/ares-emulator/ares/releases/tag/@ARES_VERSION@</url>
     </release>
   </releases>
+  <custom>
+    <value key="flathub::manifest">https://github.com/ares-emulator/ares/blob/@GIT_HASH@/packaging/flatpak/</value>
+  </custom>
   <content_rating type="oars-1.1"/>
 </component>
