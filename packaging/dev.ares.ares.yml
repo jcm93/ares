@@ -26,7 +26,7 @@ modules:
     build-commands:
       - cargo run -p librashader-build-script -- --profile optimized --stable
       - mkdir ${FLATPAK_DEST}/lib && cp -r target/optimized/librashader.so ${FLATPAK_DEST}/lib/librashader.so
-      - mkdir -p ${FLATPAK_DEST}/include/librashader/ && cp -r include/* ${FLATPAK_DEST}/include/librashader/      
+      - mkdir -p ${FLATPAK_DEST}/include/librashader/ && cp -r include/* ${FLATPAK_DEST}/include/librashader/
     sources:
       - type: git
         url: https://github.com/SnowflakePowered/librashader
@@ -52,11 +52,9 @@ modules:
       - -D CMAKE_INSTALL_PREFIX=/app
       - -D CMAKE_PREFIX_PATH=/app
       - -D ARES_BUILD_LOCAL=OFF
-      - -D ARES_BUNDLE_SHADERS=OFF
       - -D ARES_SKIP_DEPS=ON
       - -D CMAKE_C_COMPILER=clang
       - -D CMAKE_CXX_COMPILER=clang++
-      - -D ARES_VERSION_OVERRIDE=v143
       - -G Ninja
     sources:
       - type: dir
