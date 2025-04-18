@@ -1,0 +1,13 @@
+{
+  "name": "slang-shaders",
+  "make-install-args": [
+    "PREFIX=/app"
+  ],
+  "sources": [
+    {
+      "type": "git",
+      "url": "https://github.com/libretro/slang-shaders",
+      "commit": "130f589cd5a2f3e5df1d6607b82b6771bc8b8446"
+    }
+  ]
+}
