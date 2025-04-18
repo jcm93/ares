@@ -1,0 +1,23 @@
+{
+  "name": "SDL3",
+  "buildsystem": "cmake-ninja",
+  "build-options": {
+    "append-path": "/usr/lib/sdk/rust-stable/bin",
+    "env": {
+      "CARGO_HOME": "/run/build/librashader/cargo"
+    }
+  },
+  "build-commands": [
+    "cargo run -p librashader-build-script -- --profile optimized --stable",
+    "mkdir /app/lib && cp -r target/optimized/librashader.so /app/lib/librashader.so",
+    "mkdir -p /app/include/librashader/ && cp -r include/* /app/include/librashader/"
+  ],
+  "sources": [
+    {
+      "type": "git",
+      "url": "https://github.com/SnowflakePowered/librashader",
+      "commit": "029cd36cdf4963e8d9501d912689549254f50f0c"
+    },
+    "cargo-sources.json"
+  ]
+}
