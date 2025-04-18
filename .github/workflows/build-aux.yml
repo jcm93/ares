@@ -10,7 +10,15 @@ on:
 jobs:
   flatpak-setup:
     name: Flatpak Setup 🔨
-    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+        - arch: x86_64
+          os: ubuntu-24.04
+        - arch: aarch64
+          os: ubuntu-24.04-arm
+    runs-on: ${{ matrix.platform.os }}
     defaults:
       run:
         shell: bash
@@ -51,15 +59,22 @@ jobs:
       - name: Upload cargo-sources.json
         uses: actions/upload-artifact@v4
         with:
-          name: librashader-manifest
+          name: "librashader-manifest-${{ matrix.platform.arch }}"
           path: cargo-sources.json
           
   flatpak-build:
     name: Flatpak Build 📦
-    needs: flatpak-setup
-    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+        - arch: x86_64
+          os: ubuntu-24.04
+        - arch: aarch64
+          os: ubuntu-24.04-arm
+    runs-on: ${{ matrix.platform.os }}
     container:
-      image: bilelmoussaoui/flatpak-github-actions:freedesktop-24.08
+      image: ghcr.io/flathub-infra/flatpak-github-actions:freedesktop-24.08
       options: --privileged
     steps:
       - uses: actions/checkout@v4
@@ -81,8 +96,7 @@ jobs:
         run: |
           : Set Up Cache 🔧
           ls librashader-manifest/**
-          mv librashader-manifest/librashader-manifest/cargo-sources.json ares/packaging/cargo-sources.json
-#          if [[ "${RUNNER_DEBUG}" ]]; then set -x; fi
+          mv librashader-manifest/librashader-manifest-${{ matrix.platform.arch }}/cargo-sources.json ares/packaging/cargo-sources.json
 #
 #          git config --global --add safe.directory "${GITHUB_WORKSPACE}/ares"
 #          git config --global --add safe.directory "${GITHUB_WORKSPACE}/librashader"
@@ -114,7 +128,8 @@ jobs:
         uses: flathub-infra/flatpak-github-actions/flatpak-builder@42d281a5cf2ad1d0882a66af700a62cdad7686c6
         with:
           bundle: ares-flatpak-${{ github.sha }}.flatpak
-          manifest-path: ${{ github.workspace }}/ares/packaging/dev.ares.ares.yaml
+          manifest-path: ${{ github.workspace }}/ares/packaging/dev.ares.ares.yml
+          arch: ${{ matrix.platform.arch }}
 #          cache: ${{ fromJSON(steps.setup.outputs.cacheHit) || (github.event_name == 'push' && github.ref_name == 'master')}}
 #          restore-cache: ${{ fromJSON(steps.setup.outputs.cacheHit) }}
 #          cache-key: ${{ steps.setup.outputs.cacheKey }}

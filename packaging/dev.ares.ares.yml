@@ -48,6 +48,7 @@ modules:
     config-opts:
       - -W no-dev
       - -D CMAKE_BUILD_TYPE=RelWithDebInfo
+      - -D ARES_UNITY_CORES=ON
       - -D CMAKE_INSTALL_PREFIX=/app
       - -D CMAKE_PREFIX_PATH=/app
       - -D ARES_BUILD_LOCAL=OFF
