@@ -22,6 +22,7 @@
   "modules": [
     "modules/10-librashader.json",
     "modules/20-slang-shaders.json",
+    "modules/30-sdl3.json",
     {
       "name": "ares",
       "buildsystem": "cmake-ninja",
