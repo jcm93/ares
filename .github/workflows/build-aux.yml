@@ -29,6 +29,7 @@ jobs:
           fetch-depth: 0
           set-safe-directory: ${{ env.GITHUB_WORKSPACE }}
           path: ares
+          fetch-tags: true
           
       - name: Clone librashader
         uses: actions/checkout@v4
@@ -73,6 +74,7 @@ jobs:
         - arch: aarch64
           os: ubuntu-24.04-arm
     runs-on: ${{ matrix.platform.os }}
+    needs: flatpak-setup
     container:
       image: ghcr.io/flathub-infra/flatpak-github-actions:freedesktop-24.08
       options: --privileged
@@ -89,40 +91,10 @@ jobs:
         with:
           path: 'librashader-manifest'
         
-      - name: Set Up Cache 🔧
+      - name: Prepare librashader manifest 🔧
         id: setup
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: |
-          : Set Up Cache 🔧
-          ls librashader-manifest/**
           mv librashader-manifest/librashader-manifest-${{ matrix.platform.arch }}/cargo-sources.json ares/packaging/cargo-sources.json
-#
-#          git config --global --add safe.directory "${GITHUB_WORKSPACE}/ares"
-#          git config --global --add safe.directory "${GITHUB_WORKSPACE}/librashader"
-#          git config --global --add safe.directory "${GITHUB_WORKSPACE}/flatpak-builder-tools"
-#
-#          echo '::group::Install actions/gh-actions-cache'
-#          gh extension install actions/gh-actions-cache
-#          echo '::endgroup::'
-#
-#          cache_key='flatpak-builder-${{ hashFiles('packaging/*.json') }}'
-#          cache_ref='master'
-#          read -r key size unit _ ref _ <<< \
-#            "$(gh actions-cache list -B ${cache_ref} --key "${cache_key}-x86_64" | head -1)"
-#
-#          if [[ "${key}" ]]; then
-#            echo "cacheHit=true" >> $GITHUB_OUTPUT
-#          else
-#            echo "cacheHit=false" >> $GITHUB_OUTPUT
-#          fi
-#
-#          echo "cacheKey=${cache_key}" >> $GITHUB_OUTPUT
-#          
-#      - name: Install Extra Flatpak Dependencies❓
-#        run: |
-#           flatpak install --user org.freedesktop.Sdk.Extension.rust-stable/x86_64/24.08
-#           flatpak install --user org.freedesktop.Sdk.Extension.llvm19/x86_64/24.08
            
       - name: Build Flatpak Manifest 🧾
         uses: flathub-infra/flatpak-github-actions/flatpak-builder@42d281a5cf2ad1d0882a66af700a62cdad7686c6
@@ -130,6 +102,3 @@ jobs:
           bundle: ares-flatpak-${{ github.sha }}.flatpak
           manifest-path: ${{ github.workspace }}/ares/packaging/dev.ares.ares.yml
           arch: ${{ matrix.platform.arch }}
-#          cache: ${{ fromJSON(steps.setup.outputs.cacheHit) || (github.event_name == 'push' && github.ref_name == 'master')}}
-#          restore-cache: ${{ fromJSON(steps.setup.outputs.cacheHit) }}
-#          cache-key: ${{ steps.setup.outputs.cacheKey }}
