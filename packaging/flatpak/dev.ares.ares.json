@@ -38,6 +38,7 @@
         "-DCMAKE_INSTALL_PREFIX=/app",
         "-DCMAKE_PREFIX_PATH=/app",
         "-DARES_BUILD_LOCAL=OFF",
+        "-DARES_BUNDLE_SHADERS=OFF",
         "-DARES_SKIP_DEPS=ON",
         "-DCMAKE_C_COMPILER=clang",
         "-DCMAKE_CXX_COMPILER=clang++",
