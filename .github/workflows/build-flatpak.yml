@@ -1,0 +1,139 @@
+name: Build (Flatpak)
+on:
+  workflow_call
+jobs:
+  flatpak-setup:
+    name: Flatpak Setup 🔨
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+        - arch: x86_64
+          os: ubuntu-24.04
+        - arch: aarch64
+          os: ubuntu-24.04-arm
+    runs-on: ${{ matrix.platform.os }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+          set-safe-directory: ${{ env.GITHUB_WORKSPACE }}
+          path: ares
+          fetch-tags: true
+          
+      - name: Clone librashader
+        uses: actions/checkout@v4
+        with:
+          repository: SnowflakePowered/librashader
+          ref: '029cd36cdf4963e8d9501d912689549254f50f0c'
+          fetch-depth: 0
+          path: librashader
+          
+      - name: Set up Flatpak Builder Tools
+        uses: actions/checkout@v4
+        with:
+          repository: flatpak/flatpak-builder-tools
+          fetch-depth: 0
+          path: flatpak-builder-tools
+          
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: pip install aiohttp toml
+          
+      - name: Create librashader Manifest
+        run: |
+          set -euo pipefail
+          cd ares/util
+          python3 ${{ github.workspace }}/flatpak-builder-tools/cargo/flatpak-cargo-generator.py ${{ github.workspace }}/librashader/Cargo.lock -o ${{ github.workspace }}/cargo-sources.json
+          
+      - name: Upload cargo-sources.json
+        uses: actions/upload-artifact@v4
+        with:
+          name: "librashader-manifest-${{ matrix.platform.arch }}"
+          path: cargo-sources.json
+          
+  flatpak-build:
+    name: Flatpak Build 📦
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+        - arch: x86_64
+          os: ubuntu-24.04
+        - arch: aarch64
+          os: ubuntu-24.04-arm
+    runs-on: ${{ matrix.platform.os }}
+    needs: flatpak-setup
+    container:
+      image: ghcr.io/flathub-infra/flatpak-github-actions:freedesktop-24.08
+      options: --privileged
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+          set-safe-directory: ${{ env.GITHUB_WORKSPACE }}
+          path: ares
+          
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: 'librashader-manifest'
+        
+      - name: Prepare librashader manifest 🔧
+        id: setup
+        run: |
+          mv librashader-manifest/librashader-manifest-${{ matrix.platform.arch }}/cargo-sources.json ares/util/flatpak/modules/cargo-sources.json
+          
+      - name: Validate Flatpak manifest
+        uses: ./ares/.github/actions/flatpak-builder-lint
+        with:
+          artifact: manifest
+          path: ares/util/flatpak/dev.ares.ares.json
+           
+      - name: Build Flatpak Manifest 🧾
+        uses: flathub-infra/flatpak-github-actions/flatpak-builder@42d281a5cf2ad1d0882a66af700a62cdad7686c6
+        with:
+          bundle: ares-flatpak-${{ github.sha }}.flatpak
+          manifest-path: ${{ github.workspace }}/ares/util/flatpak/dev.ares.ares.json
+          mirror-screenshots-url: https://dl.flathub.org/media/
+          arch: ${{ matrix.platform.arch }}
+          
+      - name: Validate AppStream
+        uses: ./ares/.github/actions/flatpak-builder-lint
+        with:
+          artifact: appstream
+          path: flatpak_app/files/share/metainfo/dev.ares.ares.metainfo.xml
+          
+      - name: Verify Icon and Metadata in app-info
+        working-directory: flatpak_app/files/share
+        run: |
+          : Verify Icon and Metadata in app-info
+          test -f app-info/icons/flatpak/128x128/dev.ares.ares.png || { echo "::error::Missing 128x128 icon in app-info"; exit 1; }
+          test -f app-info/xmls/dev.ares.ares.xml.gz || { echo "::error::Missing dev.ares.ares.xml.gz in app-info"; exit 1; }
+
+      - name: Validate build directory
+        uses: ./ares/.github/actions/flatpak-builder-lint
+        with:
+          artifact: builddir
+          path: flatpak_app
+
+      - name: Validate repository
+        uses: ./ares/.github/actions/flatpak-builder-lint
+        with:
+          artifact: repo
+          path: repo
+
+      - name: Publish to Flathub
+        uses: flatpak/flatpak-github-actions/flat-manager@10a3c29f0162516f0f68006be14c92f34bd4fa6c
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          flat-manager-url: https://hub.flathub.org/
+          repository: stable
+          token: ${{ secrets.FLATHUB_TOKEN }}
+          build-log-url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}

@@ -15,3 +15,11 @@ jobs:
     uses: ./.github/workflows/build.yml
     permissions:
       contents: read
+  build-flatpak:
+    name: Build ares (Flatpak)
+    uses: ./.github/workflows/build-flatpak.yml
+    secrets: inherit
+  build-aux:
+    name: Build ares (Auxiliary)
+    uses: ./.github/workflows/build-aux.yml
+    secrets: inherit

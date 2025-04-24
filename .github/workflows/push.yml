@@ -8,17 +8,19 @@ permissions:
   contents: write
 jobs:
   build:
-    name: Build ares
+    name: Build ares (Primary)
     uses: ./.github/workflows/build.yml
     secrets: inherit
     with:
       codesign: true
+  build-flatpak:
+    name: Build ares (Flatpak)
+    uses: ./.github/workflows/build-flatpak.yml
+    secrets: inherit
   build-aux:
-    name: Build ares (auxiliary)
+    name: Build ares (Auxiliary)
     uses: ./.github/workflows/build-aux.yml
     secrets: inherit
-    with:
-      codesign: true
   release:
     name: Release
     needs: build
