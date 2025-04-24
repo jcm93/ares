@@ -11,11 +11,10 @@
 !/mia
 !/nall
 !/ruby
-!/packaging
-!/scripts
 !/tests
 !/thirdparty
 !/tools
+!/util
 !/GNUMakefile
 !/LICENSE
 !/README.md

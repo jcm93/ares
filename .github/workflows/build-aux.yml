@@ -54,7 +54,7 @@ jobs:
       - name: Create librashader Manifest
         run: |
           set -euo pipefail
-          cd ares/packaging
+          cd ares/util
           python3 ${{ github.workspace }}/flatpak-builder-tools/cargo/flatpak-cargo-generator.py ${{ github.workspace }}/librashader/Cargo.lock -o ${{ github.workspace }}/cargo-sources.json
           
       - name: Upload cargo-sources.json
@@ -94,11 +94,11 @@ jobs:
       - name: Prepare librashader manifest 🔧
         id: setup
         run: |
-          mv librashader-manifest/librashader-manifest-${{ matrix.platform.arch }}/cargo-sources.json ares/packaging/flatpak/modules/cargo-sources.json
+          mv librashader-manifest/librashader-manifest-${{ matrix.platform.arch }}/cargo-sources.json ares/util/flatpak/modules/cargo-sources.json
            
       - name: Build Flatpak Manifest 🧾
         uses: flathub-infra/flatpak-github-actions/flatpak-builder@42d281a5cf2ad1d0882a66af700a62cdad7686c6
         with:
           bundle: ares-flatpak-${{ github.sha }}.flatpak
-          manifest-path: ${{ github.workspace }}/ares/packaging/flatpak/dev.ares.ares.json
+          manifest-path: ${{ github.workspace }}/ares/util/flatpak/dev.ares.ares.json
           arch: ${{ matrix.platform.arch }}
