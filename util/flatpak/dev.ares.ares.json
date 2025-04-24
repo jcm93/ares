@@ -17,7 +17,8 @@
     "--socket=x11",
     "--device=input",
     "--device=dri",
-    "--allow=bluetooth"
+    "--allow=bluetooth",
+    "--require-version=1.16.0"
   ],
   "modules": [
     "modules/10-librashader.json",

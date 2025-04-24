@@ -95,10 +95,42 @@ jobs:
         id: setup
         run: |
           mv librashader-manifest/librashader-manifest-${{ matrix.platform.arch }}/cargo-sources.json ares/util/flatpak/modules/cargo-sources.json
+          
+      - name: Validate Flatpak manifest
+        uses: ./ares/.github/actions/flatpak-builder-lint
+        with:
+          artifact: manifest
+          path: ares/util/flatpak/dev.ares.ares.json
            
       - name: Build Flatpak Manifest 🧾
         uses: flathub-infra/flatpak-github-actions/flatpak-builder@42d281a5cf2ad1d0882a66af700a62cdad7686c6
         with:
           bundle: ares-flatpak-${{ github.sha }}.flatpak
           manifest-path: ${{ github.workspace }}/ares/util/flatpak/dev.ares.ares.json
+          mirror-screenshots-url: https://dl.flathub.org/media/
           arch: ${{ matrix.platform.arch }}
+          
+      - name: Validate AppStream
+        uses: ./ares/.github/actions/flatpak-builder-lint
+        with:
+          artifact: appstream
+          path: flatpak_app/files/share/metainfo/dev.ares.ares.metainfo.xml
+          
+      - name: Verify Icon and Metadata in app-info
+        working-directory: flatpak_app/files/share
+        run: |
+          : Verify Icon and Metadata in app-info
+          test -f app-info/icons/flatpak/128x128/dev.ares.ares.png || { echo "::error::Missing 128x128 icon in app-info"; exit 1; }
+          test -f app-info/xmls/dev.ares.ares.xml.gz || { echo "::error::Missing dev.ares.ares.xml.gz in app-info"; exit 1; }
+
+      - name: Validate build directory
+        uses: ./ares/.github/actions/flatpak-builder-lint
+        with:
+          artifact: builddir
+          path: flatpak_app
+
+      - name: Validate repository
+        uses: ./ares/.github/actions/flatpak-builder-lint
+        with:
+          artifact: repo
+          path: repo

@@ -148,7 +148,7 @@
     </release>
   </releases>
   <custom>
-    <value key="flathub::manifest">https://github.com/ares-emulator/ares/blob/@GIT_HASH@/packaging/flatpak/</value>
+    <value key="flathub::manifest">https://github.com/ares-emulator/ares/blob/@GIT_HASH@/util/flatpak/</value>
   </custom>
   <content_rating type="oars-1.1"/>
 </component>
