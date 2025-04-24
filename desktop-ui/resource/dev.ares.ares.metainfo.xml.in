@@ -138,7 +138,9 @@
     </screenshot>
   </screenshots>
   <url type="homepage">https://ares-emu.net</url>
-  <developer_name>Near, ares team</developer_name>
+  <developer id="dev.ares">
+    <name>Near, ares team</name>
+  </developer>
   <provides>
     <binary>ares</binary>
   </provides>
