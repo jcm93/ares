@@ -11,6 +11,7 @@ struct file : inode {
   file() = delete;
 
   static auto open(const string& filename, u32 mode) -> file_buffer {
+    print("inode opening", filename);
     return file_buffer{filename, mode};
   }
 
@@ -50,6 +51,7 @@ struct file : inode {
 
   //returns false if specified filename is a directory
   static auto exists(const string& filename) -> bool {
+    print("inode checking exists ", filename);
     #if defined(API_POSIX)
     struct stat data;
     if(stat(filename, &data) != 0) return false;

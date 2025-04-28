@@ -100,6 +100,7 @@ public:
   }
 
   auto open(const string& filename, u32 mode_) -> bool {
+    print("opening ", filename);
     close();
     if(file::exists(filename) && file::size(filename) == 0) return _open = true;
 
