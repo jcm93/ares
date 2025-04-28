@@ -18,7 +18,8 @@
     "--device=input",
     "--device=dri",
     "--allow=bluetooth",
-    "--require-version=1.16.0"
+    "--require-version=1.16.0",
+    "--persist=."
   ],
   "modules": [
     "modules/10-librashader.json",
@@ -35,10 +36,9 @@
       "config-opts": [
         "-Wno-dev",
         "-DCMAKE_BUILD_TYPE=RelWithDebInfo",
-        "-DARES_UNITY_CORES=ON",
         "-DCMAKE_INSTALL_PREFIX=/app",
         "-DCMAKE_PREFIX_PATH=/app",
-        "-DARES_BUILD_LOCAL=OFF",
+        "-DARES_BUILD_LOCAL=ON",
         "-DARES_BUNDLE_SHADERS=OFF",
         "-DARES_SKIP_DEPS=ON",
         "-DCMAKE_C_COMPILER=clang",
