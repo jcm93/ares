@@ -1,4 +1,3 @@
-
 constexpr auto clip = [](auto x, auto lo, auto hi) {
   return std::clamp(x, lo <= hi ? lo : hi, hi >= lo ? hi : lo);
 };

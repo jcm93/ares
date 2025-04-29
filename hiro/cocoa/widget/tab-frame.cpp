@@ -5,6 +5,7 @@
 -(id) initWith:(hiro::mTabFrame&)tabFrameReference {
   if(self = [super initWithFrame:NSMakeRect(0, 0, 0, 0)]) {
     tabFrame = &tabFrameReference;
+    [(NSTabViewController *)self setTabStyle:NSTabViewControllerTabStyleToolbar];
 
     [self setDelegate:self];
   }
