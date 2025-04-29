@@ -187,17 +187,17 @@ SettingsWindow::SettingsWindow() {
 
   panelContainer.setPadding(5_sx, 5_sy);
 
-  panelList.append(ListViewItem().setText("Video").setIcon(Icon::Device::Display));
-  panelList.append(ListViewItem().setText("Audio").setIcon(Icon::Device::Speaker));
-  panelList.append(ListViewItem().setText("Input").setIcon(Icon::Device::Joypad));
-  panelList.append(ListViewItem().setText("Hotkeys").setIcon(Icon::Device::Keyboard));
-  panelList.append(ListViewItem().setText("Emulators").setIcon(Icon::Place::Server));
-  panelList.append(ListViewItem().setText("Options").setIcon(Icon::Action::Settings));
-  panelList.append(ListViewItem().setText("Firmware").setIcon(Icon::Emblem::Binary));
-  panelList.append(ListViewItem().setText("Paths").setIcon(Icon::Emblem::Folder));
-  panelList.append(ListViewItem().setText("Drivers").setIcon(Icon::Place::Settings));
-  panelList.append(ListViewItem().setText("Debug").setIcon(Icon::Device::Network));
-  panelList->setUsesSidebarStyle();
+  panelList.append(TabFrameItem().setText("Video").setIcon(Icon::Device::Display));
+  panelList.append(TabFrameItem().setText("Audio").setIcon(Icon::Device::Speaker));
+  panelList.append(TabFrameItem().setText("Input").setIcon(Icon::Device::Joypad));
+  panelList.append(TabFrameItem().setText("Hotkeys").setIcon(Icon::Device::Keyboard));
+  panelList.append(TabFrameItem().setText("Emulators").setIcon(Icon::Place::Server));
+  panelList.append(TabFrameItem().setText("Options").setIcon(Icon::Action::Settings));
+  panelList.append(TabFrameItem().setText("Firmware").setIcon(Icon::Emblem::Binary));
+  panelList.append(TabFrameItem().setText("Paths").setIcon(Icon::Emblem::Folder));
+  panelList.append(TabFrameItem().setText("Drivers").setIcon(Icon::Place::Settings));
+  panelList.append(TabFrameItem().setText("Debug").setIcon(Icon::Device::Network));
+  //panelList->setUsesSidebarStyle();
   panelList.onChange([&] { eventChange(); });
 
   panelContainer.append(videoSettings, Size{~0, ~0});
