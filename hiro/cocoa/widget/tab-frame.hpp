@@ -12,6 +12,7 @@
   @public
   CocoaTabFrame *cocoaTabFrame;
 }
+-(id) initWith:(CocoaTabFrame *)tabFrameReference;
 @end
 
 @interface CocoaTabFrameItem : NSTabViewItem {
