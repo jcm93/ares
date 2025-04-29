@@ -5,7 +5,7 @@
 -(id) initWith:(hiro::mTabFrame&)tabFrameReference {
   if(self = [super initWithFrame:NSMakeRect(0, 0, 0, 0)]) {
     tabFrame = &tabFrameReference;
-    [(NSTabViewController *)self setTabStyle:NSTabViewControllerTabStyleToolbar];
+    //[(NSTabViewController *)self setTabStyle:NSTabViewControllerTabStyleToolbar];
 
     [self setDelegate:self];
   }
@@ -15,6 +15,22 @@
 -(void) tabView:(NSTabView*)tabView didSelectTabViewItem:(NSTabViewItem*)tabViewItem {
   tabFrame->self()->_synchronizeSizable();
   tabFrame->doChange();
+}
+
+@end
+
+@implementation CocoaTabFrameController
+
+-(id) initWith:(CocoaTabFrame&)tabFrameReference {
+  if(self = [super init]) {
+    cocoaTabFrame = &tabFrameReference;
+    [(NSTabViewController *)self setTabStyle:NSTabViewControllerTabStyleToolbar];
+  }
+  return self;
+}
+
+-(void) tabView:(NSTabView*)tabView didSelectTabViewItem:(NSTabViewItem*)tabViewItem {
+  
 }
 
 @end
@@ -70,6 +86,9 @@ namespace hiro {
 
 auto pTabFrame::construct() -> void {
   cocoaView = cocoaTabFrame = [[CocoaTabFrame alloc] initWith:self()];
+  CocoaTabFrameController *controller = [[CocoaTabFrameController alloc] initWith:cocoaTabFrame];
+  
+  
   pWidget::construct();
 
   setNavigation(state().navigation);
