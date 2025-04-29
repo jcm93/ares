@@ -443,8 +443,8 @@ struct SettingsWindow : Window {
   auto show(const string& panel) -> void;
   auto eventChange() -> void;
 
-  HorizontalLayout layout{this};
-    ListView panelList{&layout, Size{125_sx, ~0}};
+  VerticalLayout layout{this};
+    TabFrame panelList{&layout, Size{~0, 20_sy}};
     VerticalLayout panelContainer{&layout, Size{~0, ~0}};
       VideoSettings videoSettings;
       AudioSettings audioSettings;
