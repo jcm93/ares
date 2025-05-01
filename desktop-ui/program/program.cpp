@@ -16,9 +16,9 @@ auto Program::create() -> void {
   audioDriverUpdate();
   inputDriverUpdate();
 
-  driverSettings.videoRefresh();
-  driverSettings.audioRefresh();
-  driverSettings.inputRefresh();
+  videoSettings.videoRefresh();
+  audioSettings.audioRefresh();
+  inputSettings.inputRefresh();
 
   if(startGameLoad) {
     auto gameToLoad = startGameLoad.takeFirst();
@@ -51,7 +51,7 @@ auto Program::main() -> void {
   inputManager.poll();
   inputManager.pollHotkeys();
 
-  bool defocused = driverSettings.inputDefocusPause.checked() && !ruby::video.fullScreen() && !presentation.focused();
+  bool defocused = inputSettings.inputDefocusPause.checked() && !ruby::video.fullScreen() && !presentation.focused();
   if(emulator && defocused) message.text = "Paused";
 
   if(settings.debugServer.enabled) {
