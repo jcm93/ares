@@ -765,6 +765,49 @@ struct TextEdit : sTextEdit {
 };
 #endif
 
+#if defined(Hiro_Toolbar)
+struct ToolbarItem : sToolbarItem {
+  DeclareSharedObject(ToolbarItem)
+
+  auto append(sSizable sizable) { return self().append(sizable), *this; }
+  auto closable() const { return self().closable(); }
+  auto icon() const { return self().icon(); }
+  auto movable() const { return self().movable(); }
+  auto remove(sSizable sizable) { return self().remove(sizable), *this; }
+  auto reset() { return self().reset(), *this; }
+  auto selected() const { return self().selected(); }
+  auto setClosable(bool closable = true) { return self().setClosable(closable), *this; }
+  auto setIcon(const multiFactorImage& icon = {}) { return self().setIcon(icon), *this; }
+  auto setMovable(bool movable = true) { return self().setMovable(movable), *this; }
+  auto setSelected() { return self().setSelected(), *this; }
+  auto setText(const string& text = "") { return self().setText(text), *this; }
+  auto sizable() const { return self().sizable(); }
+  auto text() const { return self().text(); }
+};
+#endif
+
+#if defined(Hiro_Toolbar)
+struct Toolbar : sToolbar {
+  DeclareSharedWidget(Toolbar)
+
+  auto append(sToolbarItem item) { return self().append(item), *this; }
+  auto doChange() const { return self().doChange(); }
+  auto doClose(sToolbarItem item) const { return self().doClose(item); }
+  auto doMove(sToolbarItem from, sToolbarItem to) const { return self().doMove(from, to); }
+  auto item(u32 position) const { return self().item(position); }
+  auto itemCount() const { return self().itemCount(); }
+  auto items() const { return self().items(); }
+  auto navigation() const { return self().navigation(); }
+  auto onChange(const function<void ()>& callback = {}) { return self().onChange(callback), *this; }
+  auto onClose(const function<void (sToolbarItem)>& callback = {}) { return self().onClose(callback), *this; }
+  auto onMove(const function<void (sToolbarItem, sToolbarItem)>& callback = {}) { return self().onMove(callback), *this; }
+  auto remove(sToolbarItem item) { return self().remove(item), *this; }
+  auto reset() { return self().reset(), *this; }
+  auto selected() const { return self().selected(); }
+  auto setNavigation(Navigation navigation = Navigation::Top) { return self().setNavigation(navigation), *this; }
+};
+#endif
+
 #if defined(Hiro_TreeView)
 struct TreeViewItem : sTreeViewItem {
   DeclareSharedObject(TreeViewItem)

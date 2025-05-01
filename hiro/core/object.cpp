@@ -189,6 +189,26 @@ auto mObject::parentTabFrameItem(bool recursive) const -> mTabFrameItem* {
 }
 #endif
 
+#if defined(Hiro_Toolbar)
+auto mObject::parentToolbar(bool recursive) const -> mToolbar* {
+  if(auto Toolbar = dynamic_cast<mToolbar*>(parent())) return Toolbar;
+  if(recursive) {
+    if(auto object = parent()) return object->parentToolbar(true);
+  }
+  return nullptr;
+}
+#endif
+
+#if defined(Hiro_Toolbar)
+auto mObject::parentToolbarItem(bool recursive) const -> mToolbarItem* {
+  if(auto ToolbarItem = dynamic_cast<mToolbarItem*>(parent())) return ToolbarItem;
+  if(recursive) {
+    if(auto object = parent()) return object->parentToolbarItem(true);
+  }
+  return nullptr;
+}
+#endif
+
 #if defined(Hiro_TableView)
 auto mObject::parentTableView(bool recursive) const -> mTableView* {
   if(auto tableView = dynamic_cast<mTableView*>(parent())) return tableView;

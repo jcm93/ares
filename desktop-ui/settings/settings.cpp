@@ -23,7 +23,6 @@ OptionSettings& optionSettings = settingsWindow.optionSettings;
 FirmwareSettings& firmwareSettings = settingsWindow.firmwareSettings;
 PathSettings& pathSettings = settingsWindow.pathSettings;
 DebugSettings& debugSettings = settingsWindow.debugSettings;
-DriverSettings& driverSettings = settingsWindow.driverSettings;
 
 auto Settings::load() -> void {
   Markup::Node::operator=(BML::unserialize(string::read(locate("settings.bml")), " "));
@@ -187,17 +186,15 @@ SettingsWindow::SettingsWindow() {
 
   panelContainer.setPadding(5_sx, 5_sy);
 
-  panelList.append(TabFrameItem().setText("Video").setIcon(Icon::Device::Display));
-  panelList.append(TabFrameItem().setText("Audio").setIcon(Icon::Device::Speaker));
-  panelList.append(TabFrameItem().setText("Input").setIcon(Icon::Device::Joypad));
-  panelList.append(TabFrameItem().setText("Hotkeys").setIcon(Icon::Device::Keyboard));
-  panelList.append(TabFrameItem().setText("Emulators").setIcon(Icon::Place::Server));
-  panelList.append(TabFrameItem().setText("Options").setIcon(Icon::Action::Settings));
-  panelList.append(TabFrameItem().setText("Firmware").setIcon(Icon::Emblem::Binary));
-  panelList.append(TabFrameItem().setText("Paths").setIcon(Icon::Emblem::Folder));
-  panelList.append(TabFrameItem().setText("Drivers").setIcon(Icon::Place::Settings));
-  panelList.append(TabFrameItem().setText("Debug").setIcon(Icon::Device::Network));
-  //panelList->setUsesSidebarStyle();
+  panelList.append(ToolbarItem().setText("Video").setIcon(Icon::Device::Display));
+  panelList.append(ToolbarItem().setText("Audio").setIcon(Icon::Device::Speaker));
+  panelList.append(ToolbarItem().setText("Input").setIcon(Icon::Device::Joypad));
+  panelList.append(ToolbarItem().setText("Hotkeys").setIcon(Icon::Device::Keyboard));
+  panelList.append(ToolbarItem().setText("Emulators").setIcon(Icon::Place::Server));
+  panelList.append(ToolbarItem().setText("Options").setIcon(Icon::Action::Settings));
+  panelList.append(ToolbarItem().setText("Firmware").setIcon(Icon::Emblem::Binary));
+  panelList.append(ToolbarItem().setText("Paths").setIcon(Icon::Emblem::Folder));
+  panelList.append(ToolbarItem().setText("Debug").setIcon(Icon::Device::Network));
   panelList.onChange([&] { eventChange(); });
 
   panelContainer.append(videoSettings, Size{~0, ~0});
@@ -208,7 +205,6 @@ SettingsWindow::SettingsWindow() {
   panelContainer.append(optionSettings, Size{~0, ~0});
   panelContainer.append(firmwareSettings, Size{~0, ~0});
   panelContainer.append(pathSettings, Size{~0, ~0});
-  panelContainer.append(driverSettings, Size{~0, ~0});
   panelContainer.append(debugSettings, Size{~0, ~0});
   panelContainer.append(homePanel, Size{~0, ~0});
 
@@ -220,15 +216,14 @@ SettingsWindow::SettingsWindow() {
   optionSettings.construct();
   firmwareSettings.construct();
   pathSettings.construct();
-  driverSettings.construct();
   debugSettings.construct();
   homePanel.construct();
 
   setDismissable();
   setTitle("Configuration");
-  setSize({700_sx, 425_sy});
+  setSize({900_sx, 450_sy});
   setAlignment({0.0, 1.0});
-  setResizable(false);
+  //setResizable(false);
 }
 
 auto SettingsWindow::show(const string& panel) -> void {
@@ -253,7 +248,6 @@ auto SettingsWindow::eventChange() -> void {
   optionSettings.setVisible(false);
   firmwareSettings.setVisible(false);
   pathSettings.setVisible(false);
-  driverSettings.setVisible(false);
   debugSettings.setVisible(false);
   homePanel.setVisible(false);
 
@@ -267,7 +261,6 @@ auto SettingsWindow::eventChange() -> void {
     if(item.text() == "Options"  ) found = true, optionSettings.setVisible();
     if(item.text() == "Firmware" ) found = true, firmwareSettings.setVisible();
     if(item.text() == "Paths"    ) found = true, pathSettings.setVisible();
-    if(item.text() == "Drivers"  ) found = true, driverSettings.setVisible();
     if(item.text() == "Debug"    ) found = true, debugSettings.setVisible();
   }
   if(!found) homePanel.setVisible();
