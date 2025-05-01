@@ -19,6 +19,10 @@ auto mToolbar::append(sToolbarItem item) -> type& {
   return *this;
 }
 
+auto mToolbar::setWindow(sWindow window) -> void {
+  signal(setWindow, window);
+}
+
 auto mToolbar::doChange() const -> void {
   if(state.onChange) return state.onChange();
 }

@@ -318,7 +318,8 @@ if(OS_MACOS)
       cocoa/widget/widget.cpp
       cocoa/widget/widget.hpp
   )
-elseif(OS_WINDOWS)
+endif()
+if(OS_MACOS)
   target_sources(
     hiro
     PRIVATE
