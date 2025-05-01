@@ -802,6 +802,7 @@ struct Toolbar : sToolbar {
   auto onChange(const function<void ()>& callback = {}) { return self().onChange(callback), *this; }
   auto onClose(const function<void (sToolbarItem)>& callback = {}) { return self().onClose(callback), *this; }
   auto onMove(const function<void (sToolbarItem, sToolbarItem)>& callback = {}) { return self().onMove(callback), *this; }
+  auto onSelect(string identifier) { return self().onSelect(identifier), *this; }
   auto remove(sToolbarItem item) { return self().remove(item), *this; }
   auto reset() { return self().reset(), *this; }
   auto selected() const { return self().selected(); }

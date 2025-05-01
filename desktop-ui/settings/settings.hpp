@@ -427,7 +427,11 @@ struct SettingsWindow : Window {
   auto eventChange() -> void;
 
   VerticalLayout layout{this};
+#if defined(PLATFORM_MACOS)
     Toolbar panelList{&layout, Size{~0, 20_sy}};
+#else
+    TabFrame panelList{&layout, Size{~0, 20_sy}};
+#endif
     VerticalLayout panelContainer{&layout, Size{~0, ~0}};
       VideoSettings videoSettings;
       AudioSettings audioSettings;
