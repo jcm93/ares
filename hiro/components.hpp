@@ -78,6 +78,10 @@
 
 //platform-specific exclusions
 
+#if defined(HIRO_WINDOWS) || defined(HIRO_QT) || defined(HIRO_GTK)
+  #undef Hiro_Toolbar
+#endif
+
 #if defined(HIRO_WINDOWS) || defined(HIRO_COCOA) || defined(HIRO_QT)
   #undef Hiro_ComboEdit
   #undef Hiro_Console

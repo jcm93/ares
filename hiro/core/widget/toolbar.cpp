@@ -68,6 +68,16 @@ auto mToolbar::onMove(const function<void (ToolbarItem, ToolbarItem)>& callback)
   return *this;
 }
 
+auto mToolbar::onSelect(string identifier) -> type& {
+  for(auto n : range(0, itemCount())) {
+    state.items[n]->state.selected = false;
+    if(state.items[n]->state.text == identifier) {
+      state.items[n]->state.selected = true;
+    }
+  }
+  return *this;
+}
+
 auto mToolbar::remove(sToolbarItem item) -> type& {
   auto offset = item->offset();
   item->setParent();

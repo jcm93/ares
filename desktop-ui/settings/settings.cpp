@@ -186,8 +186,9 @@ SettingsWindow::SettingsWindow() {
     hotkeySettings.setVisible(false);
   });
 
-  panelContainer.setPadding(20_sx, 20_sy);
+  panelContainer.setPadding(20_sx, 0);
   
+#if defined(PLATFORM_MACOS)
   panelList.append(ToolbarItem().setText("Video").setIcon(Icon::Device::Display));
   panelList.append(ToolbarItem().setText("Audio").setIcon(Icon::Device::Speaker));
   panelList.append(ToolbarItem().setText("Input").setIcon(Icon::Device::Joypad));
@@ -198,6 +199,17 @@ SettingsWindow::SettingsWindow() {
   panelList.append(ToolbarItem().setText("Paths").setIcon(Icon::Emblem::Folder));
   panelList.append(ToolbarItem().setText("Debug").setIcon(Icon::Device::Network));
   panelList.setWindow(*this);
+#else
+  panelList.append(TabFrameItem().setText("Video").setIcon(Icon::Device::Display));
+  panelList.append(TabFrameItem().setText("Audio").setIcon(Icon::Device::Speaker));
+  panelList.append(TabFrameItem().setText("Input").setIcon(Icon::Device::Joypad));
+  panelList.append(TabFrameItem().setText("Hotkeys").setIcon(Icon::Device::Keyboard));
+  panelList.append(TabFrameItem().setText("Emulators").setIcon(Icon::Place::Server));
+  panelList.append(TabFrameItem().setText("Options").setIcon(Icon::Action::Settings));
+  panelList.append(TabFrameItem().setText("Firmware").setIcon(Icon::Emblem::Binary));
+  panelList.append(TabFrameItem().setText("Paths").setIcon(Icon::Emblem::Folder));
+  panelList.append(TabFrameItem().setText("Debug").setIcon(Icon::Device::Network));
+#endif
   panelList.onChange([&] { eventChange(); });
 
   panelContainer.append(videoSettings, Size{~0, ~0});

@@ -1,11 +1,11 @@
 #if defined(Hiro_Toolbar)
 @implementation CocoaToolbar
 
--(id) initWith:(hiro::mToolbar&)ToolbarReference {
+-(id) initWith:(hiro::mToolbar&)toolbarReference {
   if(self = [super init]) {
-    Toolbar = &ToolbarReference;
+    hiroToolbar = &toolbarReference;
     allowedIdentifiers = [[NSMutableArray alloc] initWithCapacity:10];
-    //[(NSToolbarController *)self setTabStyle:NSToolbarControllerTabStyleToolbar];
+    identifierImages = [[NSMutableDictionary alloc] initWithCapacity:10];
 
     [self setDelegate:self];
   }
@@ -14,6 +14,10 @@
 
 -(NSMutableArray<NSString *> *) allowedIdentifiers {
   return allowedIdentifiers;
+}
+
+- (NSMutableDictionary *) identifierImages {
+  return identifierImages;
 }
 
 - (NSArray<NSString *> *) toolbarAllowedItemIdentifiers:(NSToolbar *) toolbar {
@@ -27,35 +31,44 @@
 - (NSToolbarItem *) toolbar:(NSToolbar *) toolbar
       itemForItemIdentifier:(NSToolbarItemIdentifier) itemIdentifier
 willBeInsertedIntoToolbar:(BOOL) flag {
-  NSToolbarItem *cocoaToolbarItem = [[NSToolbarItem alloc] initWithItemIdentifier:itemIdentifier];
+  CocoaToolbarItem *cocoaToolbarItem = [[CocoaToolbarItem alloc] initWithItemIdentifier:itemIdentifier toolbarReference:*hiroToolbar];
   [cocoaToolbarItem setLabel:itemIdentifier];
+  [cocoaToolbarItem setImage:(NSImage *)identifierImages[itemIdentifier]];
+  [cocoaToolbarItem setTarget:cocoaToolbarItem];
   [cocoaToolbarItem setAction:@selector(hiroToolbarAction)];
-  [cocoaToolbarItem setAutovalidates:YES];
-  [cocoaToolbarItem setEnabled:YES];
   //[toolbar insertItemWithItemIdentifier:p->cocoaToolbarItem.label atIndex:0];
   return cocoaToolbarItem;
-}
-
-- (void) hiroToolbarAction {
-  
 }
 
 @end
 
 @implementation CocoaToolbarItem : NSToolbarItem
 
--(id) initWith:(hiro::mToolbar&)ToolbarReference {
-  if(self = [super initWithItemIdentifier:@"poop"]) {
-    Toolbar = &ToolbarReference;
-    cocoaToolbar = Toolbar->self()->cocoaToolbar;
+-(id) initWithItemIdentifier:(NSString *)identifier toolbarReference:(hiro::mToolbar&)ToolbarReference {
+  if(self = [super initWithItemIdentifier:identifier]) {
+    hiroToolbar = &ToolbarReference;
+    cocoaToolbar = hiroToolbar->self()->cocoaToolbar;
   }
   return self;
 }
 
-- (void) validate {
-  print("validating");
+- (void) hiroToolbarAction {
+  hiroToolbar->onSelect(self.itemIdentifier.UTF8String);
+  hiroToolbar->state.onChange();
+  //print("action!");
 }
 
+- (void) validate {
+}
+
+
+- (hiro::pToolbarItem *)hiroToolbarItem {
+  return hiroToolbarItem;
+}
+
+- (void)setHiroToolbarItem:(hiro::pToolbarItem *)item {
+  hiroToolbarItem = item;
+}
 
 @end
 
@@ -82,11 +95,10 @@ auto pToolbar::destruct() -> void {
 
 auto pToolbar::append(sToolbarItem item) -> void {
   if(auto p = item->self()) {
-    p->cocoaToolbarItem = [[CocoaToolbarItem alloc] initWith:self()];
-    [p->cocoaToolbarItem setLabel:[NSString stringWithUTF8String:item->state.text]];
-    [cocoaToolbar insertItemWithItemIdentifier:p->cocoaToolbarItem.label atIndex:0];
-    [[cocoaToolbar allowedIdentifiers] addObject:[NSString stringWithUTF8String:item->state.text]];
-    [cocoaToolbar setVisible:YES];
+    auto labelString = [NSString stringWithUTF8String:item->state.text];
+    [cocoaToolbar insertItemWithItemIdentifier:labelString atIndex:0];
+    [[cocoaToolbar allowedIdentifiers] addObject:labelString];
+    [cocoaToolbar identifierImages][labelString] = NSMakeImage(item->icon());
   }
 }
 

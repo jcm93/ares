@@ -15,6 +15,7 @@ struct mToolbar : mWidget {
   auto onChange(const function<void ()>& callback = {}) -> type&;
   auto onClose(const function<void (ToolbarItem)>& callback = {}) -> type&;
   auto onMove(const function<void (ToolbarItem, ToolbarItem)>& callback = {}) -> type&;
+  auto onSelect(string identifier) -> type&;
   auto remove(sToolbarItem item) -> type&;
   auto reset() -> type& override;
   auto selected() const -> ToolbarItem;
