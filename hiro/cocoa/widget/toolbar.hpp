@@ -2,25 +2,30 @@
 
 @interface CocoaToolbar : NSToolbar <NSToolbarDelegate> {
 @public
-  hiro::mToolbar* Toolbar;
+  hiro::mToolbar* hiroToolbar;
   NSMutableArray<NSString *> *allowedIdentifiers;
+  NSMutableDictionary *identifierImages;
 }
--(id) initWith:(hiro::mToolbar&)Toolbar;
+-(id) initWith:(hiro::mToolbar&)toolbar;
 - (NSMutableArray<NSString *> *) allowedIdentifiers;
+- (NSMutableDictionary *) identifierImages;
 - (NSArray<NSString *> *) toolbarAllowedItemIdentifiers:(NSToolbar *) toolbar;
 - (NSArray<NSString *> *) toolbarDefaultItemIdentifiers:(NSToolbar *) toolbar;
 - (NSToolbarItem *) toolbar:(NSToolbar *) toolbar
       itemForItemIdentifier:(NSToolbarItemIdentifier) itemIdentifier
   willBeInsertedIntoToolbar:(BOOL) flag;
-- (void) hiroToolbarAction;
 @end
 
 @interface CocoaToolbarItem : NSToolbarItem <NSToolbarItemValidation> {
 @public
-  hiro::mToolbar* Toolbar;
+  hiro::mToolbar* hiroToolbar;
+  hiro::pToolbarItem* hiroToolbarItem;
   CocoaToolbar* cocoaToolbar;
 }
--(id) initWith:(hiro::mToolbar&)Toolbar;
+- (void) hiroToolbarAction;
+- (id) initWithItemIdentifier:(NSString *)identifier toolbarReference:(hiro::mToolbar&)ToolbarReference;
+- (hiro::pToolbarItem *) hiroToolbarItem;
+- (void) setHiroToolbarItem:(hiro::pToolbarItem *)item;
 - (void) validate;
 @end
 
