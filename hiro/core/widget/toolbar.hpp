@@ -18,6 +18,7 @@ struct mToolbar : mWidget {
   auto remove(sToolbarItem item) -> type&;
   auto reset() -> type& override;
   auto selected() const -> ToolbarItem;
+  auto setWindow(sWindow window) -> void;
   auto setEnabled(bool enabled = true) -> type& override;
   auto setFont(const Font& font = {}) -> type& override;
   auto setNavigation(Navigation navigation = Navigation::Top) -> type&;

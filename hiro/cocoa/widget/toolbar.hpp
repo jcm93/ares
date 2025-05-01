@@ -3,19 +3,25 @@
 @interface CocoaToolbar : NSToolbar <NSToolbarDelegate> {
 @public
   hiro::mToolbar* Toolbar;
+  NSMutableArray<NSString *> *allowedIdentifiers;
 }
 -(id) initWith:(hiro::mToolbar&)Toolbar;
--(void) tabView:(NSToolbar*)tabView didSelectTabViewItem:(NSToolbarItem*)tabViewItem;
+- (NSMutableArray<NSString *> *) allowedIdentifiers;
+- (NSArray<NSString *> *) toolbarAllowedItemIdentifiers:(NSToolbar *) toolbar;
+- (NSArray<NSString *> *) toolbarDefaultItemIdentifiers:(NSToolbar *) toolbar;
+- (NSToolbarItem *) toolbar:(NSToolbar *) toolbar
+      itemForItemIdentifier:(NSToolbarItemIdentifier) itemIdentifier
+  willBeInsertedIntoToolbar:(BOOL) flag;
+- (void) hiroToolbarAction;
 @end
 
-@interface CocoaToolbarItem : NSToolbarItem {
+@interface CocoaToolbarItem : NSToolbarItem <NSToolbarItemValidation> {
 @public
   hiro::mToolbar* Toolbar;
   CocoaToolbar* cocoaToolbar;
 }
 -(id) initWith:(hiro::mToolbar&)Toolbar;
--(NSSize) sizeOfLabel:(BOOL)shouldTruncateLabel;
--(void) drawLabel:(BOOL)shouldTruncateLabel inRect:(NSRect)tabRect;
+- (void) validate;
 @end
 
 namespace hiro {
@@ -24,6 +30,7 @@ struct pToolbar : pWidget {
   Declare(Toolbar, Widget)
 
   auto append(sToolbarItem item) -> void;
+  auto setWindow(sWindow window) -> void;
   auto remove(sToolbarItem item) -> void;
   auto setEnabled(bool enabled) -> void override;
   auto setFont(const Font& font) -> void override;

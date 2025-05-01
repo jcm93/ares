@@ -2,8 +2,9 @@
 @implementation CocoaToolbar
 
 -(id) initWith:(hiro::mToolbar&)ToolbarReference {
-  if(self = [super initWithFrame:NSMakeRect(0, 0, 0, 0)]) {
+  if(self = [super init]) {
     Toolbar = &ToolbarReference;
+    allowedIdentifiers = [[NSMutableArray alloc] initWithCapacity:10];
     //[(NSToolbarController *)self setTabStyle:NSToolbarControllerTabStyleToolbar];
 
     [self setDelegate:self];
@@ -11,9 +12,32 @@
   return self;
 }
 
--(void) tabView:(NSToolbar*)tabView didSelectTabViewItem:(NSToolbarItem*)tabViewItem {
-  Toolbar->self()->_synchronizeSizable();
-  Toolbar->doChange();
+-(NSMutableArray<NSString *> *) allowedIdentifiers {
+  return allowedIdentifiers;
+}
+
+- (NSArray<NSString *> *) toolbarAllowedItemIdentifiers:(NSToolbar *) toolbar {
+  return allowedIdentifiers;
+}
+
+- (NSArray<NSString *> *) toolbarDefaultItemIdentifiers:(NSToolbar *) toolbar {
+  return allowedIdentifiers;
+}
+
+- (NSToolbarItem *) toolbar:(NSToolbar *) toolbar
+      itemForItemIdentifier:(NSToolbarItemIdentifier) itemIdentifier
+willBeInsertedIntoToolbar:(BOOL) flag {
+  NSToolbarItem *cocoaToolbarItem = [[NSToolbarItem alloc] initWithItemIdentifier:itemIdentifier];
+  [cocoaToolbarItem setLabel:itemIdentifier];
+  [cocoaToolbarItem setAction:@selector(hiroToolbarAction)];
+  [cocoaToolbarItem setAutovalidates:YES];
+  [cocoaToolbarItem setEnabled:YES];
+  //[toolbar insertItemWithItemIdentifier:p->cocoaToolbarItem.label atIndex:0];
+  return cocoaToolbarItem;
+}
+
+- (void) hiroToolbarAction {
+  
 }
 
 @end
@@ -21,60 +45,35 @@
 @implementation CocoaToolbarItem : NSToolbarItem
 
 -(id) initWith:(hiro::mToolbar&)ToolbarReference {
-  if(self = [super initWithIdentifier:nil]) {
+  if(self = [super initWithItemIdentifier:@"poop"]) {
     Toolbar = &ToolbarReference;
     cocoaToolbar = Toolbar->self()->cocoaToolbar;
   }
   return self;
 }
 
--(NSSize) sizeOfLabel:(BOOL)shouldTruncateLabel {
-  NSSize sizeOfLabel = [super sizeOfLabel:shouldTruncateLabel];
-  s32 selection = [cocoaToolbar indexOfTabViewItem:self];
-  if(selection >= 0) {
-    if(auto item = Toolbar->item(selection)) {
-      if(item->state.icon) {
-        u32 iconSize = hiro::pFont::size(Toolbar->font(true), " ").height();
-        u32 labelWidth = hiro::pFont::size(Toolbar->font(true), self.label.UTF8String).width();
-        sizeOfLabel.width += iconSize + labelWidth / 3;
-      }
-    }
-  }
-  return sizeOfLabel;
+- (void) validate {
+  print("validating");
 }
 
--(void) drawLabel:(BOOL)shouldTruncateLabel inRect:(NSRect)tabRect {
-  s32 selection = [cocoaToolbar indexOfTabViewItem:self];
-  if(selection >= 0) {
-    if(auto item = Toolbar->item(selection)) {
-      if(item->state.icon) {
-        u32 iconSize = hiro::pFont::size(Toolbar->font(true), " ").height();
-        u32 labelWidth = hiro::pFont::size(Toolbar->font(true), self.label.UTF8String).width();
-        NSImage* image = NSMakeImage(item->state.icon);
-
-        [[NSGraphicsContext currentContext] saveGraphicsState];
-        NSRect targetRect = NSMakeRect(tabRect.origin.x, tabRect.origin.y + 2, iconSize, iconSize);
-        [image drawInRect:targetRect fromRect:NSZeroRect operation:NSCompositingOperationSourceOver fraction:1.0 respectFlipped:YES hints:nil];
-        [[NSGraphicsContext currentContext] restoreGraphicsState];
-
-        tabRect.origin.x += iconSize + 2;
-        tabRect.size.width -= iconSize + 2;
-      }
-    }
-  }
-  [super drawLabel:shouldTruncateLabel inRect:tabRect];
-}
 
 @end
 
 namespace hiro {
 
 auto pToolbar::construct() -> void {
-  cocoaView = cocoaToolbar = [[CocoaToolbar alloc] initWith:self()];
+  cocoaToolbar = [[CocoaToolbar alloc] initWith:self()];
   
   pWidget::construct();
 
   setNavigation(state().navigation);
+}
+
+auto pToolbar::setWindow(sWindow window) -> void {
+  auto p = window->self();
+  p->cocoaWindow.toolbar = cocoaToolbar;
+  [p->cocoaWindow toggleToolbarShown:nil];
+  [cocoaToolbar setVisible:YES];
 }
 
 auto pToolbar::destruct() -> void {
@@ -85,13 +84,15 @@ auto pToolbar::append(sToolbarItem item) -> void {
   if(auto p = item->self()) {
     p->cocoaToolbarItem = [[CocoaToolbarItem alloc] initWith:self()];
     [p->cocoaToolbarItem setLabel:[NSString stringWithUTF8String:item->state.text]];
-    [(CocoaToolbar*)cocoaView addTabViewItem:p->cocoaToolbarItem];
+    [cocoaToolbar insertItemWithItemIdentifier:p->cocoaToolbarItem.label atIndex:0];
+    [[cocoaToolbar allowedIdentifiers] addObject:[NSString stringWithUTF8String:item->state.text]];
+    [cocoaToolbar setVisible:YES];
   }
 }
 
 auto pToolbar::remove(sToolbarItem item) -> void {
   if(auto p = item->self()) {
-    [(CocoaToolbar*)cocoaView removeTabViewItem:p->cocoaToolbarItem];
+    [cocoaToolbar removeItemAtIndex:0];//todo
   }
 }
 
@@ -143,12 +144,7 @@ auto pToolbar::setVisible(bool visible) -> void {
 }
 
 auto pToolbar::_synchronizeSizable() -> void {
-  NSToolbarItem* tabViewItem = [(CocoaToolbar*)cocoaView selectedTabViewItem];
-  s32 selected = tabViewItem ? [(CocoaToolbar*)cocoaView indexOfTabViewItem:tabViewItem] : -1;
-  for(auto& item : state().items) {
-    item->state.selected = item->offset() == selected;
-    if(auto& sizable = item->state.sizable) sizable->setVisible(item->selected());
-  }
+  
 }
 
 }

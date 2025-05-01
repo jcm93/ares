@@ -791,6 +791,7 @@ struct Toolbar : sToolbar {
   DeclareSharedWidget(Toolbar)
 
   auto append(sToolbarItem item) { return self().append(item), *this; }
+  auto setWindow(sWindow window) { return self().setWindow(window), *this; }
   auto doChange() const { return self().doChange(); }
   auto doClose(sToolbarItem item) const { return self().doClose(item); }
   auto doMove(sToolbarItem from, sToolbarItem to) const { return self().doMove(from, to); }

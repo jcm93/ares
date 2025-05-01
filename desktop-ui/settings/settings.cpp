@@ -186,8 +186,8 @@ SettingsWindow::SettingsWindow() {
     hotkeySettings.setVisible(false);
   });
 
-  panelContainer.setPadding(5_sx, 5_sy);
-
+  panelContainer.setPadding(20_sx, 20_sy);
+  
   panelList.append(ToolbarItem().setText("Video").setIcon(Icon::Device::Display));
   panelList.append(ToolbarItem().setText("Audio").setIcon(Icon::Device::Speaker));
   panelList.append(ToolbarItem().setText("Input").setIcon(Icon::Device::Joypad));
@@ -197,6 +197,7 @@ SettingsWindow::SettingsWindow() {
   panelList.append(ToolbarItem().setText("Firmware").setIcon(Icon::Emblem::Binary));
   panelList.append(ToolbarItem().setText("Paths").setIcon(Icon::Emblem::Folder));
   panelList.append(ToolbarItem().setText("Debug").setIcon(Icon::Device::Network));
+  panelList.setWindow(*this);
   panelList.onChange([&] { eventChange(); });
 
   panelContainer.append(videoSettings, Size{~0, ~0});
@@ -223,7 +224,7 @@ SettingsWindow::SettingsWindow() {
 
   setDismissable();
   setTitle("Configuration");
-  setSize({900_sx, 450_sy});
+  setSize({725_sx, 425_sy});
   setAlignment({0.0, 1.0});
   //setResizable(false);
 }
