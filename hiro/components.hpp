@@ -70,6 +70,7 @@
 #define Hiro_TabFrame
 #define Hiro_TableView
 #define Hiro_TextEdit
+#define Hiro_Toolbar
 #define Hiro_TreeView
 #define Hiro_VerticalScrollBar
 #define Hiro_VerticalSlider

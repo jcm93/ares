@@ -31,6 +31,7 @@ target_sources(
     settings/debug.cpp
     settings/drivers.cpp
     settings/emulators.cpp
+    settings/emulators.hpp
     settings/firmware.cpp
     settings/home.cpp
     settings/hotkeys.cpp

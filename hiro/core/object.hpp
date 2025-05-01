@@ -29,6 +29,8 @@ struct mObject {
   auto parentTabFrameItem(bool recursive = false) const -> mTabFrameItem*;
   auto parentTableView(bool recursive = false) const -> mTableView*;
   auto parentTableViewItem(bool recursive = false) const -> mTableViewItem*;
+  auto parentToolbar(bool recursive = false) const -> mToolbar*;
+  auto parentToolbarItem(bool recursive = false) const -> mToolbarItem*;
   auto parentTreeView(bool recursive = false) const -> mTreeView*;
   auto parentTreeViewItem(bool recursive = false) const -> mTreeViewItem*;
   auto parentWidget(bool recursive = false) const -> mWidget*;

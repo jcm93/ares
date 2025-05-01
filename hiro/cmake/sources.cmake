@@ -144,6 +144,10 @@ target_sources(
     core/widget/table-view.hpp
     core/widget/text-edit.cpp
     core/widget/text-edit.hpp
+    core/widget/toolbar-item.cpp
+    core/widget/toolbar-item.hpp
+    core/widget/toolbar.cpp
+    core/widget/toolbar.hpp
     core/widget/tree-view-item.cpp
     core/widget/tree-view-item.hpp
     core/widget/tree-view.cpp
@@ -287,6 +291,10 @@ if(OS_MACOS)
       cocoa/widget/tab-frame-item.hpp
       cocoa/widget/tab-frame.cpp
       cocoa/widget/tab-frame.hpp
+      cocoa/widget/toolbar-item.cpp
+      cocoa/widget/toolbar-item.hpp
+      cocoa/widget/toolbar.cpp
+      cocoa/widget/toolbar.hpp
       cocoa/widget/table-view-cell.cpp
       cocoa/widget/table-view-cell.hpp
       cocoa/widget/table-view-column.cpp

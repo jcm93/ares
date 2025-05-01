@@ -8,13 +8,6 @@
 -(void) tabView:(NSTabView*)tabView didSelectTabViewItem:(NSTabViewItem*)tabViewItem;
 @end
 
-@interface CocoaTabFrameController: NSTabViewController {
-  @public
-  CocoaTabFrame *cocoaTabFrame;
-}
--(id) initWith:(CocoaTabFrame *)tabFrameReference;
-@end
-
 @interface CocoaTabFrameItem : NSTabViewItem {
 @public
   hiro::mTabFrame* tabFrame;
@@ -41,7 +34,6 @@ struct pTabFrame : pWidget {
   auto _synchronizeSizable() -> void;
 
   CocoaTabFrame* cocoaTabFrame = nullptr;
-  NSTabViewController *tabViewController = nullptr;
 };
 
 }
