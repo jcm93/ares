@@ -86,6 +86,9 @@ auto pToolbar::setWindow(sWindow window) -> void {
   auto p = window->self();
   p->cocoaWindow.toolbar = cocoaToolbar;
   [p->cocoaWindow toggleToolbarShown:nil];
+  if (@available(macOS 11.0, *)) {
+    [p->cocoaWindow setToolbarStyle:NSWindowToolbarStylePreference];
+  }
   [cocoaToolbar setVisible:YES];
 }
 
