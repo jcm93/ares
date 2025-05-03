@@ -292,7 +292,7 @@ struct EmulatorSettings : VerticalLayout {
   auto eventChange() -> void;
 
   HorizontalLayout layout{this, Size{700_sx, ~0}};
-    TableView emulatorList{&layout, Size{160_sx, ~0}};
+    TableView emulatorList{&layout, Size{260_sx, ~0}};
     VerticalLayout emulatorPanelContainer{&layout, Size{575_sx, ~0}};
       ArcadeSettings arcadeSettings;
       A2600Settings a2600Settings;

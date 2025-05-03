@@ -5,7 +5,7 @@ auto EmulatorSettings::construct() -> void {
   n64Settings.construct();
   mega32XMegaCD32XMegaCDMegaDriveSettings.construct();
   
-  emulatorPanelContainer.setPadding(20_sx, 20_sy);
+  //emulatorPanelContainer.setPadding(20_sx, 20_sy);
   
   emulatorPanelContainer.append(n64Settings, Size{~0, ~0});
   emulatorPanelContainer.append(mega32XMegaCD32XMegaCDMegaDriveSettings, Size{~0, ~0});
