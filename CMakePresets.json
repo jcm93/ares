@@ -10,6 +10,7 @@
       "name": "baseCacheVars",
       "hidden": true,
       "cacheVariables": {
+        "ARES_REQUIRE_VERSION": {"type": "BOOL", "value": "$penv{ARES_REQUIRE_VERSION}"},
         "ARES_PROFILE_ACCURACY": false,
         "ARES_BUILD_LOCAL": true,
         "ENABLE_CCACHE": true

@@ -1,6 +1,12 @@
 name: Build (Auxiliary)
 on:
-  workflow_call
+  workflow_call:
+    inputs:
+      require-version:
+        description: Require a canonical version (tags)
+        required: true
+        default: true
+        type: boolean
 jobs:
   build:
     strategy:
@@ -86,11 +92,13 @@ jobs:
       if: runner.os == 'Linux'
       run: .github/scripts/build_ubuntu.sh
       env:
+        ARES_REQUIRE_VERSION: ${{ inputs.require-version }}
         TARGET_PRESET: ${{ matrix.platform.target-cmake-preset }}
     - name: "Build: Windows"
       if: runner.os != 'macOS' && runner.os != 'Linux'
       run: .github/scripts/build_windows.sh
       env:
+        ARES_REQUIRE_VERSION: ${{ inputs.require-version }}
         ARES_PLATFORM_NAME: ${{ matrix.platform.name }}
         CROSS_COMPILE: ${{ matrix.platform.native-cmake-preset != '' }}
         NATIVE_PRESET: ${{ matrix.platform.native-cmake-preset }}

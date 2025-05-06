@@ -44,12 +44,19 @@ endfunction()
 populate_ares_version_info()
 
 if(NOT ARES_VERSION_CANONICAL MATCHES "^[0-9]+\\.[0-9]+\\.[0-9]+$")
-  message(
-    FATAL_ERROR
-    "Available ares version information ('${ARES_VERSION}') could not be converted to a valid CMake version string.\n"
-    "Make sure the repository you have cloned or archived from contains ares version tags ('git fetch --tags').\n"
-    "If tags are unavailable, you may specify a custom version with ARES_VERSION_OVERRIDE, using an ares-formatted "
-    "version string, e.g. 'v123'.\n"
-  )
+  if(ARES_REQUIRE_VERSION)
+    message(FATAL_ERROR "Version information was required but not found")
+  else()
+    message(WARNING "Version number not found -- falling back to hash")
+    execute_process(
+      COMMAND git symbolic-ref --short -q HEAD
+      OUTPUT_VARIABLE _ares_version_branch
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+      WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+    )
+    set(ARES_VERSION_CANONICAL 0.0.0)
+    set(ARES_VERSION "${_ares_version_branch} - ${ARES_VERSION}")
+    unset(_ares_version_branch)
+  endif()
 endif()
 

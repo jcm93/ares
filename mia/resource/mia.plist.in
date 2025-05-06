@@ -8,6 +8,8 @@
   <string>mia</string>
   <key>CFBundleExecutable</key>
   <string>mia</string>
+  <key>CFBundleShortVersionString</key>
+  <string>@ARES_VERSION_CANONICAL@</string>
   <key>CFBundleIconFile</key>
   <string>mia.icns</string>
   <key>NSHighResolutionCapable</key>
