@@ -160,8 +160,6 @@ if(ARES_BUILD_OPTIONAL_TARGETS)
       PROPERTIES PRODUCT_BUNDLE_IDENTIFIER dev.ares.mia
                  PRODUCT_NAME mia
                  ASSETCATALOG_COMPILER_APPICON_NAME AppIcon
-                 MARKETING_VERSION ${ARES_VERSION}
-                 GENERATE_INFOPLIST_FILE YES
                  CLANG_ENABLE_OBJC_ARC YES
                  INFOPLIST_KEY_CFBundleDisplayName "mia"
                  INFOPLIST_KEY_NSHumanReadableCopyright "(c) 2004-${CURRENT_YEAR} ares team, Near et. al."
