@@ -1,25 +1,25 @@
 include_guard(GLOBAL)
 
-function(populate_ares_version_info)
+function(get_ares_version_info)
+  # Get the canonical version
   if(DEFINED ARES_VERSION_OVERRIDE)
-    set(ARES_VERSION ${ARES_VERSION_OVERRIDE})
+    set(ARES_VERSION ARES_VERSION_OVERRIDE)
+    set(ARES_CANONICAL_VERSION_CANDIDATE ${ARES_VERSION_OVERRIDE})
   elseif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git")
     execute_process(
-      COMMAND git describe --always --tags --exclude=nightly --dirty=-modified
-      OUTPUT_VARIABLE ARES_VERSION
-      ERROR_VARIABLE git_describe_err
+      COMMAND git describe --always --tags --exclude=nightly
+      OUTPUT_VARIABLE ARES_CANONICAL_VERSION_CANDIDATE
       WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
       RESULT_VARIABLE ares_version_result
       OUTPUT_STRIP_TRAILING_WHITESPACE
     )
-
-    if(git_describe_err)
-      message(FATAL_ERROR "Could not fetch ares version tag from git.\n" ${git_describe_err})
-    endif()
+    message(STATUS "describe output is ${ARES_CANONICAL_VERSION_CANDIDATE}")
   else()
-    file(READ cmake/common/.archive-version ares_tarball_version)
-    string(STRIP "${ares_tarball_version}" ares_tarball_version)
-    set(ARES_VERSION "${ares_tarball_version}")
+    file(READ cmake/common/.archive-version ares_tarball_version_json)
+    string(JSON ${ares_tarball_version_json} GET ares_tarball_version_tag tag)
+    string(STRIP "${ares_tarball_version_tag}" ares_tarball_version_tag)
+    set(ARES_CANONICAL_VERSION_CANDIDATE "${ares_tarball_version_tag}")
+    set(ARES_DISPLAY_VERSION_CANDIDATE "${ares_tarball_version_tag}")
   endif()
   
   string(REGEX REPLACE "^v([0-9]+(\\.[0-9]+)*)-.*" "\\1" ares_version_stripped "${ARES_VERSION}")
@@ -38,25 +38,65 @@ function(populate_ares_version_info)
   endif()
   set(ARES_VERSION_CANONICAL "${major}.${minor}.${patch}")
   message(DEBUG "Canonical version set to ${ARES_VERSION_CANONICAL}")
-  return(PROPAGATE ARES_VERSION ARES_VERSION_CANONICAL)
-endfunction()
-
-populate_ares_version_info()
-
-if(NOT ARES_VERSION_CANONICAL MATCHES "^[0-9]+\\.[0-9]+\\.[0-9]+$")
-  if(ARES_REQUIRE_VERSION)
-    message(FATAL_ERROR "Version information was required but not found")
-  else()
-    message(WARNING "Version number not found -- falling back to hash")
+  
+  if(NOT ARES_VERSION_CANONICAL MATCHES "^[0-9]+\\.[0-9]+\\.[0-9]+$")
+    message(STATUS "No recent tags found -- using dummy canonical version")
+    set(ARES_VERSION_CANONICAL 0.0.0)
+  endif()
+  
+  if(ARES_VERSION_OVERRIDE)
+    return(PROPAGATE ARES_VERSION ARES_VERSION_CANONICAL)
+  endif()
+  
+  # Get the display version
+  if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git")
     execute_process(
-      COMMAND git symbolic-ref --short -q HEAD
-      OUTPUT_VARIABLE _ares_version_branch
+      COMMAND git describe --tags --exact-match
+      OUTPUT_VARIABLE ARES_DISPLAY_VERSION_CANDIDATE
+      ERROR_VARIABLE git_describe_err
       OUTPUT_STRIP_TRAILING_WHITESPACE
       WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
     )
-    set(ARES_VERSION_CANONICAL 0.0.0)
-    set(ARES_VERSION "${_ares_version_branch} - ${ARES_VERSION}")
-    unset(_ares_version_branch)
+    if(git_describe_err)
+      set(exact_match NO)
+    endif()
+  else()
+    if(ARES_CANONICAL_VERSION_CANDIDATE MATCHES "^v([0-9]+(\\.[0-9]+)*)-.*$")
+      set(exact_match YES)
+    endif()
   endif()
-endif()
+  if(NOT exact_match)
+    # Not an exact match; use branch - commit
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git")
+      execute_process(
+        COMMAND git symbolic-ref --short -q HEAD
+        OUTPUT_VARIABLE ARES_BRANCH_NAME
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+      )
+      execute_process(
+        COMMAND git rev-parse --short HEAD
+        OUTPUT_VARIABLE ARES_GIT_COMMIT_SHORTHASH
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+      )
+      execute_process(
+        COMMAND git status --porcelain
+        OUTPUT_VARIABLE ARES_GIT_DIRTY
+        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+      )
+    else()
+      string(JSON ${ares_tarball_version_json} GET ARES_BRANCH_NAME ref-name)
+      string(JSON ${ares_tarball_version_json} GET ARES_GIT_COMMIT_SHORTHASH hash)
+    endif()
+    set(ARES_VERSION "${ARES_BRANCH_NAME} - ${ARES_GIT_COMMIT_SHORTHASH}")
+    if(ARES_GIT_DIRTY)
+      set(ARES_VERSION "${ARES_VERSION}-modified")
+    endif()
+  else()
+    set(ARES_VERSION ARES_DISPLAY_VERSION_CANDIDATE)
+  endif()
+  return(PROPAGATE ARES_VERSION_CANONICAL ARES_VERSION)
+endfunction()
 
+get_ares_version_info()
