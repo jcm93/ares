@@ -22,7 +22,7 @@ function(get_ares_version_info)
     set(ARES_DISPLAY_VERSION_CANDIDATE "${ares_tarball_version_tag}")
   endif()
   
-  string(REGEX REPLACE "^v([0-9]+(\\.[0-9]+)*)-.*" "\\1" ares_version_stripped "${ARES_VERSION}")
+  string(REGEX REPLACE "^v([0-9]+(\\.[0-9]+)*)-.*" "\\1" ares_version_stripped "${ARES_CANONICAL_VERSION_CANDIDATE}")
   string(REPLACE "." ";" ares_version_parts "${ares_version_stripped}")
   list(LENGTH ares_version_parts ares_version_parts_length)
   list(GET ares_version_parts 0 major)
@@ -57,16 +57,20 @@ function(get_ares_version_info)
       OUTPUT_STRIP_TRAILING_WHITESPACE
       WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
     )
-    if(git_describe_err)
+    if(NOT git_describe_err)
+      set(exact_match YES)
+    else()
       set(exact_match NO)
     endif()
   else()
-    if(ARES_CANONICAL_VERSION_CANDIDATE MATCHES "^v([0-9]+(\\.[0-9]+)*)-.*$")
+    if(ARES_DISPLAY_VERSION_CANDIDATE MATCHES "^v([0-9]+(\\.[0-9]+)*)$")
       set(exact_match YES)
+    else()
+      set(exact_match NO)
     endif()
   endif()
   if(NOT exact_match)
-    # Not an exact match; use branch - commit
+    # Not an exact match; use display branch - commit
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git")
       execute_process(
         COMMAND git symbolic-ref --short -q HEAD
