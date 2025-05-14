@@ -10,6 +10,12 @@ struct Nintendo64 : Emulator {
   shared_pointer<mia::Pak> disk;
   u32 regionID = 0;
   sTimer diskInsertTimer;
+  
+  Setting interpreterOverride = {
+    .name = "General/ForceInterpreter",
+    .settingType = "boolean",
+    .binding = &systemSettingsObject.general.forceInterpreter
+  };
 };
 
 Nintendo64::Nintendo64() {

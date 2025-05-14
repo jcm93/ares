@@ -11,6 +11,7 @@
 - (NSMutableDictionary *) identifierImages;
 - (NSArray<NSString *> *) toolbarAllowedItemIdentifiers:(NSToolbar *) toolbar;
 - (NSArray<NSString *> *) toolbarDefaultItemIdentifiers:(NSToolbar *) toolbar;
+- (NSArray<NSString *> *) toolbarSelectableItemIdentifiers:(NSToolbar *) toolbar;
 - (NSToolbarItem *) toolbar:(NSToolbar *) toolbar
       itemForItemIdentifier:(NSToolbarItemIdentifier) itemIdentifier
   willBeInsertedIntoToolbar:(BOOL) flag;
@@ -39,7 +40,6 @@ struct pToolbar : pWidget {
   auto remove(sToolbarItem item) -> void;
   auto setEnabled(bool enabled) -> void override;
   auto setFont(const Font& font) -> void override;
-  auto setGeometry(Geometry geometry) -> void override;
   auto setNavigation(Navigation navigation) -> void;
   auto setVisible(bool visible) -> void override;
 

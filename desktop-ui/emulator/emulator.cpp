@@ -151,6 +151,26 @@ auto Emulator::load(shared_pointer<mia::Pak> pak, string& path) -> string {
     dialog.setFilters({filters, "All|*"});
     location = program.openFile(dialog);
   }
+  
+  /*if(systemSettings) {
+    string settingValue;
+    for (u32 n : range(settingsOverrides.size())) {
+      auto kv = settingValue.split("=", 1L);
+      if(kv.size() == 2) {
+        auto node = settings[kv[0]];
+        if(node) {
+          node.setValue(kv[1]);
+        } else {
+          print("Invalid setting: ", settingValue, "\n");
+          break;
+        }
+      } else {
+        print("Invalid setting: ", settingValue, "\n");
+        break;
+      }
+    }
+    settings.process(true);
+  }*/
 
   if(location) {
     path = Location::dir(location);

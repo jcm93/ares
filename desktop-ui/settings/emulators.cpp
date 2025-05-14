@@ -2,11 +2,14 @@ auto EmulatorSettings::construct() -> void {
   setCollapsible();
   setVisible(false);
   
+  defaultSettings.construct();
   n64Settings.construct();
   mega32XMegaCD32XMegaCDMegaDriveSettings.construct();
   
-  //emulatorPanelContainer.setPadding(20_sx, 20_sy);
+  layout.setPadding(-20_sx, -20_sy);
+  emulatorPanelContainer.setPadding(20_sx, 20_sy);
   
+  emulatorPanelContainer.append(defaultSettings, Size{~0, ~0});
   emulatorPanelContainer.append(n64Settings, Size{~0, ~0});
   emulatorPanelContainer.append(mega32XMegaCD32XMegaCDMegaDriveSettings, Size{~0, ~0});
 
@@ -17,6 +20,11 @@ auto EmulatorSettings::construct() -> void {
   emulatorList.append(TableViewColumn().setText("Name").setExpandable());
   emulatorList.append(TableViewColumn().setText("Manufacturer").setAlignment(1.0));
   emulatorList.setHeadered();
+  TableViewItem item{&emulatorList};
+  TableViewCell visible{&item};
+  TableViewCell name{&item};
+  name.setText("Defaults");
+  //TableViewCell manufacturer{&item};
   for(auto& emulator : emulators) {
     TableViewItem item{&emulatorList};
     item.setAttribute<shared_pointer<Emulator>>("emulator", emulator);
@@ -34,6 +42,7 @@ auto EmulatorSettings::construct() -> void {
 }
 
 auto EmulatorSettings::eventChange() -> void {
+  defaultSettings.setVisible(false);
   arcadeSettings.setVisible(false);
   a2600Settings.setVisible(false);
   colecoVisionSettings.setVisible(false);
@@ -85,6 +94,8 @@ auto EmulatorSettings::eventChange() -> void {
     if(name == "superGrafxSettings" ) found = true, superGrafxSettings.setVisible();
     if(name == "wonderSwanSettings" ) found = true, wonderSwanSettings.setVisible();
     if(name == "zxSpectrumSettings" ) found = true, zxSpectrumSettings.setVisible();
+  } else {
+    found = true, defaultSettings.setVisible();
   }
   emulatorPanelContainer.resize();
 }
@@ -96,6 +107,85 @@ auto EmulatorSettings::eventToggle(TableViewCell cell) -> void {
   }
 }
 
+/// MARK: Default settings
+
+auto DefaultSettings::construct() -> void {
+  commonSettingsLabel.setText("System Options").setFont(Font().setBold());
+
+  rewind.setText("Rewind").setChecked(settings.general.rewind).onToggle([&] {
+    settings.general.rewind = rewind.checked();
+    program.rewindReset();
+  }).doToggle();
+  rewindLayout.setAlignment(1).setPadding(12_sx, 0);
+      rewindHint.setText("Allows you to reverse time via the rewind hotkey").setFont(Font().setSize(7.0)).setForegroundColor(SystemColor::Sublabel);
+
+  runAhead.setText("Run-Ahead").setEnabled(co_serializable()).setChecked(settings.general.runAhead && co_serializable()).onToggle([&] {
+    settings.general.runAhead = runAhead.checked() && co_serializable();
+    program.runAheadUpdate();
+  });
+  runAheadLayout.setAlignment(1).setPadding(12_sx, 0);
+      runAheadHint.setText("Removes one frame of input lag, but doubles system requirements").setFont(Font().setSize(7.0)).setForegroundColor(SystemColor::Sublabel);
+
+  autoSaveMemory.setText("Auto-Save Memory Periodically").setChecked(settings.general.autoSaveMemory).onToggle([&] {
+    settings.general.autoSaveMemory = autoSaveMemory.checked();
+  });
+  autoSaveMemoryLayout.setAlignment(1).setPadding(12_sx, 0);
+      autoSaveMemoryHint.setText("Helps safeguard game saves from being lost").setFont(Font().setSize(7.0)).setForegroundColor(SystemColor::Sublabel);
+
+  homebrewMode.setText("Homebrew Development Mode").setChecked(settings.general.homebrewMode).onToggle([&] {
+    settings.general.homebrewMode = homebrewMode.checked();
+  });
+  homebrewModeLayout.setAlignment(1).setPadding(12_sx, 0);
+      homebrewModeHint.setText("Activate core-specific features to help homebrew developers").setFont(Font().setSize(7.0)).setForegroundColor(SystemColor::Sublabel);
+
+  forceInterpreter.setText("Force Interpreter").setChecked(settings.general.forceInterpreter).onToggle([&] {
+    settings.general.forceInterpreter = forceInterpreter.checked();
+  });
+  forceInterpreterLayout.setAlignment(1).setPadding(12_sx, 0);
+      forceInterpreterHint.setText("(Slow) Enable interpreter for cores that default to a recompiler").setFont(Font().setSize(7.0)).setForegroundColor(SystemColor::Sublabel);
+  
+  emulatorSettingsLabel.setText("Rendering Options").setFont(Font().setBold());
+  colorBleedOption.setText("Color Bleed").setChecked(settings.video.colorBleed).onToggle([&] {
+    settings.video.colorBleed = colorBleedOption.checked();
+    if(emulator) emulator->setColorBleed(settings.video.colorBleed);
+  });
+  colorBleedLayout.setAlignment(1).setPadding(12_sx, 0);
+  colorBleedHint.setText("Blurs adjacent pixels for translucency effects").setFont(Font().setSize(7.0)).setForegroundColor(SystemColor::Sublabel);
+  colorEmulationOption.setText("Color Emulation").setChecked(settings.video.colorEmulation).onToggle([&] {
+    settings.video.colorEmulation = colorEmulationOption.checked();
+    if(emulator) emulator->setBoolean("Color Emulation", settings.video.colorEmulation);
+  });
+  colorEmulationLayout.setAlignment(1).setPadding(12_sx, 0);
+  colorEmulationHint.setText("Matches colors to how they look on real hardware").setFont(Font().setSize(7.0)).setForegroundColor(SystemColor::Sublabel);
+  deepBlackBoostOption.setText("Deep Black Boost").setChecked(settings.video.deepBlackBoost).onToggle([&] {
+    settings.video.deepBlackBoost = deepBlackBoostOption.checked();
+    if(emulator) emulator->setBoolean("Deep Black Boost", settings.video.deepBlackBoost);
+  });
+  deepBlackBoostLayout.setAlignment(1).setPadding(12_sx, 0);
+  deepBlackBoostHint.setText("Applies a gamma ramp to crush black levels (SNES/SFC)").setFont(Font().setSize(7.0)).setForegroundColor(SystemColor::Sublabel);
+  interframeBlendingOption.setText("Interframe Blending").setChecked(settings.video.interframeBlending).onToggle([&] {
+    settings.video.interframeBlending = interframeBlendingOption.checked();
+    if(emulator) emulator->setBoolean("Interframe Blending", settings.video.interframeBlending);
+  });
+  interframeBlendingLayout.setAlignment(1).setPadding(12_sx, 0);
+  interframeBlendingHint.setText("Emulates LCD translucency effects, but increases motion blur").setFont(Font().setSize(7.0)).setForegroundColor(SystemColor::Sublabel);
+  overscanOption.setText("Overscan").setChecked(settings.video.overscan).onToggle([&] {
+    settings.video.overscan = overscanOption.checked();
+    if(emulator) emulator->setOverscan(settings.video.overscan);
+  });
+  overscanLayout.setAlignment(1).setPadding(12_sx, 0);
+  overscanHint.setText("Displays the full frame without cropping 'undesirable' borders").setFont(Font().setSize(7.0)).setForegroundColor(SystemColor::Sublabel);
+  pixelAccuracyOption.setText("Pixel Accuracy Mode").setChecked(settings.video.pixelAccuracy).onToggle([&] {
+    settings.video.pixelAccuracy = pixelAccuracyOption.checked();
+    if(emulator) emulator->setBoolean("Pixel Accuracy", settings.video.pixelAccuracy);
+  });
+  pixelAccuracyLayout.setAlignment(1).setPadding(12_sx, 0);
+  pixelAccuracyHint.setText("Use pixel-accurate emulation where available").setFont(Font().setSize(7.0)).setForegroundColor(SystemColor::Sublabel);
+
+}
+
+/// MARK: MD settings
+
 auto Mega32XMegaCD32XMegaCDMegaDriveSettings::construct() -> void {
   setCollapsible();
   megaDriveSettingsLabel.setText("Mega Drive Settings").setFont(Font().setBold());
@@ -106,6 +196,8 @@ auto Mega32XMegaCD32XMegaCDMegaDriveSettings::construct() -> void {
   megaDriveTmssLayout.setAlignment(1).setPadding(12_sx, 0);
     megaDriveTmssHint.setText("Enable/Disable the TMSS Boot Rom at system initialization").setFont(Font().setSize(7.0)).setForegroundColor(SystemColor::Sublabel);
 }
+
+/// MARK: N64 settings
 
 auto N64Settings::construct() -> void {
   setCollapsible();
