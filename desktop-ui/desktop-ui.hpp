@@ -21,11 +21,11 @@ namespace ruby {
 
 #include "resource/resource.hpp"
 #include "input/input.hpp"
+#include "settings/settings.hpp"
 #include "emulator/emulator.hpp"
 #include "game-browser/game-browser.hpp"
 #include "program/program.hpp"
 #include "presentation/presentation.hpp"
-#include "settings/settings.hpp"
 #include "tools/tools.hpp"
 
 auto locate(const string& name) -> string;

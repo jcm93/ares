@@ -25,7 +25,9 @@ auto pToolbarItem::setMovable(bool movable) -> void {
 
 auto pToolbarItem::setSelected() -> void {
   if(auto parent = _parent()) {
-    //[(CocoaToolbar*)parent selectTabViewItem:cocoaToolbarItem];
+    auto parentToolbar = parent->cocoaToolbar;
+    auto identifierString = [NSString stringWithUTF8String:state().text];
+    [parentToolbar setSelectedItemIdentifier:identifierString];
   }
 }
 

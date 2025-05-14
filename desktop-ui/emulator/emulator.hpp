@@ -1,3 +1,9 @@
+struct Setting {
+  string name;
+  string settingType;
+  void *binding;
+};
+
 struct Emulator {
   //emulators.cpp
   static auto construct() -> void;
@@ -67,6 +73,11 @@ struct Emulator {
 
   //queue of pre-specified game locations; used by Program::load()
   vector<string> locationQueue;
+  
+  //Core-specific settings
+  vector<Setting> systemSettings;
+  Settings systemSettingsObject;
+  
 };
 
 extern vector<shared_pointer<Emulator>> emulators;

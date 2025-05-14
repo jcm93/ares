@@ -979,6 +979,9 @@ struct Window : sWindow {
   auto remove(sStatusBar statusBar) { return self().remove(statusBar), *this; }
   auto reset() { return self().reset(), *this; }
   auto resizable() const { return self().resizable(); }
+  /// Positions a window within screen space.
+  ///
+  /// Top left origin, 0 to 1 floating point coordinate space.
   auto setAlignment(Alignment alignment = Alignment::Center) { return self().setAlignment(alignment), *this; }
   auto setAlignment(sWindow relativeTo, Alignment alignment = Alignment::Center) { return self().setAlignment(relativeTo, alignment), *this; }
   auto setBackgroundColor(Color color = {}) { return self().setBackgroundColor(color), *this; }

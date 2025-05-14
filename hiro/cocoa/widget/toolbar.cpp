@@ -24,6 +24,10 @@
   return allowedIdentifiers;
 }
 
+- (NSArray<NSString *> *) toolbarSelectableItemIdentifiers:(NSToolbar *) toolbar {
+  return allowedIdentifiers;
+}
+
 - (NSArray<NSString *> *) toolbarDefaultItemIdentifiers:(NSToolbar *) toolbar {
   return allowedIdentifiers;
 }
@@ -88,6 +92,7 @@ auto pToolbar::setWindow(sWindow window) -> void {
   [p->cocoaWindow toggleToolbarShown:nil];
   if (@available(macOS 11.0, *)) {
     [p->cocoaWindow setToolbarStyle:NSWindowToolbarStylePreference];
+    [cocoaToolbar setSizeMode:NSToolbarSizeModeSmall];
   }
   [cocoaToolbar setVisible:YES];
 }
@@ -129,23 +134,6 @@ auto pToolbar::setFont(const Font& font) -> void {
   }
 }
 
-auto pToolbar::setGeometry(Geometry geometry) -> void {
-  pWidget::setGeometry({
-    geometry.x() - 7, geometry.y() - 5,
-    geometry.width() + 14, geometry.height() + 6
-  });
-  geometry.setGeometry({
-    geometry.x() + 1, geometry.y() + 22,
-    geometry.width() - 2, geometry.height() - 32
-  });
-  for(auto& item : state().items) {
-    if(auto& sizable = item->state.sizable) {
-      sizable->setGeometry(geometry);
-    }
-  }
-  _synchronizeSizable();
-}
-
 auto pToolbar::setNavigation(Navigation navigation) -> void {
 }
 
@@ -156,10 +144,6 @@ auto pToolbar::setVisible(bool visible) -> void {
       if(auto self = sizable->self()) self->setVisible(sizable->visible(true));
     }
   }
-}
-
-auto pToolbar::_synchronizeSizable() -> void {
-  
 }
 
 }

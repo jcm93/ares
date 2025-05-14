@@ -159,25 +159,6 @@ struct VideoSettings : VerticalLayout {
     Label gammaLabel{&colorAdjustmentLayout, Size{0, 0}};
     Label gammaValue{&colorAdjustmentLayout, Size{50_sx, 0}};
     HorizontalSlider gammaSlider{&colorAdjustmentLayout, Size{~0, 0}};
-  Label emulatorSettingsLabel{this, Size{~0, 0}, 5};
-    HorizontalLayout colorBleedLayout{this, Size{~0, 0}, 5};
-      CheckLabel colorBleedOption{&colorBleedLayout, Size{0, 0}, 5};
-      Label colorBleedHint{&colorBleedLayout, Size{~0, 0}};
-    HorizontalLayout colorEmulationLayout{this, Size{~0, 0}, 5};
-      CheckLabel colorEmulationOption{&colorEmulationLayout, Size{0, 0}, 5};
-      Label colorEmulationHint{&colorEmulationLayout, Size{~0, 0}};
-    HorizontalLayout deepBlackBoostLayout{this, Size{~0, 0}, 5};
-      CheckLabel deepBlackBoostOption{&deepBlackBoostLayout, Size{0, 0}, 5};
-      Label deepBlackBoostHint{&deepBlackBoostLayout, Size{~0, 0}};
-    HorizontalLayout interframeBlendingLayout{this, Size{~0, 0}, 5};
-      CheckLabel interframeBlendingOption{&interframeBlendingLayout, Size{0, 0}, 5};
-      Label interframeBlendingHint{&interframeBlendingLayout, Size{~0, 0}};
-    HorizontalLayout overscanLayout{this, Size{~0, 0}};
-      CheckLabel overscanOption{&overscanLayout, Size{0, 0}, 5};
-      Label overscanHint{&overscanLayout, Size{~0, 0}};
-    HorizontalLayout pixelAccuracyLayout{this, Size{~0, 0}};
-      CheckLabel pixelAccuracyOption{&pixelAccuracyLayout, Size{0, 0}, 5};
-      Label pixelAccuracyHint{&pixelAccuracyLayout, Size{~0, 0}};
   //
 };
 
@@ -292,8 +273,9 @@ struct EmulatorSettings : VerticalLayout {
   auto eventChange() -> void;
 
   HorizontalLayout layout{this, Size{700_sx, ~0}};
-    TableView emulatorList{&layout, Size{260_sx, ~0}};
+    TableView emulatorList{&layout, Size{200_sx, ~0}};
     VerticalLayout emulatorPanelContainer{&layout, Size{575_sx, ~0}};
+      DefaultSettings defaultSettings;
       ArcadeSettings arcadeSettings;
       A2600Settings a2600Settings;
       ColecoVisionSettings colecoVisionSettings;
@@ -317,26 +299,6 @@ struct EmulatorSettings : VerticalLayout {
       SuperGrafxSettings superGrafxSettings;
       WonderSwanSettings wonderSwanSettings;
       ZXSpectrumSettings zxSpectrumSettings;
-};
-
-struct OptionSettings : VerticalLayout {
-  auto construct() -> void;
-  Label commonSettingsLabel{this, Size{~0, 0}, 5};
-    HorizontalLayout rewindLayout{this, Size{~0, 0}, 5};
-      CheckLabel rewind{&rewindLayout, Size{0, 0}, 5};
-      Label rewindHint{&rewindLayout, Size{~0, 0}};
-    HorizontalLayout runAheadLayout{this, Size{~0, 0}, 5};
-      CheckLabel runAhead{&runAheadLayout, Size{0, 0}, 5};
-      Label runAheadHint{&runAheadLayout, Size{~0, 0}};
-    HorizontalLayout autoSaveMemoryLayout{this, Size{~0, 0}, 5};
-      CheckLabel autoSaveMemory{&autoSaveMemoryLayout, Size{0, 0}, 5};
-      Label autoSaveMemoryHint{&autoSaveMemoryLayout, Size{~0, 0}};
-    HorizontalLayout homebrewModeLayout{this, Size{~0, 0}, 5};
-      CheckLabel homebrewMode{&homebrewModeLayout, Size{0, 0}, 5};
-      Label homebrewModeHint{&homebrewModeLayout, Size{~0, 0}};
-    HorizontalLayout forceInterpreterLayout{this, Size{~0, 0}, 5};
-      CheckLabel forceInterpreter{&forceInterpreterLayout, Size{0, 0}, 5};
-      Label forceInterpreterHint{&forceInterpreterLayout, Size{0, 0}};
 };
 
 struct FirmwareSettings : VerticalLayout {
@@ -432,7 +394,7 @@ struct SettingsWindow : Window {
 
   VerticalLayout layout{this};
 #if defined(PLATFORM_MACOS)
-    Toolbar panelList{&layout, Size{~0, 20_sy}};
+    Toolbar panelList{&layout, Size{~0, -5_sy}};
 #else
     TabFrame panelList{&layout, Size{~0, 20_sy}};
 #endif
@@ -442,7 +404,6 @@ struct SettingsWindow : Window {
       InputSettings inputSettings;
       HotkeySettings hotkeySettings;
       EmulatorSettings emulatorSettings;
-      OptionSettings optionSettings;
       FirmwareSettings firmwareSettings;
       PathSettings pathSettings;
       DebugSettings debugSettings;
@@ -457,7 +418,6 @@ extern AudioSettings& audioSettings;
 extern InputSettings& inputSettings;
 extern HotkeySettings& hotkeySettings;
 extern EmulatorSettings& emulatorSettings;
-extern OptionSettings& optionSettings;
 extern FirmwareSettings& firmwareSettings;
 extern PathSettings& pathSettings;
 extern DebugSettings& debugSettings;
