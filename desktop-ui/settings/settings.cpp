@@ -19,7 +19,6 @@ AudioSettings& audioSettings = settingsWindow.audioSettings;
 InputSettings& inputSettings = settingsWindow.inputSettings;
 HotkeySettings& hotkeySettings = settingsWindow.hotkeySettings;
 EmulatorSettings& emulatorSettings = settingsWindow.emulatorSettings;
-OptionSettings& optionSettings = settingsWindow.optionSettings;
 FirmwareSettings& firmwareSettings = settingsWindow.firmwareSettings;
 PathSettings& pathSettings = settingsWindow.pathSettings;
 DebugSettings& debugSettings = settingsWindow.debugSettings;
@@ -42,6 +41,15 @@ auto Settings::process(bool load) -> void {
     audio.driver = ruby::Audio::optimalDriver();
     input.driver = ruby::Input::optimalDriver();
   }
+  
+  auto bind = [this, load](auto type, auto path, auto name) {
+    if(load) {
+      if(auto node = operator[](path)) name = node.type();
+    } else {
+      operator()(path).setValue(name);
+    }
+  };
+
 
   #define bind(type, path, name) \
     if(load) { \
@@ -122,7 +130,7 @@ auto Settings::process(bool load) -> void {
   bind(boolean, "DebugServer/UseIPv4", debugServer.useIPv4);
 
   bind(boolean, "Nintendo64/ExpansionPak", nintendo64.expansionPak);
-  bind(string, "Nintendo64/ControllerPakBankString", nintendo64.controllerPakBankString);
+  bind(string,  "Nintendo64/ControllerPakBankString", nintendo64.controllerPakBankString);
 
   bind(boolean, "GameBoyAdvance/Player", gameBoyAdvance.player);
 
@@ -170,6 +178,9 @@ auto Settings::process(bool load) -> void {
       name.replace(" ", "-");
       bind(string, name, firmware.location);
     }
+    for(auto setting : ares::Node::enumerate<ares::Node::Setting::Boolean>(emulator->root)) {
+      print(setting.data());
+    }
   }
 
   #undef bind
@@ -186,7 +197,7 @@ SettingsWindow::SettingsWindow() {
     hotkeySettings.setVisible(false);
   });
 
-  panelContainer.setPadding(20_sx, 0);
+  panelContainer.setPadding(20_sx, 20_sy);
   
 #if defined(PLATFORM_MACOS)
   panelList.append(ToolbarItem().setText("Video").setIcon(Icon::Device::Display));
@@ -194,7 +205,6 @@ SettingsWindow::SettingsWindow() {
   panelList.append(ToolbarItem().setText("Input").setIcon(Icon::Device::Joypad));
   panelList.append(ToolbarItem().setText("Hotkeys").setIcon(Icon::Device::Keyboard));
   panelList.append(ToolbarItem().setText("Emulators").setIcon(Icon::Place::Server));
-  panelList.append(ToolbarItem().setText("Options").setIcon(Icon::Action::Settings));
   panelList.append(ToolbarItem().setText("Firmware").setIcon(Icon::Emblem::Binary));
   panelList.append(ToolbarItem().setText("Paths").setIcon(Icon::Emblem::Folder));
   panelList.append(ToolbarItem().setText("Debug").setIcon(Icon::Device::Network));
@@ -205,7 +215,6 @@ SettingsWindow::SettingsWindow() {
   panelList.append(TabFrameItem().setText("Input").setIcon(Icon::Device::Joypad));
   panelList.append(TabFrameItem().setText("Hotkeys").setIcon(Icon::Device::Keyboard));
   panelList.append(TabFrameItem().setText("Emulators").setIcon(Icon::Place::Server));
-  panelList.append(TabFrameItem().setText("Options").setIcon(Icon::Action::Settings));
   panelList.append(TabFrameItem().setText("Firmware").setIcon(Icon::Emblem::Binary));
   panelList.append(TabFrameItem().setText("Paths").setIcon(Icon::Emblem::Folder));
   panelList.append(TabFrameItem().setText("Debug").setIcon(Icon::Device::Network));
@@ -217,7 +226,6 @@ SettingsWindow::SettingsWindow() {
   panelContainer.append(inputSettings, Size{~0, ~0});
   panelContainer.append(hotkeySettings, Size{~0, ~0});
   panelContainer.append(emulatorSettings, Size{~0, ~0});
-  panelContainer.append(optionSettings, Size{~0, ~0});
   panelContainer.append(firmwareSettings, Size{~0, ~0});
   panelContainer.append(pathSettings, Size{~0, ~0});
   panelContainer.append(debugSettings, Size{~0, ~0});
@@ -228,7 +236,6 @@ SettingsWindow::SettingsWindow() {
   inputSettings.construct();
   hotkeySettings.construct();
   emulatorSettings.construct();
-  optionSettings.construct();
   firmwareSettings.construct();
   pathSettings.construct();
   debugSettings.construct();
@@ -236,8 +243,8 @@ SettingsWindow::SettingsWindow() {
 
   setDismissable();
   setTitle("Configuration");
-  setSize({725_sx, 425_sy});
-  setAlignment({0.0, 1.0});
+  setSize({875_sx, 465_sy});
+  setAlignment({0.25, 0.25});
   //setResizable(false);
 }
 
@@ -260,7 +267,6 @@ auto SettingsWindow::eventChange() -> void {
   inputSettings.setVisible(false);
   hotkeySettings.setVisible(false);
   emulatorSettings.setVisible(false);
-  optionSettings.setVisible(false);
   firmwareSettings.setVisible(false);
   pathSettings.setVisible(false);
   debugSettings.setVisible(false);
@@ -273,7 +279,6 @@ auto SettingsWindow::eventChange() -> void {
     if(item.text() == "Input"    ) found = true, inputSettings.setVisible();
     if(item.text() == "Hotkeys"  ) found = true, hotkeySettings.setVisible();
     if(item.text() == "Emulators") found = true, emulatorSettings.setVisible();
-    if(item.text() == "Options"  ) found = true, optionSettings.setVisible();
     if(item.text() == "Firmware" ) found = true, firmwareSettings.setVisible();
     if(item.text() == "Paths"    ) found = true, pathSettings.setVisible();
     if(item.text() == "Debug"    ) found = true, debugSettings.setVisible();

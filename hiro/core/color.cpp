@@ -12,7 +12,12 @@ Color::Color(SystemColor color) {
   switch (color) {
     case SystemColor::Text: setColor(0, 0, 0, 255); return;
     case SystemColor::Label: setColor(0, 0, 0, 255); return;
+#ifdef PLATFORM_MACOS
+      //TODO remove or verify or address
+    case SystemColor::Sublabel: setColor(100, 100, 100, 255); return;
+#else
     case SystemColor::Sublabel: setColor(80, 80, 80, 255); return;
+#endif
     case SystemColor::Link: setColor(0, 85, 255, 255); return;
     case SystemColor::PlaceholderText: setColor(128, 128, 128, 255); return;
     default: setColor(0, 0, 0, 0); return;
