@@ -11,12 +11,40 @@ struct Nintendo64 : Emulator {
   u32 regionID = 0;
   sTimer diskInsertTimer;
   
-  Setting interpreterOverride = {
-    .name = "General/ForceInterpreter",
-    .settingType = "boolean",
-    .binding = &systemSettingsObject.general.forceInterpreter
-  };
+  struct N64SettingsStruct : Markup::Node {
+    
+    auto load() -> void;
+    auto save() -> void;
+    auto process(bool load) -> void;
+    
+    struct Video {
+      struct string quality = "SD";
+      bool supersampling = false;
+      bool disableVideoInterfaceProcessing = false;
+      bool weaveDeinterlacing = true;
+    } video;
+    struct System {
+      bool expansionPak = true;
+      u8 controllerPakBankCount = 1;
+      struct string controllerPakBankString = "32KiB (Default)";
+    } system;
+  } settings;
 };
+
+Nintendo64::N64SettingsStruct::process(bool load) -> void {
+  
+#define bind(type, path, name) \
+  if(load) { \
+    if(auto node = operator[](path)) name = node.type(); \
+  } else { \
+    operator()(path).setValue(name); \
+  } \
+  
+  bind(string,  "Nintendo 64/Video/Quality", video.quality);
+  bind(boolean, "Nintendo 64/Video/Supersampling", video.supersampling);
+  bind(boolean, "Nintendo 64/Video/DisableVideoInterfaceProcessing", video.disableVideoInterfaceProcessing);
+  bind(boolean, "Nintendo 64/Video/WeaveDeinterlacing", video.weaveDeinterlacing);
+}
 
 Nintendo64::Nintendo64() {
   manufacturer = "Nintendo";
