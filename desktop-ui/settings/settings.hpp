@@ -4,6 +4,7 @@ struct Settings : Markup::Node {
   auto load() -> void;
   auto save() -> void;
   auto process(bool load) -> void;
+  auto tempBind(maybe<string> prefix, bool load, Markup::Node receiver) -> void;
 
   struct Video {
     string driver;

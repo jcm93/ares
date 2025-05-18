@@ -34,6 +34,160 @@ auto Settings::save() -> void {
   file::write(locate("settings.bml"), BML::serialize(*this, " "));
 }
 
+auto Settings::tempBind(maybe<string> prefixArg, bool load, Markup::Node receiver) -> void {
+  #define bind(type, path, name) \
+    if(load) { \
+      if(auto node = receiver[path]) name = node.type(); \
+    } else { \
+      receiver(path).setValue(name); \
+    } \
+
+  string prefix;
+  if(prefixArg) {
+    prefix = {prefixArg.get(), "/"};
+  } else {
+    prefix = (string)"";
+  }
+
+  string prefixedName = {prefix, "Video/Driver"};
+  bind(string,  prefixedName, video.driver);
+  prefixedName = {prefix, "Video/Monitor"};
+  bind(string,  prefixedName, video.monitor);
+  prefixedName = {prefix, "Video/Format"};
+  bind(string,  prefixedName, video.format);
+  prefixedName = {prefix, "Video/Exclusive"};
+  bind(boolean, prefixedName, video.exclusive);
+  prefixedName = {prefix, "Video/Blocking"};
+  bind(boolean, prefixedName, video.blocking);
+  prefixedName = {prefix, "Video/PresentSRGB"};
+  bind(boolean, prefixedName, video.forceSRGB);
+  prefixedName = {prefix, "Video/ThreadedRenderer"};
+  bind(boolean, prefixedName, video.threadedRenderer);
+  prefixedName = {prefix, "Video/NativeFullScreen"};
+  bind(boolean, prefixedName, video.nativeFullScreen);
+  prefixedName = {prefix, "Video/Flush"};
+  bind(boolean, prefixedName, video.flush);
+  prefixedName = {prefix, "Video/Shader"};
+  bind(string,  prefixedName, video.shader);
+  prefixedName = {prefix, "Video/Multiplier"};
+  bind(natural, prefixedName, video.multiplier);
+  prefixedName = {prefix, "Video/Output"};
+  bind(string,  prefixedName, video.output);
+  prefixedName = {prefix, "Video/AspectCorrection"};
+  bind(boolean, prefixedName, video.aspectCorrection);
+  prefixedName = {prefix, "Video/AdaptiveSizing"};
+  bind(boolean, prefixedName, video.adaptiveSizing);
+  prefixedName = {prefix, "Video/AutoCentering"};
+  bind(boolean, prefixedName, video.autoCentering);
+  prefixedName = {prefix, "Video/Luminance"};
+  bind(real,    prefixedName, video.luminance);
+  prefixedName = {prefix, "Video/Saturation"};
+  bind(real,    prefixedName, video.saturation);
+  prefixedName = {prefix, "Video/Gamma"};
+  bind(real,    prefixedName, video.gamma);
+  prefixedName = {prefix, "Video/ColorBleed"};
+  bind(boolean, prefixedName, video.colorBleed);
+  prefixedName = {prefix, "Video/ColorEmulation"};
+  bind(boolean, prefixedName, video.colorEmulation);
+  prefixedName = {prefix, "Video/DeepBlackBoost"};
+  bind(boolean, prefixedName, video.deepBlackBoost);
+  prefixedName = {prefix, "Video/InterframeBlending"};
+  bind(boolean, prefixedName, video.interframeBlending);
+  prefixedName = {prefix, "Video/Overscan"};
+  bind(boolean, prefixedName, video.overscan);
+  prefixedName = {prefix, "Video/PixelAccuracy"};
+  bind(boolean, prefixedName, video.pixelAccuracy);
+
+  prefixedName = {prefix, "Audio/Driver"};
+  bind(string,  prefixedName, audio.driver);
+  prefixedName = {prefix, "Audio/Device"};
+  bind(string,  prefixedName, audio.device);
+  prefixedName = {prefix, "Audio/Frequency"};
+  bind(natural, prefixedName, audio.frequency);
+  prefixedName = {prefix, "Audio/Latency"};
+  bind(natural, prefixedName, audio.latency);
+  prefixedName = {prefix, "Audio/Exclusive"};
+  bind(boolean, prefixedName, audio.exclusive);
+  prefixedName = {prefix, "Audio/Blocking"};
+  bind(boolean, prefixedName, audio.blocking);
+  prefixedName = {prefix, "Audio/Dynamic"};
+  bind(boolean, prefixedName, audio.dynamic);
+  prefixedName = {prefix, "Audio/Mute"};
+  bind(boolean, prefixedName, audio.mute);
+  prefixedName = {prefix, "Audio/Volume"};
+  bind(real,    prefixedName, audio.volume);
+  prefixedName = {prefix, "Audio/Balance"};
+  bind(real,    prefixedName, audio.balance);
+
+  prefixedName = {prefix, "Input/Driver"};
+  bind(string,  prefixedName, input.driver);
+  prefixedName = {prefix, "Input/Defocus"};
+  bind(string,  prefixedName, input.defocus);
+
+  prefixedName = {prefix, "Boot/Fast"};
+  bind(boolean, prefixedName, boot.fast);
+  prefixedName = {prefix, "Boot/Debugger"};
+  bind(boolean, prefixedName, boot.debugger);
+  prefixedName = {prefix, "Boot/Prefer"};
+  bind(string,  prefixedName, boot.prefer);
+
+  prefixedName = {prefix, "General/ShowStatusBar"};
+  bind(boolean, prefixedName, general.showStatusBar);
+  prefixedName = {prefix, "General/Rewind"};
+  bind(boolean, prefixedName, general.rewind);
+  prefixedName = {prefix, "General/RunAhead"};
+  bind(boolean, prefixedName, general.runAhead);
+  prefixedName = {prefix, "General/AutoSaveMemory"};
+  bind(boolean, prefixedName, general.autoSaveMemory);
+  prefixedName = {prefix, "General/HomebrewMode"};
+  bind(boolean, prefixedName, general.homebrewMode);
+  prefixedName = {prefix, "General/ForceInterpreter"};
+  bind(boolean, prefixedName, general.forceInterpreter);
+
+  prefixedName = {prefix, "Rewind/Length"};
+  bind(natural, prefixedName, rewind.length);
+  prefixedName = {prefix, "Rewind/Frequency"};
+  bind(natural, prefixedName, rewind.frequency);
+
+  prefixedName = {prefix, "Paths/Home"};
+  bind(string,  prefixedName, paths.home);
+  prefixedName = {prefix, "Paths/Firmware"};
+  bind(string,  prefixedName, paths.firmware);
+  prefixedName = {prefix, "Paths/Saves"};
+  bind(string,  prefixedName, paths.saves);
+  prefixedName = {prefix, "Paths/Screenshots"};
+  bind(string,  prefixedName, paths.screenshots);
+  prefixedName = {prefix, "Paths/Debugging"};
+  bind(string,  prefixedName, paths.debugging);
+  prefixedName = {prefix, "Paths/ArcadeRoms"};
+  bind(string,  prefixedName, paths.arcadeRoms);
+  prefixedName = {prefix, "Paths/SuperFamicom/GameBoy"};
+  bind(string,  prefixedName, paths.superFamicom.gameBoy);
+  prefixedName = {prefix, "Paths/SuperFamicom/BSMemory"};
+  bind(string,  prefixedName, paths.superFamicom.bsMemory);
+  prefixedName = {prefix, "Paths/SuperFamicom/SufamiTurbo"};
+  bind(string,  prefixedName, paths.superFamicom.sufamiTurbo);
+
+  prefixedName = {prefix, "DebugServer/Port"};
+  bind(natural, prefixedName, debugServer.port);
+  prefixedName = {prefix, "DebugServer/Enabled"};
+  bind(boolean, prefixedName, debugServer.enabled);
+  prefixedName = {prefix, "DebugServer/UseIPv4"};
+  bind(boolean, prefixedName, debugServer.useIPv4);
+
+  prefixedName = {prefix, "Nintendo64/ExpansionPak"};
+  bind(boolean, prefixedName, nintendo64.expansionPak);
+  prefixedName = {prefix, "Nintendo64/ControllerPakBankString"};
+  bind(string,  prefixedName, nintendo64.controllerPakBankString);
+
+  prefixedName = {prefix, "GameBoyAdvance/Player"};
+  bind(boolean, prefixedName, gameBoyAdvance.player);
+
+  prefixedName = {prefix, "MegaDrive/TMSS"};
+  bind(boolean, prefixedName, megadrive.tmss);
+  #undef bind
+}
+
 auto Settings::process(bool load) -> void {
   if(load) {
     //initialize non-static default settings
@@ -42,99 +196,22 @@ auto Settings::process(bool load) -> void {
     input.driver = ruby::Input::optimalDriver();
   }
   
-  auto bind = [this, load](auto type, auto path, auto name) {
+  tempBind(nothing, load, *this);
+  
+  /*auto bind = [this, load](auto type, auto path, auto name) {
     if(load) {
       if(auto node = operator[](path)) name = node.type();
     } else {
       operator()(path).setValue(name);
     }
-  };
-
-
-  #define bind(type, path, name) \
-    if(load) { \
-      if(auto node = operator[](path)) name = node.type(); \
-    } else { \
-      operator()(path).setValue(name); \
-    } \
-
-  bind(string,  "Video/Driver", video.driver);
-  bind(string,  "Video/Monitor", video.monitor);
-  bind(string,  "Video/Format", video.format);
-  bind(boolean, "Video/Exclusive", video.exclusive);
-  bind(boolean, "Video/Blocking", video.blocking);
-  bind(boolean, "Video/PresentSRGB", video.forceSRGB);
-  bind(boolean, "Video/ThreadedRenderer", video.threadedRenderer);
-  bind(boolean, "Video/NativeFullScreen", video.nativeFullScreen);
-  bind(boolean, "Video/Flush", video.flush);
-  bind(string,  "Video/Shader", video.shader);
-  bind(natural, "Video/Multiplier", video.multiplier);
-  bind(string,  "Video/Output", video.output);
-  bind(boolean, "Video/AspectCorrection", video.aspectCorrection);
-  bind(boolean, "Video/AdaptiveSizing", video.adaptiveSizing);
-  bind(boolean, "Video/AutoCentering", video.autoCentering);
-  bind(real,    "Video/Luminance", video.luminance);
-  bind(real,    "Video/Saturation", video.saturation);
-  bind(real,    "Video/Gamma", video.gamma);
-  bind(boolean, "Video/ColorBleed", video.colorBleed);
-  bind(boolean, "Video/ColorEmulation", video.colorEmulation);
-  bind(boolean, "Video/DeepBlackBoost", video.deepBlackBoost);
-  bind(boolean, "Video/InterframeBlending", video.interframeBlending);
-  bind(boolean, "Video/Overscan", video.overscan);
-  bind(boolean, "Video/PixelAccuracy", video.pixelAccuracy);
-  bind(string,  "Video/Quality", video.quality);
-  bind(boolean, "Video/Supersampling", video.supersampling);
-  bind(boolean, "Video/DisableVideoInterfaceProcessing", video.disableVideoInterfaceProcessing);
-  bind(boolean, "Video/WeaveDeinterlacing", video.weaveDeinterlacing);
-
-  bind(string,  "Audio/Driver", audio.driver);
-  bind(string,  "Audio/Device", audio.device);
-  bind(natural, "Audio/Frequency", audio.frequency);
-  bind(natural, "Audio/Latency", audio.latency);
-  bind(boolean, "Audio/Exclusive", audio.exclusive);
-  bind(boolean, "Audio/Blocking", audio.blocking);
-  bind(boolean, "Audio/Dynamic", audio.dynamic);
-  bind(boolean, "Audio/Mute", audio.mute);
-  bind(real,    "Audio/Volume", audio.volume);
-  bind(real,    "Audio/Balance", audio.balance);
-
-  bind(string,  "Input/Driver", input.driver);
-  bind(string,  "Input/Defocus", input.defocus);
-
-  bind(boolean, "Boot/Fast", boot.fast);
-  bind(boolean, "Boot/Debugger", boot.debugger);
-  bind(string,  "Boot/Prefer", boot.prefer);
-
-  bind(boolean, "General/ShowStatusBar", general.showStatusBar);
-  bind(boolean, "General/Rewind", general.rewind);
-  bind(boolean, "General/RunAhead", general.runAhead);
-  bind(boolean, "General/AutoSaveMemory", general.autoSaveMemory);
-  bind(boolean, "General/HomebrewMode", general.homebrewMode);
-  bind(boolean, "General/ForceInterpreter", general.forceInterpreter);
-
-  bind(natural, "Rewind/Length", rewind.length);
-  bind(natural, "Rewind/Frequency", rewind.frequency);
-
-  bind(string,  "Paths/Home", paths.home);
-  bind(string,  "Paths/Firmware", paths.firmware);
-  bind(string,  "Paths/Saves", paths.saves);
-  bind(string,  "Paths/Screenshots", paths.screenshots);
-  bind(string,  "Paths/Debugging", paths.debugging);
-  bind(string,  "Paths/ArcadeRoms", paths.arcadeRoms);
-  bind(string,  "Paths/SuperFamicom/GameBoy", paths.superFamicom.gameBoy);
-  bind(string,  "Paths/SuperFamicom/BSMemory", paths.superFamicom.bsMemory);
-  bind(string,  "Paths/SuperFamicom/SufamiTurbo", paths.superFamicom.sufamiTurbo);
-
-  bind(natural, "DebugServer/Port", debugServer.port);
-  bind(boolean, "DebugServer/Enabled", debugServer.enabled);
-  bind(boolean, "DebugServer/UseIPv4", debugServer.useIPv4);
-
-  bind(boolean, "Nintendo64/ExpansionPak", nintendo64.expansionPak);
-  bind(string,  "Nintendo64/ControllerPakBankString", nintendo64.controllerPakBankString);
-
-  bind(boolean, "GameBoyAdvance/Player", gameBoyAdvance.player);
-
-  bind(boolean, "MegaDrive/TMSS", megadrive.tmss);
+  };*/
+  
+#define bind(type, path, name) \
+  if(load) { \
+    if(auto node = operator[](path)) name = node.type(); \
+  } else { \
+    operator()(path).setValue(name); \
+  } \
 
   for(u32 index : range(9)) {
     string name = {"Recent/Game-", 1 + index};
@@ -178,9 +255,8 @@ auto Settings::process(bool load) -> void {
       name.replace(" ", "-");
       bind(string, name, firmware.location);
     }
-    for(auto setting : ares::Node::enumerate<ares::Node::Setting::Boolean>(emulator->root)) {
-      print(setting.data());
-    }
+    emulator->systemSettingsObject.tempBind(base, load, emulator->systemSettingsObject);
+    append(emulator->systemSettingsObject);
   }
 
   #undef bind

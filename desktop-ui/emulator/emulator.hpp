@@ -77,7 +77,6 @@ struct Emulator {
   //Core-specific settings
   vector<Setting> systemSettings;
   Settings systemSettingsObject;
-  
 };
 
 extern vector<shared_pointer<Emulator>> emulators;
