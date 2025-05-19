@@ -1,8 +1,13 @@
-struct Settings : Markup::Node {
+struct SettingsNode : Markup::Node {
   using string = nall::string;
 
   auto load() -> void;
   auto save() -> void;
+  virtual auto process(bool load) -> void = 0;
+};
+
+struct GlobalSettings : SettingsNode {
+  
   auto process(bool load) -> void;
   auto tempBind(maybe<string> prefix, bool load, Markup::Node receiver) -> void;
 
@@ -32,11 +37,6 @@ struct Settings : Markup::Node {
     bool interframeBlending = true;
     bool overscan = false;
     bool pixelAccuracy = false;
-
-    string quality = "SD";
-    bool supersampling = false;
-    bool disableVideoInterfaceProcessing = false;
-    bool weaveDeinterlacing = true;
   } video;
 
   struct Audio {
@@ -101,12 +101,6 @@ struct Settings : Markup::Node {
     bool enabled = false; // if enabled, server starts with ares
     bool useIPv4 = false; // forces IPv4 over IPv6
   } debugServer;
-
-  struct Nintendo64 {
-    bool expansionPak = true;
-    u8 controllerPakBankCount = 1;
-    string controllerPakBankString = "32KiB (Default)";
-  } nintendo64;
 
   struct GameBoyAdvance {
     bool player = false;

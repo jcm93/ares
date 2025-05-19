@@ -11,7 +11,7 @@
 #include "debug.cpp"
 #include "home.cpp"
 
-Settings settings;
+GlobalSettings settings;
 namespace Instances { Instance<SettingsWindow> settingsWindow; }
 SettingsWindow& settingsWindow = Instances::settingsWindow();
 VideoSettings& videoSettings = settingsWindow.videoSettings;
@@ -23,18 +23,18 @@ FirmwareSettings& firmwareSettings = settingsWindow.firmwareSettings;
 PathSettings& pathSettings = settingsWindow.pathSettings;
 DebugSettings& debugSettings = settingsWindow.debugSettings;
 
-auto Settings::load() -> void {
+auto SettingsNode::load() -> void {
   Markup::Node::operator=(BML::unserialize(string::read(locate("settings.bml")), " "));
   process(true);
   save();
 }
 
-auto Settings::save() -> void {
+auto SettingsNode::save() -> void {
   process(false);
   file::write(locate("settings.bml"), BML::serialize(*this, " "));
 }
 
-auto Settings::tempBind(maybe<string> prefixArg, bool load, Markup::Node receiver) -> void {
+auto GlobalSettings::tempBind(maybe<string> prefixArg, bool load, Markup::Node receiver) -> void {
   #define bind(type, path, name) \
     if(load) { \
       if(auto node = receiver[path]) name = node.type(); \
@@ -175,11 +175,6 @@ auto Settings::tempBind(maybe<string> prefixArg, bool load, Markup::Node receive
   prefixedName = {prefix, "DebugServer/UseIPv4"};
   bind(boolean, prefixedName, debugServer.useIPv4);
 
-  prefixedName = {prefix, "Nintendo64/ExpansionPak"};
-  bind(boolean, prefixedName, nintendo64.expansionPak);
-  prefixedName = {prefix, "Nintendo64/ControllerPakBankString"};
-  bind(string,  prefixedName, nintendo64.controllerPakBankString);
-
   prefixedName = {prefix, "GameBoyAdvance/Player"};
   bind(boolean, prefixedName, gameBoyAdvance.player);
 
@@ -188,7 +183,7 @@ auto Settings::tempBind(maybe<string> prefixArg, bool load, Markup::Node receive
   #undef bind
 }
 
-auto Settings::process(bool load) -> void {
+auto GlobalSettings::process(bool load) -> void {
   if(load) {
     //initialize non-static default settings
     video.driver = ruby::Video::optimalDriver();
@@ -256,7 +251,9 @@ auto Settings::process(bool load) -> void {
       bind(string, name, firmware.location);
     }
     emulator->systemSettingsObject.tempBind(base, load, emulator->systemSettingsObject);
+    emulator->coreSettings->process(load);
     append(emulator->systemSettingsObject);
+    append(*(emulator->coreSettings));
   }
 
   #undef bind

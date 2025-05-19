@@ -11,14 +11,14 @@ struct Nintendo64 : Emulator {
   u32 regionID = 0;
   sTimer diskInsertTimer;
   
-  struct N64SettingsStruct : Markup::Node {
+  struct N64SettingsStruct : SettingsNode {
     
     auto load() -> void;
     auto save() -> void;
     auto process(bool load) -> void;
     
     struct Video {
-      struct string quality = "SD";
+      string quality = "SD";
       bool supersampling = false;
       bool disableVideoInterfaceProcessing = false;
       bool weaveDeinterlacing = true;
@@ -26,12 +26,12 @@ struct Nintendo64 : Emulator {
     struct System {
       bool expansionPak = true;
       u8 controllerPakBankCount = 1;
-      struct string controllerPakBankString = "32KiB (Default)";
+      string controllerPakBankString = "32KiB (Default)";
     } system;
-  } settings;
+  } coreSettings;
 };
 
-Nintendo64::N64SettingsStruct::process(bool load) -> void {
+auto Nintendo64::N64SettingsStruct::process(bool load) -> void {
   
 #define bind(type, path, name) \
   if(load) { \
@@ -138,19 +138,19 @@ auto Nintendo64::load() -> LoadResult {
     if(result != successful) return result;
   }
 
-  ares::Nintendo64::option("Quality", settings.video.quality);
-  ares::Nintendo64::option("Supersampling", settings.video.supersampling);
+  ares::Nintendo64::option("Quality", coreSettings.video.quality);
+  ares::Nintendo64::option("Supersampling", coreSettings.video.supersampling);
 #if defined(VULKAN)
   ares::Nintendo64::option("Enable GPU acceleration", true);
 #else
   ares::Nintendo64::option("Enable GPU acceleration", false);
 #endif
-  ares::Nintendo64::option("Disable Video Interface Processing", settings.video.disableVideoInterfaceProcessing);
-  ares::Nintendo64::option("Weave Deinterlacing", settings.video.weaveDeinterlacing);
+  ares::Nintendo64::option("Disable Video Interface Processing", coreSettings.video.disableVideoInterfaceProcessing);
+  ares::Nintendo64::option("Weave Deinterlacing", coreSettings.video.weaveDeinterlacing);
   ares::Nintendo64::option("Homebrew Mode", settings.general.homebrewMode);
   ares::Nintendo64::option("Recompiler", !settings.general.forceInterpreter);
-  ares::Nintendo64::option("Expansion Pak", settings.nintendo64.expansionPak);
-  ares::Nintendo64::option("Controller Pak Banks", settings.nintendo64.controllerPakBankString);
+  ares::Nintendo64::option("Expansion Pak", coreSettings.system.expansionPak);
+  ares::Nintendo64::option("Controller Pak Banks", coreSettings.system.controllerPakBankString);
 
   if(!ares::Nintendo64::load(root, {"[Nintendo] ", name, " (", region, ")"})) return otherError;
 

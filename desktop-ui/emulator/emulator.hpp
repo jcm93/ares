@@ -75,8 +75,8 @@ struct Emulator {
   vector<string> locationQueue;
   
   //Core-specific settings
-  vector<Setting> systemSettings;
-  Settings systemSettingsObject;
+  GlobalSettings systemSettingsObject;
+  unique_pointer<SettingsNode> coreSettings;
 };
 
 extern vector<shared_pointer<Emulator>> emulators;
