@@ -206,7 +206,7 @@ auto N64Settings::construct() -> void {
   renderQualityLayout.setPadding(12_sx, 0);
 
   disableVideoInterfaceProcessingOption.setText("Disable Video Interface Processing").setChecked(settings.video.disableVideoInterfaceProcessing).onToggle([&] {
-    settings.video.disableVideoInterfaceProcessing = disableVideoInterfaceProcessingOption.checked();
+    coreSettings.video.disableVideoInterfaceProcessing = disableVideoInterfaceProcessingOption.checked();
     if(emulator) emulator->setBoolean("Disable Video Interface Processing", settings.video.disableVideoInterfaceProcessing);
   });
   disableVideoInterfaceProcessingLayout.setAlignment(1).setPadding(12_sx, 0);

@@ -109,7 +109,7 @@ struct GlobalSettings : SettingsNode {
   struct MegaDrive {
     bool tmss = false;
   } megadrive;
-};
+} settings;
 
 #include "emulators.hpp"
 
@@ -405,7 +405,7 @@ struct SettingsWindow : Window {
       HomePanel homePanel;
 };
 
-extern Settings settings;
+extern GlobalSettings settings;
 namespace Instances { extern Instance<SettingsWindow> settingsWindow; }
 extern SettingsWindow& settingsWindow;
 extern VideoSettings& videoSettings;

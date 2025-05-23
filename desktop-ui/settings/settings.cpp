@@ -11,7 +11,6 @@
 #include "debug.cpp"
 #include "home.cpp"
 
-GlobalSettings settings;
 namespace Instances { Instance<SettingsWindow> settingsWindow; }
 SettingsWindow& settingsWindow = Instances::settingsWindow();
 VideoSettings& videoSettings = settingsWindow.videoSettings;
