@@ -3,14 +3,13 @@ auto EmulatorSettings::construct() -> void {
   setVisible(false);
   
   defaultSettings.construct();
-  n64Settings.construct();
   mega32XMegaCD32XMegaCDMegaDriveSettings.construct();
   
   layout.setPadding(-20_sx, -20_sy);
   emulatorPanelContainer.setPadding(20_sx, 20_sy);
   
   emulatorPanelContainer.append(defaultSettings, Size{~0, ~0});
-  emulatorPanelContainer.append(n64Settings, Size{~0, ~0});
+  
   emulatorPanelContainer.append(mega32XMegaCD32XMegaCDMegaDriveSettings, Size{~0, ~0});
 
   //emulatorLabel.setText("Load Menu Emulators").setFont(Font().setBold());
@@ -26,6 +25,10 @@ auto EmulatorSettings::construct() -> void {
   name.setText("Defaults");
   //TableViewCell manufacturer{&item};
   for(auto& emulator : emulators) {
+    if(emulator->name == "Nintendo 64") {
+      n64Settings.construct(emulator);
+      emulatorPanelContainer.append(n64Settings, Size{~0, ~0});
+    }
     TableViewItem item{&emulatorList};
     item.setAttribute<shared_pointer<Emulator>>("emulator", emulator);
     TableViewCell visible{&item};
@@ -199,15 +202,15 @@ auto Mega32XMegaCD32XMegaCDMegaDriveSettings::construct() -> void {
 
 /// MARK: N64 settings
 
-auto N64Settings::construct() -> void {
+auto N64Settings::construct(shared_pointer<Emulator> n64Instance) -> void {
   setCollapsible();
   renderSettingsLabel.setText("N64 Render Settings").setFont(Font().setBold());
 
   renderQualityLayout.setPadding(12_sx, 0);
 
   disableVideoInterfaceProcessingOption.setText("Disable Video Interface Processing").setChecked(settings.video.disableVideoInterfaceProcessing).onToggle([&] {
-    coreSettings.video.disableVideoInterfaceProcessing = disableVideoInterfaceProcessingOption.checked();
-    if(emulator) emulator->setBoolean("Disable Video Interface Processing", settings.video.disableVideoInterfaceProcessing);
+    (N64SettingsStruct)instance->coreSettings.disableVideoInterfaceProcessing = disableVideoInterfaceProcessingOption.checked();
+    if(emulator) emulator->setBoolean("Disable Video Interface Processing", instance->coreSettings.disableVideoInterfaceProcessing);
   });
   disableVideoInterfaceProcessingLayout.setAlignment(1).setPadding(12_sx, 0);
   disableVideoInterfaceProcessingHint.setText("Disables Video Interface post processing to render image from VRAM directly").setFont(Font().setSize(7.0)).setForegroundColor(SystemColor::Sublabel);

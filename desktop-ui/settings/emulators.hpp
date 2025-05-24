@@ -110,7 +110,8 @@ struct NeoGeoSettings : VerticalLayout {
 
 // MARK: N64 Settings
 struct N64Settings : VerticalLayout {
-  auto construct() -> void;
+  auto construct(shared_pointer<Emulator> n64Instance) -> void;
+  shared_pointer<Emulator> instance;
   Label commonSettingsLabel{this, Size{~0, 0}, 5};
     HorizontalLayout homebrewModeLayout{this, Size{~0, 0}, 5};
       CheckLabel homebrewMode{&homebrewModeLayout, Size{0, 0}, 5};

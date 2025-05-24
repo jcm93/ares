@@ -21,6 +21,9 @@ namespace ruby {
 
 #include "resource/resource.hpp"
 #include "input/input.hpp"
+//TODO: fix
+struct Emulator;
+struct N64SettingsStruct;
 #include "settings/settings.hpp"
 #include "emulator/emulator.hpp"
 #include "game-browser/game-browser.hpp"
