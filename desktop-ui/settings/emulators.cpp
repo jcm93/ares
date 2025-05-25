@@ -110,77 +110,73 @@ auto EmulatorSettings::eventToggle(TableViewCell cell) -> void {
 /// MARK: Default settings
 
 auto DefaultSettings::construct() -> void {
+  setCollapsible();
   commonSettingsLabel.setText("System Options").setFont(Font().setBold());
+  
+  systemOptionsTableLayout.setSize({2, 6}).setPadding(12_sx, 0);
+  systemOptionsTableLayout.column(0).setAlignment(1.0);
+  
+  renderingOptionsTableLayout.setSize({2, 6}).setPadding(12_sx, 0);
+  renderingOptionsTableLayout.column(0).setAlignment(1.0);
 
-  rewind.setText("Rewind").setChecked(settings.general.rewind).onToggle([&] {
+  rewindHint.setText("Rewind:");
+  rewind.setText("Allow you to reverse time via the rewind hotkey").setChecked(settings.general.rewind).onToggle([&] {
     settings.general.rewind = rewind.checked();
     program.rewindReset();
   }).doToggle();
-  rewindLayout.setAlignment(1).setPadding(12_sx, 0);
-      rewindHint.setText("Allows you to reverse time via the rewind hotkey").setFont(Font().setSize(7.0)).setForegroundColor(SystemColor::Sublabel);
 
-  runAhead.setText("Run-Ahead").setEnabled(co_serializable()).setChecked(settings.general.runAhead && co_serializable()).onToggle([&] {
+  runAheadHint.setText("Run-Ahead:");
+  runAhead.setText("Remove one frame of input lag, but double system requirements").setEnabled(co_serializable()).setChecked(settings.general.runAhead && co_serializable()).onToggle([&] {
     settings.general.runAhead = runAhead.checked() && co_serializable();
     program.runAheadUpdate();
   });
-  runAheadLayout.setAlignment(1).setPadding(12_sx, 0);
-      runAheadHint.setText("Removes one frame of input lag, but doubles system requirements").setFont(Font().setSize(7.0)).setForegroundColor(SystemColor::Sublabel);
 
-  autoSaveMemory.setText("Auto-Save Memory Periodically").setChecked(settings.general.autoSaveMemory).onToggle([&] {
+  autoSaveMemoryHint.setText("Auto-Save Memory:");
+  autoSaveMemory.setText("Periodically auto-save to prevent game saves from being lost").setChecked(settings.general.autoSaveMemory).onToggle([&] {
     settings.general.autoSaveMemory = autoSaveMemory.checked();
   });
-  autoSaveMemoryLayout.setAlignment(1).setPadding(12_sx, 0);
-      autoSaveMemoryHint.setText("Helps safeguard game saves from being lost").setFont(Font().setSize(7.0)).setForegroundColor(SystemColor::Sublabel);
 
-  homebrewMode.setText("Homebrew Development Mode").setChecked(settings.general.homebrewMode).onToggle([&] {
+  homebrewModeHint.setText("Homebrew Mode:");
+  homebrewMode.setText("Activate core-specific features to help homebrew developers").setChecked(settings.general.homebrewMode).onToggle([&] {
     settings.general.homebrewMode = homebrewMode.checked();
   });
-  homebrewModeLayout.setAlignment(1).setPadding(12_sx, 0);
-      homebrewModeHint.setText("Activate core-specific features to help homebrew developers").setFont(Font().setSize(7.0)).setForegroundColor(SystemColor::Sublabel);
 
-  forceInterpreter.setText("Force Interpreter").setChecked(settings.general.forceInterpreter).onToggle([&] {
+  forceInterpreterHint.setText("Force Interpreter:");
+  forceInterpreter.setText("(Slow) Enable interpreter for cores that default to a recompiler").setChecked(settings.general.forceInterpreter).onToggle([&] {
     settings.general.forceInterpreter = forceInterpreter.checked();
   });
-  forceInterpreterLayout.setAlignment(1).setPadding(12_sx, 0);
-      forceInterpreterHint.setText("(Slow) Enable interpreter for cores that default to a recompiler").setFont(Font().setSize(7.0)).setForegroundColor(SystemColor::Sublabel);
   
   emulatorSettingsLabel.setText("Rendering Options").setFont(Font().setBold());
-  colorBleedOption.setText("Color Bleed").setChecked(settings.video.colorBleed).onToggle([&] {
+  colorBleedHint.setText("Color Bleed:");
+  colorBleedOption.setText("Blur adjacent pixels for translucency effects").setChecked(settings.video.colorBleed).onToggle([&] {
     settings.video.colorBleed = colorBleedOption.checked();
     if(emulator) emulator->setColorBleed(settings.video.colorBleed);
   });
-  colorBleedLayout.setAlignment(1).setPadding(12_sx, 0);
-  colorBleedHint.setText("Blurs adjacent pixels for translucency effects").setFont(Font().setSize(7.0)).setForegroundColor(SystemColor::Sublabel);
-  colorEmulationOption.setText("Color Emulation").setChecked(settings.video.colorEmulation).onToggle([&] {
+  colorEmulationHint.setText("Color Emulation:");
+  colorEmulationOption.setText("Match colors to how they look on real hardware").setChecked(settings.video.colorEmulation).onToggle([&] {
     settings.video.colorEmulation = colorEmulationOption.checked();
     if(emulator) emulator->setBoolean("Color Emulation", settings.video.colorEmulation);
   });
-  colorEmulationLayout.setAlignment(1).setPadding(12_sx, 0);
-  colorEmulationHint.setText("Matches colors to how they look on real hardware").setFont(Font().setSize(7.0)).setForegroundColor(SystemColor::Sublabel);
-  deepBlackBoostOption.setText("Deep Black Boost").setChecked(settings.video.deepBlackBoost).onToggle([&] {
+  deepBlackBoostHint.setText("Deep Black Boost:");
+  deepBlackBoostOption.setText("Apply a gamma ramp to crush black levels (SNES/SFC)").setChecked(settings.video.deepBlackBoost).onToggle([&] {
     settings.video.deepBlackBoost = deepBlackBoostOption.checked();
     if(emulator) emulator->setBoolean("Deep Black Boost", settings.video.deepBlackBoost);
   });
-  deepBlackBoostLayout.setAlignment(1).setPadding(12_sx, 0);
-  deepBlackBoostHint.setText("Applies a gamma ramp to crush black levels (SNES/SFC)").setFont(Font().setSize(7.0)).setForegroundColor(SystemColor::Sublabel);
-  interframeBlendingOption.setText("Interframe Blending").setChecked(settings.video.interframeBlending).onToggle([&] {
+  interframeBlendingHint.setText("Interframe Blending:");
+  interframeBlendingOption.setText("Emulate LCD translucency effects, but increase motion blur").setChecked(settings.video.interframeBlending).onToggle([&] {
     settings.video.interframeBlending = interframeBlendingOption.checked();
     if(emulator) emulator->setBoolean("Interframe Blending", settings.video.interframeBlending);
   });
-  interframeBlendingLayout.setAlignment(1).setPadding(12_sx, 0);
-  interframeBlendingHint.setText("Emulates LCD translucency effects, but increases motion blur").setFont(Font().setSize(7.0)).setForegroundColor(SystemColor::Sublabel);
-  overscanOption.setText("Overscan").setChecked(settings.video.overscan).onToggle([&] {
+  overscanHint.setText("Overscan:");
+  overscanOption.setText("Display the full frame without cropping 'undesirable' borders").setChecked(settings.video.overscan).onToggle([&] {
     settings.video.overscan = overscanOption.checked();
     if(emulator) emulator->setOverscan(settings.video.overscan);
   });
-  overscanLayout.setAlignment(1).setPadding(12_sx, 0);
-  overscanHint.setText("Displays the full frame without cropping 'undesirable' borders").setFont(Font().setSize(7.0)).setForegroundColor(SystemColor::Sublabel);
-  pixelAccuracyOption.setText("Pixel Accuracy Mode").setChecked(settings.video.pixelAccuracy).onToggle([&] {
+  pixelAccuracyHint.setText("Pixel Accuracy Mode:");
+  pixelAccuracyOption.setText("Use pixel-accurate emulation where available").setChecked(settings.video.pixelAccuracy).onToggle([&] {
     settings.video.pixelAccuracy = pixelAccuracyOption.checked();
     if(emulator) emulator->setBoolean("Pixel Accuracy", settings.video.pixelAccuracy);
   });
-  pixelAccuracyLayout.setAlignment(1).setPadding(12_sx, 0);
-  pixelAccuracyHint.setText("Use pixel-accurate emulation where available").setFont(Font().setSize(7.0)).setForegroundColor(SystemColor::Sublabel);
 
 }
 
@@ -201,6 +197,20 @@ auto Mega32XMegaCD32XMegaCDMegaDriveSettings::construct() -> void {
 
 auto N64Settings::construct() -> void {
   setCollapsible();
+  
+  systemOptionsTableLayout.setSize({2, 6}).setPadding(12_sx, 0);
+  systemOptionsTableLayout.column(0).setAlignment(1.0);
+  
+  homebrewModeHint.setText("Homebrew Mode:");
+  homebrewMode.setText("Activate core-specific features to help homebrew developers").setChecked(settings.general.homebrewMode).onToggle([&] {
+    emulator->systemSettingsObject.general.homebrewMode = homebrewMode.checked();
+  });
+
+  forceInterpreterHint.setText("Force Interpreter:");
+  forceInterpreter.setText("(Slow) Enable interpreter for cores that default to a recompiler").setChecked(settings.general.forceInterpreter).onToggle([&] {
+    emulator->systemSettingsObject.general.forceInterpreter = forceInterpreter.checked();
+  });
+  
   renderSettingsLabel.setText("N64 Render Settings").setFont(Font().setBold());
 
   renderQualityLayout.setPadding(12_sx, 0);

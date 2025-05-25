@@ -25,13 +25,11 @@ auto VideoSettings::videoRefresh() -> void {
 #if !defined(PLATFORM_MACOS)
   videoExclusiveToggle.setChecked(ruby::video.exclusive()).setEnabled(ruby::video.hasExclusive());
 #endif
-  videoBlockingToggle.setChecked(ruby::video.blocking()).setEnabled(ruby::video.hasBlocking());
 #if defined(PLATFORM_MACOS)
   videoColorSpaceToggle.setChecked(ruby::video.forceSRGB()).setEnabled(ruby::video.hasForceSRGB());
   videoThreadedRendererToggle.setChecked(ruby::video.threadedRenderer()).setEnabled(ruby::video.hasThreadedRenderer());
   videoNativeFullScreenToggle.setChecked(ruby::video.nativeFullScreen()).setEnabled(ruby::video.hasNativeFullScreen());
 #endif
-  videoFlushToggle.setChecked(ruby::video.flush()).setEnabled(ruby::video.hasFlush());
   VerticalLayout::resize();
 }
 
@@ -80,14 +78,6 @@ auto VideoSettings::construct() -> void {
     ruby::video.setExclusive(settings.video.exclusive);
   });
 #endif
-  videoBlockingToggle.setText("Synchronize").onToggle([&] {
-    settings.video.blocking = videoBlockingToggle.checked();
-    ruby::video.setBlocking(settings.video.blocking);
-  });
-  videoFlushToggle.setText("GPU sync").onToggle([&] {
-    settings.video.flush = videoFlushToggle.checked();
-    ruby::video.setFlush(settings.video.flush);
-  });
 #if defined(PLATFORM_MACOS)
   videoColorSpaceToggle.setText("Force sRGB").onToggle([&] {
     settings.video.forceSRGB = videoColorSpaceToggle.checked();

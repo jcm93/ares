@@ -18,6 +18,7 @@ auto Program::create() -> void {
 
   videoSettings.videoRefresh();
   audioSettings.audioRefresh();
+  syncSettings.refresh();
   inputSettings.inputRefresh();
 
   if(startGameLoad) {

@@ -1,42 +1,48 @@
 // MARK: Default Settings
 struct DefaultSettings: VerticalLayout {
   auto construct() -> void;
-  Label commonSettingsLabel{this, Size{~0, 0}, 5};
-    HorizontalLayout rewindLayout{this, Size{~0, 0}, 5};
-      CheckLabel rewind{&rewindLayout, Size{0, 0}, 5};
-      Label rewindHint{&rewindLayout, Size{~0, 0}};
-    HorizontalLayout runAheadLayout{this, Size{~0, 0}, 5};
-      CheckLabel runAhead{&runAheadLayout, Size{0, 0}, 5};
-      Label runAheadHint{&runAheadLayout, Size{~0, 0}};
-    HorizontalLayout autoSaveMemoryLayout{this, Size{~0, 0}, 5};
-      CheckLabel autoSaveMemory{&autoSaveMemoryLayout, Size{0, 0}, 5};
-      Label autoSaveMemoryHint{&autoSaveMemoryLayout, Size{~0, 0}};
-    HorizontalLayout homebrewModeLayout{this, Size{~0, 0}, 5};
-      CheckLabel homebrewMode{&homebrewModeLayout, Size{0, 0}, 5};
-      Label homebrewModeHint{&homebrewModeLayout, Size{~0, 0}};
-    HorizontalLayout forceInterpreterLayout{this, Size{~0, 0}, 5};
-      CheckLabel forceInterpreter{&forceInterpreterLayout, Size{0, 0}, 5};
-      Label forceInterpreterHint{&forceInterpreterLayout, Size{0, 0}};
+  Label commonSettingsLabel{this, Size{~0, 0}};
+  TableLayout systemOptionsTableLayout{this, Size{~0, 0}};
+      Label rewindHint{&systemOptionsTableLayout, Size{0, 0}};
+      CheckLabel rewind{&systemOptionsTableLayout, Size{0, 0}};
+      //
+      Label runAheadHint{&systemOptionsTableLayout, Size{0, 0}};
+      CheckLabel runAhead{&systemOptionsTableLayout, Size{0, 0}};
+      //
+      Label autoSaveMemoryHint{&systemOptionsTableLayout, Size{0, 0}};
+      CheckLabel autoSaveMemory{&systemOptionsTableLayout, Size{0, 0}};
+      //
+      Label homebrewModeHint{&systemOptionsTableLayout, Size{0, 0}};
+      CheckLabel homebrewMode{&systemOptionsTableLayout, Size{0, 0}};
+      //
+      Label forceInterpreterHint{&systemOptionsTableLayout, Size{0, 0}};
+      CheckLabel forceInterpreter{&systemOptionsTableLayout, Size{0, 0}};
+      //
+      Label placeholderSystemOption{&systemOptionsTableLayout, Size{125, 0}};
+      Label placeholderSystemOption2{&systemOptionsTableLayout, Size{~0, 0}};
   
-  Label emulatorSettingsLabel{this, Size{~0, 0}, 5};
-    HorizontalLayout colorBleedLayout{this, Size{~0, 0}, 5};
-      CheckLabel colorBleedOption{&colorBleedLayout, Size{0, 0}, 5};
-      Label colorBleedHint{&colorBleedLayout, Size{~0, 0}};
-    HorizontalLayout colorEmulationLayout{this, Size{~0, 0}, 5};
-      CheckLabel colorEmulationOption{&colorEmulationLayout, Size{0, 0}, 5};
-      Label colorEmulationHint{&colorEmulationLayout, Size{~0, 0}};
-    HorizontalLayout deepBlackBoostLayout{this, Size{~0, 0}, 5};
-      CheckLabel deepBlackBoostOption{&deepBlackBoostLayout, Size{0, 0}, 5};
-      Label deepBlackBoostHint{&deepBlackBoostLayout, Size{~0, 0}};
-    HorizontalLayout interframeBlendingLayout{this, Size{~0, 0}, 5};
-      CheckLabel interframeBlendingOption{&interframeBlendingLayout, Size{0, 0}, 5};
-      Label interframeBlendingHint{&interframeBlendingLayout, Size{~0, 0}};
-    HorizontalLayout overscanLayout{this, Size{~0, 0}};
-      CheckLabel overscanOption{&overscanLayout, Size{0, 0}, 5};
-      Label overscanHint{&overscanLayout, Size{~0, 0}};
-    HorizontalLayout pixelAccuracyLayout{this, Size{~0, 0}};
-      CheckLabel pixelAccuracyOption{&pixelAccuracyLayout, Size{0, 0}, 5};
-      Label pixelAccuracyHint{&pixelAccuracyLayout, Size{~0, 0}};
+  Label emulatorSettingsLabel{this, Size{~0, 0}};
+  TableLayout renderingOptionsTableLayout{this, Size{~0, 0}};
+      Label colorBleedHint{&renderingOptionsTableLayout, Size{0, 0}};
+      CheckLabel colorBleedOption{&renderingOptionsTableLayout, Size{0, 0}};
+      //
+      Label colorEmulationHint{&renderingOptionsTableLayout, Size{0, 0}};
+      CheckLabel colorEmulationOption{&renderingOptionsTableLayout, Size{0, 0}};
+      //
+      Label deepBlackBoostHint{&renderingOptionsTableLayout, Size{0, 0}};
+      CheckLabel deepBlackBoostOption{&renderingOptionsTableLayout, Size{0, 0}};
+      //
+      Label interframeBlendingHint{&renderingOptionsTableLayout, Size{0, 0}};
+      CheckLabel interframeBlendingOption{&renderingOptionsTableLayout, Size{0, 0}};
+      //
+      Label overscanHint{&renderingOptionsTableLayout, Size{0, 0}};
+      CheckLabel overscanOption{&renderingOptionsTableLayout, Size{0, 0}};
+      //
+      Label pixelAccuracyHint{&renderingOptionsTableLayout, Size{0, 0}};
+      CheckLabel pixelAccuracyOption{&renderingOptionsTableLayout, Size{0, 0}};
+      //
+      Label placeholderRenderOption{&renderingOptionsTableLayout, Size{115, 0}};
+      Label placeholderRenderOption2{&renderingOptionsTableLayout, Size{~0, 0}};
 };
 
 // MARK: Arcade Settings
@@ -112,12 +118,14 @@ struct NeoGeoSettings : VerticalLayout {
 struct N64Settings : VerticalLayout {
   auto construct() -> void;
   Label commonSettingsLabel{this, Size{~0, 0}, 5};
-    HorizontalLayout homebrewModeLayout{this, Size{~0, 0}, 5};
-      CheckLabel homebrewMode{&homebrewModeLayout, Size{0, 0}, 5};
-      Label homebrewModeHint{&homebrewModeLayout, Size{~0, 0}};
-    HorizontalLayout forceInterpreterLayout{this, Size{~0, 0}, 5};
-      CheckLabel forceInterpreter{&forceInterpreterLayout, Size{0, 0}, 5};
-      Label forceInterpreterHint{&forceInterpreterLayout, Size{0, 0}};
+  
+  TableLayout systemOptionsTableLayout{this, Size{~0, 0}};
+      Label homebrewModeHint{&systemOptionsTableLayout, Size{0, 0}};
+      CheckLabel homebrewMode{&systemOptionsTableLayout, Size{0, 0}};
+      //
+      Label forceInterpreterHint{&systemOptionsTableLayout, Size{0, 0}};
+      CheckLabel forceInterpreter{&systemOptionsTableLayout, Size{0, 0}};
+      //
   Label emulatorSettingsLabel{this, Size{~0, 0}, 5};
     HorizontalLayout overscanLayout{this, Size{~0, 0}};
       CheckLabel overscanOption{&overscanLayout, Size{0, 0}, 5};

@@ -4,7 +4,7 @@
 #include "input.cpp"
 #include "hotkeys.cpp"
 #include "emulators.cpp"
-#include "options.cpp"
+#include "sync.cpp"
 #include "firmware.cpp"
 #include "paths.cpp"
 #include "drivers.cpp"
@@ -16,6 +16,7 @@ namespace Instances { Instance<SettingsWindow> settingsWindow; }
 SettingsWindow& settingsWindow = Instances::settingsWindow();
 VideoSettings& videoSettings = settingsWindow.videoSettings;
 AudioSettings& audioSettings = settingsWindow.audioSettings;
+SyncSettings& syncSettings = settingsWindow.syncSettings;
 InputSettings& inputSettings = settingsWindow.inputSettings;
 HotkeySettings& hotkeySettings = settingsWindow.hotkeySettings;
 EmulatorSettings& emulatorSettings = settingsWindow.emulatorSettings;
@@ -24,6 +25,7 @@ PathSettings& pathSettings = settingsWindow.pathSettings;
 DebugSettings& debugSettings = settingsWindow.debugSettings;
 
 auto Settings::load() -> void {
+  settingsOverridden = "all";
   Markup::Node::operator=(BML::unserialize(string::read(locate("settings.bml")), " "));
   process(true);
   save();
@@ -32,6 +34,18 @@ auto Settings::load() -> void {
 auto Settings::save() -> void {
   process(false);
   file::write(locate("settings.bml"), BML::serialize(*this, " "));
+}
+
+auto Settings::has(string setting) -> bool {
+  if(settingsOverridden.find("all")) {
+    return true;
+  } else {
+    if(settingsOverridden.vector_base<string>::find(setting)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
 
 auto Settings::tempBind(maybe<string> prefixArg, bool load, Markup::Node receiver) -> void {
@@ -50,141 +64,283 @@ auto Settings::tempBind(maybe<string> prefixArg, bool load, Markup::Node receive
   }
 
   string prefixedName = {prefix, "Video/Driver"};
-  bind(string,  prefixedName, video.driver);
+  if(has("Video/Driver")) {
+    bind(string,  prefixedName, video.driver);
+  }
   prefixedName = {prefix, "Video/Monitor"};
-  bind(string,  prefixedName, video.monitor);
+  if(has("Video/Monitor")) {
+    bind(string,  prefixedName, video.monitor);
+  }
   prefixedName = {prefix, "Video/Format"};
-  bind(string,  prefixedName, video.format);
+  if(has("Video/Format")) {
+    bind(string,  prefixedName, video.format);
+  }
   prefixedName = {prefix, "Video/Exclusive"};
-  bind(boolean, prefixedName, video.exclusive);
+  if(has("Video/Exclusive")) {
+    bind(boolean, prefixedName, video.exclusive);
+  }
   prefixedName = {prefix, "Video/Blocking"};
-  bind(boolean, prefixedName, video.blocking);
+  if(has("Video/Blocking")) {
+    bind(boolean, prefixedName, video.blocking);
+  }
   prefixedName = {prefix, "Video/PresentSRGB"};
-  bind(boolean, prefixedName, video.forceSRGB);
+  if(has("Video/PresentSRGB")) {
+    bind(boolean, prefixedName, video.forceSRGB);
+  }
   prefixedName = {prefix, "Video/ThreadedRenderer"};
-  bind(boolean, prefixedName, video.threadedRenderer);
+  if(has("Video/ThreadedRenderer")) {
+    bind(boolean, prefixedName, video.threadedRenderer);
+  }
   prefixedName = {prefix, "Video/NativeFullScreen"};
-  bind(boolean, prefixedName, video.nativeFullScreen);
+  if(has("Video/NativeFullScreen")) {
+    bind(boolean, prefixedName, video.nativeFullScreen);
+  }
   prefixedName = {prefix, "Video/Flush"};
-  bind(boolean, prefixedName, video.flush);
+  if(has("Video/Flush")) {
+    bind(boolean, prefixedName, video.flush);
+  }
   prefixedName = {prefix, "Video/Shader"};
-  bind(string,  prefixedName, video.shader);
+  if(has("Video/Shader")) {
+    bind(string,  prefixedName, video.shader);
+  }
   prefixedName = {prefix, "Video/Multiplier"};
-  bind(natural, prefixedName, video.multiplier);
+  if(has("Video/Multiplier")) {
+    bind(natural, prefixedName, video.multiplier);
+  }
   prefixedName = {prefix, "Video/Output"};
-  bind(string,  prefixedName, video.output);
+  if(has("Video/Output")) {
+    bind(string,  prefixedName, video.output);
+  }
   prefixedName = {prefix, "Video/AspectCorrection"};
-  bind(boolean, prefixedName, video.aspectCorrection);
+  if(has("Video/AspectCorrection")) {
+    bind(boolean, prefixedName, video.aspectCorrection);
+  }
   prefixedName = {prefix, "Video/AdaptiveSizing"};
-  bind(boolean, prefixedName, video.adaptiveSizing);
+  if(has("Video/AdaptiveSizing")) {
+    bind(boolean, prefixedName, video.adaptiveSizing);
+  }
   prefixedName = {prefix, "Video/AutoCentering"};
-  bind(boolean, prefixedName, video.autoCentering);
+  if(has("Video/AutoCentering")) {
+    bind(boolean, prefixedName, video.autoCentering);
+  }
   prefixedName = {prefix, "Video/Luminance"};
-  bind(real,    prefixedName, video.luminance);
+  if(has("Video/Luminance")) {
+    bind(real,    prefixedName, video.luminance);
+  }
   prefixedName = {prefix, "Video/Saturation"};
-  bind(real,    prefixedName, video.saturation);
+  if(has("Video/Saturation")) {
+    bind(real,    prefixedName, video.saturation);
+  }
   prefixedName = {prefix, "Video/Gamma"};
-  bind(real,    prefixedName, video.gamma);
+  if(has("Video/Gamma")) {
+    bind(real,    prefixedName, video.gamma);
+  }
   prefixedName = {prefix, "Video/ColorBleed"};
-  bind(boolean, prefixedName, video.colorBleed);
+  if(has("Video/ColorBleed")) {
+    bind(boolean, prefixedName, video.colorBleed);
+  }
   prefixedName = {prefix, "Video/ColorEmulation"};
-  bind(boolean, prefixedName, video.colorEmulation);
+  if(has("Video/ColorEmulation")) {
+    bind(boolean, prefixedName, video.colorEmulation);
+  }
   prefixedName = {prefix, "Video/DeepBlackBoost"};
-  bind(boolean, prefixedName, video.deepBlackBoost);
+  if(has("Video/DeepBlackBoost")) {
+    bind(boolean, prefixedName, video.deepBlackBoost);
+  }
   prefixedName = {prefix, "Video/InterframeBlending"};
-  bind(boolean, prefixedName, video.interframeBlending);
+  if(has("Video/InterframeBlending")) {
+    bind(boolean, prefixedName, video.interframeBlending);
+  }
   prefixedName = {prefix, "Video/Overscan"};
-  bind(boolean, prefixedName, video.overscan);
+  if(has("Video/Overscan")) {
+    bind(boolean, prefixedName, video.overscan);
+  }
   prefixedName = {prefix, "Video/PixelAccuracy"};
-  bind(boolean, prefixedName, video.pixelAccuracy);
+  if(has("Video/PixelAccuracy")) {
+    bind(boolean, prefixedName, video.pixelAccuracy);
+  }
+  prefixedName = {prefix, "Video/Quality"};
+  if(has("Video/Quality")) {
+    bind(string, prefixedName, video.quality);
+  }
+  prefixedName = {prefix, "Video/Supersampling"};
+  if(has("Video/Supersampling")) {
+    bind(boolean,prefixedName, video.supersampling);
+  }
+  prefixedName = {prefix, "Video/DisableVideoInterfaceProcessing"};
+  if(has("Video/DisableVideoInterfaceProcessing")) {
+    bind(boolean,prefixedName, video.disableVideoInterfaceProcessing);
+  }
+  prefixedName = {prefix, "Video/WeaveDeinterlacing"};
+  if(has("Video/WeaveDeinterlacing")) {
+    bind(boolean,prefixedName, video.weaveDeinterlacing);
+  }
 
   prefixedName = {prefix, "Audio/Driver"};
-  bind(string,  prefixedName, audio.driver);
+  if(has("Audio/Driver")) {
+    bind(string,  prefixedName, audio.driver);
+  }
   prefixedName = {prefix, "Audio/Device"};
-  bind(string,  prefixedName, audio.device);
+  if(has("Audio/Device")) {
+    bind(string,  prefixedName, audio.device);
+  }
   prefixedName = {prefix, "Audio/Frequency"};
-  bind(natural, prefixedName, audio.frequency);
+  if(has("Audio/Frequency")) {
+    bind(natural, prefixedName, audio.frequency);
+  }
   prefixedName = {prefix, "Audio/Latency"};
-  bind(natural, prefixedName, audio.latency);
+  if(has("Audio/Latency")) {
+    bind(natural, prefixedName, audio.latency);
+  }
   prefixedName = {prefix, "Audio/Exclusive"};
-  bind(boolean, prefixedName, audio.exclusive);
+  if(has("Audio/Exclusive")) {
+    bind(boolean, prefixedName, audio.exclusive);
+  }
   prefixedName = {prefix, "Audio/Blocking"};
-  bind(boolean, prefixedName, audio.blocking);
+  if(has("Audio/Blocking")) {
+    bind(boolean, prefixedName, audio.blocking);
+  }
   prefixedName = {prefix, "Audio/Dynamic"};
-  bind(boolean, prefixedName, audio.dynamic);
+  if(has("Audio/Dynamic")) {
+    bind(boolean, prefixedName, audio.dynamic);
+  }
   prefixedName = {prefix, "Audio/Mute"};
-  bind(boolean, prefixedName, audio.mute);
+  if(has("Audio/Mute")) {
+    bind(boolean, prefixedName, audio.mute);
+  }
   prefixedName = {prefix, "Audio/Volume"};
-  bind(real,    prefixedName, audio.volume);
+  if(has("Audio/Volume")) {
+    bind(real,    prefixedName, audio.volume);
+  }
   prefixedName = {prefix, "Audio/Balance"};
-  bind(real,    prefixedName, audio.balance);
+  if(has("Audio/Balance")) {
+    bind(real,    prefixedName, audio.balance);
+  }
 
   prefixedName = {prefix, "Input/Driver"};
-  bind(string,  prefixedName, input.driver);
+  if(has("Input/Driver")) {
+    bind(string,  prefixedName, input.driver);
+  }
   prefixedName = {prefix, "Input/Defocus"};
-  bind(string,  prefixedName, input.defocus);
+  if(has("Input/Defocus")) {
+    bind(string,  prefixedName, input.defocus);
+  }
 
   prefixedName = {prefix, "Boot/Fast"};
-  bind(boolean, prefixedName, boot.fast);
+  if(has("Boot/Fast")) {
+    bind(boolean, prefixedName, boot.fast);
+  }
   prefixedName = {prefix, "Boot/Debugger"};
-  bind(boolean, prefixedName, boot.debugger);
+  if(has("Boot/Debugger")) {
+    bind(boolean, prefixedName, boot.debugger);
+  }
   prefixedName = {prefix, "Boot/Prefer"};
-  bind(string,  prefixedName, boot.prefer);
+  if(has("Boot/Prefer")) {
+    bind(string,  prefixedName, boot.prefer);
+  }
 
   prefixedName = {prefix, "General/ShowStatusBar"};
-  bind(boolean, prefixedName, general.showStatusBar);
+  if(has("General/ShowStatusBar")) {
+    bind(boolean, prefixedName, general.showStatusBar);
+  }
   prefixedName = {prefix, "General/Rewind"};
-  bind(boolean, prefixedName, general.rewind);
+  if(has("General/Rewind")) {
+    bind(boolean, prefixedName, general.rewind);
+  }
   prefixedName = {prefix, "General/RunAhead"};
-  bind(boolean, prefixedName, general.runAhead);
+  if(has("General/RunAhead")) {
+    bind(boolean, prefixedName, general.runAhead);
+  }
   prefixedName = {prefix, "General/AutoSaveMemory"};
-  bind(boolean, prefixedName, general.autoSaveMemory);
+  if(has("General/AutoSaveMemory")) {
+    bind(boolean, prefixedName, general.autoSaveMemory);
+  }
   prefixedName = {prefix, "General/HomebrewMode"};
-  bind(boolean, prefixedName, general.homebrewMode);
+  if(has("General/HomebrewMode")) {
+    bind(boolean, prefixedName, general.homebrewMode);
+  }
   prefixedName = {prefix, "General/ForceInterpreter"};
-  bind(boolean, prefixedName, general.forceInterpreter);
+  if(has("General/ForceInterpreter")) {
+    bind(boolean, prefixedName, general.forceInterpreter);
+  }
 
   prefixedName = {prefix, "Rewind/Length"};
-  bind(natural, prefixedName, rewind.length);
+  if(has("Rewind/Length")) {
+    bind(natural, prefixedName, rewind.length);
+  }
   prefixedName = {prefix, "Rewind/Frequency"};
-  bind(natural, prefixedName, rewind.frequency);
+  if(has("Rewind/Frequency")) {
+    bind(natural, prefixedName, rewind.frequency);
+  }
 
   prefixedName = {prefix, "Paths/Home"};
-  bind(string,  prefixedName, paths.home);
+  if(has("Paths/Home")) {
+    bind(string,  prefixedName, paths.home);
+  }
   prefixedName = {prefix, "Paths/Firmware"};
-  bind(string,  prefixedName, paths.firmware);
+  if(has("Paths/Firmware")) {
+    bind(string,  prefixedName, paths.firmware);
+  }
   prefixedName = {prefix, "Paths/Saves"};
-  bind(string,  prefixedName, paths.saves);
+  if(has("Paths/Saves")) {
+    bind(string,  prefixedName, paths.saves);
+  }
   prefixedName = {prefix, "Paths/Screenshots"};
-  bind(string,  prefixedName, paths.screenshots);
+  if(has("Paths/Screenshots")) {
+    bind(string,  prefixedName, paths.screenshots);
+  }
   prefixedName = {prefix, "Paths/Debugging"};
-  bind(string,  prefixedName, paths.debugging);
+  if(has("Paths/Debugging")) {
+    bind(string,  prefixedName, paths.debugging);
+  }
   prefixedName = {prefix, "Paths/ArcadeRoms"};
-  bind(string,  prefixedName, paths.arcadeRoms);
+  if(has("Paths/ArcadeRoms")) {
+    bind(string,  prefixedName, paths.arcadeRoms);
+  }
   prefixedName = {prefix, "Paths/SuperFamicom/GameBoy"};
-  bind(string,  prefixedName, paths.superFamicom.gameBoy);
+  if(has("Paths/SuperFamicom/GameBoy")) {
+    bind(string,  prefixedName, paths.superFamicom.gameBoy);
+  }
   prefixedName = {prefix, "Paths/SuperFamicom/BSMemory"};
-  bind(string,  prefixedName, paths.superFamicom.bsMemory);
+  if(has("Paths/SuperFamicom/BSMemory")) {
+    bind(string,  prefixedName, paths.superFamicom.bsMemory);
+  }
   prefixedName = {prefix, "Paths/SuperFamicom/SufamiTurbo"};
-  bind(string,  prefixedName, paths.superFamicom.sufamiTurbo);
+  if(has("Paths/SuperFamicom/SufamiTurbo")) {
+    bind(string,  prefixedName, paths.superFamicom.sufamiTurbo);
+  }
 
   prefixedName = {prefix, "DebugServer/Port"};
-  bind(natural, prefixedName, debugServer.port);
+  if(has("DebugServer/Port")) {
+    bind(natural, prefixedName, debugServer.port);
+  }
   prefixedName = {prefix, "DebugServer/Enabled"};
-  bind(boolean, prefixedName, debugServer.enabled);
+  if(has("DebugServer/Enabled")) {
+    bind(boolean, prefixedName, debugServer.enabled);
+  }
   prefixedName = {prefix, "DebugServer/UseIPv4"};
-  bind(boolean, prefixedName, debugServer.useIPv4);
+  if(has("DebugServer/UseIPv4")) {
+    bind(boolean, prefixedName, debugServer.useIPv4);
+  }
 
   prefixedName = {prefix, "Nintendo64/ExpansionPak"};
-  bind(boolean, prefixedName, nintendo64.expansionPak);
+  if(has("Nintendo64/ExpansionPak")) {
+    bind(boolean, prefixedName, nintendo64.expansionPak);
+  }
   prefixedName = {prefix, "Nintendo64/ControllerPakBankString"};
-  bind(string,  prefixedName, nintendo64.controllerPakBankString);
+  if(has("Nintendo64/ControllerPakBankString")) {
+    bind(string,  prefixedName, nintendo64.controllerPakBankString);
+  }
 
   prefixedName = {prefix, "GameBoyAdvance/Player"};
-  bind(boolean, prefixedName, gameBoyAdvance.player);
+  if(has("GameBoyAdvance/Player")) {
+    bind(boolean, prefixedName, gameBoyAdvance.player);
+  }
 
   prefixedName = {prefix, "MegaDrive/TMSS"};
-  bind(boolean, prefixedName, megadrive.tmss);
+  if(has("MegaDrive/TMSS")) {
+    bind(boolean, prefixedName, megadrive.tmss);
+  }
   #undef bind
 }
 
@@ -255,8 +411,7 @@ auto Settings::process(bool load) -> void {
       name.replace(" ", "-");
       bind(string, name, firmware.location);
     }
-    emulator->systemSettingsObject.tempBind(base, load, emulator->systemSettingsObject);
-    append(emulator->systemSettingsObject);
+    emulator->systemSettingsObject.tempBind(base, load, *this);
   }
 
   #undef bind
@@ -278,6 +433,7 @@ SettingsWindow::SettingsWindow() {
 #if defined(PLATFORM_MACOS)
   panelList.append(ToolbarItem().setText("Video").setIcon(Icon::Device::Display));
   panelList.append(ToolbarItem().setText("Audio").setIcon(Icon::Device::Speaker));
+  panelList.append(ToolbarItem().setText("Sync").setIcon(Icon::Action::Refresh));
   panelList.append(ToolbarItem().setText("Input").setIcon(Icon::Device::Joypad));
   panelList.append(ToolbarItem().setText("Hotkeys").setIcon(Icon::Device::Keyboard));
   panelList.append(ToolbarItem().setText("Emulators").setIcon(Icon::Place::Server));
@@ -288,6 +444,7 @@ SettingsWindow::SettingsWindow() {
 #else
   panelList.append(TabFrameItem().setText("Video").setIcon(Icon::Device::Display));
   panelList.append(TabFrameItem().setText("Audio").setIcon(Icon::Device::Speaker));
+  panelList.append(TabFrameItem().setText("Sync").setIcon(Icon::Action::Refresh));
   panelList.append(TabFrameItem().setText("Input").setIcon(Icon::Device::Joypad));
   panelList.append(TabFrameItem().setText("Hotkeys").setIcon(Icon::Device::Keyboard));
   panelList.append(TabFrameItem().setText("Emulators").setIcon(Icon::Place::Server));
@@ -299,6 +456,7 @@ SettingsWindow::SettingsWindow() {
 
   panelContainer.append(videoSettings, Size{~0, ~0});
   panelContainer.append(audioSettings, Size{~0, ~0});
+  panelContainer.append(syncSettings, Size{~0, ~0});
   panelContainer.append(inputSettings, Size{~0, ~0});
   panelContainer.append(hotkeySettings, Size{~0, ~0});
   panelContainer.append(emulatorSettings, Size{~0, ~0});
@@ -309,6 +467,7 @@ SettingsWindow::SettingsWindow() {
 
   videoSettings.construct();
   audioSettings.construct();
+  syncSettings.construct();
   inputSettings.construct();
   hotkeySettings.construct();
   emulatorSettings.construct();
@@ -340,6 +499,7 @@ auto SettingsWindow::show(const string& panel) -> void {
 auto SettingsWindow::eventChange() -> void {
   videoSettings.setVisible(false);
   audioSettings.setVisible(false);
+  syncSettings.setVisible(false);
   inputSettings.setVisible(false);
   hotkeySettings.setVisible(false);
   emulatorSettings.setVisible(false);
@@ -352,6 +512,7 @@ auto SettingsWindow::eventChange() -> void {
   if(auto item = panelList.selected()) {
     if(item.text() == "Video"    ) found = true, videoSettings.setVisible();
     if(item.text() == "Audio"    ) found = true, audioSettings.setVisible();
+    if(item.text() == "Sync"     ) found = true, syncSettings.setVisible();
     if(item.text() == "Input"    ) found = true, inputSettings.setVisible();
     if(item.text() == "Hotkeys"  ) found = true, hotkeySettings.setVisible();
     if(item.text() == "Emulators") found = true, emulatorSettings.setVisible();

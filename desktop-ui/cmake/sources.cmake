@@ -36,9 +36,9 @@ target_sources(
     settings/home.cpp
     settings/hotkeys.cpp
     settings/input.cpp
-    settings/options.cpp
     settings/paths.cpp
     settings/settings.hpp
+    settings/sync.cpp
     settings/video.cpp
 )
 

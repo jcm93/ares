@@ -5,6 +5,9 @@ struct Settings : Markup::Node {
   auto save() -> void;
   auto process(bool load) -> void;
   auto tempBind(maybe<string> prefix, bool load, Markup::Node receiver) -> void;
+  auto has(string setting) -> bool;
+  
+  vector<string> settingsOverridden;
 
   struct Video {
     string driver;
@@ -139,8 +142,6 @@ struct VideoSettings : VerticalLayout {
 #if !defined(PLATFORM_MACOS)
     CheckLabel videoExclusiveToggle{&videoToggleLayout, Size{0, 0}};
 #endif
-    CheckLabel videoBlockingToggle{&videoToggleLayout, Size{0, 0}};
-    CheckLabel videoFlushToggle{&videoToggleLayout, Size{0, 0}};
 #if defined(PLATFORM_MACOS)
     CheckLabel videoColorSpaceToggle{&videoToggleLayout, Size{0, 0}};
     CheckLabel videoThreadedRendererToggle{&videoToggleLayout, Size{0, 0}};
@@ -185,8 +186,6 @@ struct AudioSettings : VerticalLayout {
     ComboButton audioLatencyList{&audioPropertyLayout, Size{0, 0}};
   HorizontalLayout audioToggleLayout{this, Size{~0, 0}};
     CheckLabel audioExclusiveToggle{&audioToggleLayout, Size{0, 0}};
-    CheckLabel audioBlockingToggle{&audioToggleLayout, Size{0, 0}};
-    CheckLabel audioDynamicToggle{&audioToggleLayout, Size{0, 0}};
 
   Label effectsLabel{this, Size{~0, 0}, 5};
   TableLayout effectsLayout{this, Size{~0, 0}};
@@ -359,6 +358,29 @@ struct PathSettings : VerticalLayout {
     Button arcadeRomsReset{&arcadeRomsLayout, Size{80, 0}};
 };
 
+struct SyncSettings : VerticalLayout {
+  auto construct() -> void;
+  auto refresh() -> void;
+  
+  TableLayout syncAdjustmentLayout{this, Size{~0, 0}};
+    Label placeholder{&syncAdjustmentLayout, Size{250, 0}};
+    Label syncLabel{&syncAdjustmentLayout, Size{0, 0}};
+  //
+    Label syncDescriptionLabel{&syncAdjustmentLayout, Size{0, 0}};
+    ComboButton syncOptionList{&syncAdjustmentLayout, Size{0, 0}};
+  //
+    Label placeholder2{&syncAdjustmentLayout, Size{0, 0}};
+    Label syncDescriptionHint{&syncAdjustmentLayout, Size{~0, 30}};
+  //
+    Label gpuSyncDescription{&syncAdjustmentLayout, Size{0, 0}};
+    CheckLabel gpuSyncCheckLabel{&syncAdjustmentLayout, Size{0, 0}};
+  //
+    Label dynamicRateDescription{&syncAdjustmentLayout, Size{0, 0}};
+    CheckLabel dynamicRateCheckLabel{&syncAdjustmentLayout, Size{0, 0}};
+  
+  HorizontalLayout syncDescriptionHintLayout{this, Size{~0, 0}};
+};
+
 struct DebugSettings : VerticalLayout {
   auto construct() -> void;
   auto infoRefresh() -> void;
@@ -402,6 +424,7 @@ struct SettingsWindow : Window {
     VerticalLayout panelContainer{&layout, Size{~0, ~0}};
       VideoSettings videoSettings;
       AudioSettings audioSettings;
+      SyncSettings syncSettings;
       InputSettings inputSettings;
       HotkeySettings hotkeySettings;
       EmulatorSettings emulatorSettings;
@@ -416,6 +439,7 @@ namespace Instances { extern Instance<SettingsWindow> settingsWindow; }
 extern SettingsWindow& settingsWindow;
 extern VideoSettings& videoSettings;
 extern AudioSettings& audioSettings;
+extern SyncSettings& syncSettings;
 extern InputSettings& inputSettings;
 extern HotkeySettings& hotkeySettings;
 extern EmulatorSettings& emulatorSettings;

@@ -28,8 +28,6 @@ auto AudioSettings::audioRefresh() -> void {
   }
   audioDeviceList.setEnabled(audioDeviceList.itemCount() > 1);
   audioExclusiveToggle.setChecked(ruby::audio.exclusive()).setEnabled(ruby::audio.hasExclusive());
-  audioBlockingToggle.setChecked(ruby::audio.blocking()).setEnabled(ruby::audio.hasBlocking());
-  audioDynamicToggle.setChecked(ruby::audio.dynamic()).setEnabled(ruby::audio.hasDynamic());
   VerticalLayout::resize();
 }
 
@@ -81,14 +79,6 @@ auto AudioSettings::construct() -> void {
   audioExclusiveToggle.setText("Exclusive mode").onToggle([&] {
     settings.audio.exclusive = audioExclusiveToggle.checked();
     ruby::audio.setExclusive(settings.audio.exclusive);
-  });
-  audioBlockingToggle.setText("Synchronize").onToggle([&] {
-    settings.audio.blocking = audioBlockingToggle.checked();
-    ruby::audio.setBlocking(settings.audio.blocking);
-  });
-  audioDynamicToggle.setText("Dynamic rate").onToggle([&] {
-    settings.audio.dynamic = audioDynamicToggle.checked();
-    ruby::audio.setDynamic(settings.audio.dynamic);
   });
 
   effectsLabel.setText("Effects").setFont(Font().setBold());
