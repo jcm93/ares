@@ -4,7 +4,8 @@ Presentation& presentation = Instances::presentation();
 
 #define ELLIPSIS "\u2026"
 
-Presentation::Presentation() {
+Presentation::Presentation(string *dumbLogging) {
+  auto time = nall::chrono::millisecond();
   loadMenu.setText("Load");
 
   systemMenu.setVisible(false);
@@ -68,7 +69,15 @@ Presentation::Presentation() {
     if(settings.video.autoCentering = videoAutoCentering.checked()) resizeWindow();
   });
   videoShaderMenu.setText("Shader").setIcon(Icon::Emblem::Image);
+  auto timeNow = nall::chrono::millisecond();
+  auto difference = timeNow - time;
+  *dumbLogging->append("[presentation] Time to initialize before loading shaders: ", difference, "ms\n");
+  time = timeNow;
   loadShaders();
+  timeNow = nall::chrono::millisecond();
+  difference = timeNow - time;
+  *dumbLogging->append("[presentation] Time to create shaders: ", difference, "ms\n");
+  time = timeNow;
   bootOptionsMenu.setText("Boot Options").setIcon(Icon::Place::Settings);
   fastBoot.setText("Fast Boot").setChecked(settings.boot.fast).onToggle([&] {
     settings.boot.fast = fastBoot.checked();
@@ -282,6 +291,10 @@ Presentation::Presentation() {
   Application::Cocoa::onPreferences([&] { settingsWindow.show("Video"); });
   Application::Cocoa::onQuit([&] { doClose(); });
   #endif
+  timeNow = nall::chrono::millisecond();
+  difference = timeNow - time;
+  dumbLogging->append("[presentation] Time to finish initialization after creating shaders: ", difference, "ms\n");
+  time = timeNow;
 }
 
 auto Presentation::resizeWindow() -> void {

@@ -1,7 +1,7 @@
 struct Presentation : Window {
   enum : u32 { StatusHeight = 24 };
 
-  Presentation();
+  Presentation(string *dumbLogging);
   auto resizeWindow() -> void;
   auto loadEmulators() -> void;
   auto loadEmulator() -> void;

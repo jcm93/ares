@@ -6,6 +6,8 @@ namespace ruby {
   Input input;
 }
 
+string dumbLogging;
+
 auto locate(const string& name) -> string {
   // First check each path for the presence of the file we are looking for in the following order
   // allowing users to override the default resources if they wish to do so.
@@ -54,6 +56,8 @@ auto locate(const string& name) -> string {
 
 #include <nall/main.hpp>
 auto nall::main(Arguments arguments) -> void {
+  auto time = nall::chrono::millisecond();
+  auto beginningTime = nall::chrono::millisecond();
   //force early allocation for better proximity to executable code
   ares::Memory::FixedAllocator::get();
 
@@ -153,14 +157,42 @@ auto nall::main(Arguments arguments) -> void {
   for(auto argument : arguments) {
     if(file::exists(argument) || directory::exists(argument)) program.startGameLoad.append(argument);
   }
+  auto timeNow = nall::chrono::millisecond();
+  auto difference = timeNow - time;
+  dumbLogging.append("[desktop-ui] Time to initialize before creating UI: ", difference, "ms\n");
+  time = timeNow;
 
-  Instances::presentation.construct();
+  Instances::presentation.construct(&dumbLogging);
+  timeNow = nall::chrono::millisecond();
+  difference = timeNow - time;
+  dumbLogging.append("[desktop-ui] Time to create presentation window: ", difference, "ms\n");
+  time = timeNow;
   Instances::settingsWindow.construct();
+  timeNow = nall::chrono::millisecond();
+  difference = timeNow - time;
+  dumbLogging.append("[desktop-ui] Time to create settings window window: ", difference, "ms\n");
+  time = timeNow;
   Instances::gameBrowserWindow.construct();
+  timeNow = nall::chrono::millisecond();
+  difference = timeNow - time;
+  dumbLogging.append("[desktop-ui] Time to create game browser window: ", difference, "ms\n");
+  time = timeNow;
 
   program.create();
+  timeNow = nall::chrono::millisecond();
+  difference = timeNow - time;
+  dumbLogging.append("[desktop-ui] Time to create program: ", difference, "ms\n");
+  time = timeNow;
   Instances::toolsWindow.construct(&program.programMutex);
+  timeNow = nall::chrono::millisecond();
+  difference = timeNow - time;
+  dumbLogging.append("[desktop-ui] Time to create tools window: ", difference, "ms\n");
+  time = timeNow;
   Application::onMain({&Program::main, &program});
+  timeNow = nall::chrono::millisecond();
+  difference = timeNow - beginningTime;
+  dumbLogging.append("[desktop-ui] Complete initialization time: ", difference, "ms\n");
+  MessageDialog().setText(dumbLogging).information();
   Application::run();
 
   settings.save();
