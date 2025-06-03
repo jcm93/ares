@@ -15,9 +15,7 @@
     "--share=network",
     "--socket=pulseaudio",
     "--socket=x11",
-    "--device=input",
-    "--device=dri",
-    "--device=usb",
+    "--device=all",
     "--filesystem=host",
     "--require-version=1.16.0"
   ],
