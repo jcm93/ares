@@ -1,8 +1,14 @@
-add_library(ares STATIC ares/ares.cpp ares/memory/fixed-allocator.cpp)
+add_library(ares STATIC ares/memory/fixed-allocator.cpp)
 
 configure_file(ares/ares.cpp.in ares/ares.cpp @ONLY)
 
+add_library(ares-version OBJECT ares/ares.cpp)
+
 add_library(ares::ares ALIAS ares)
+
+target_link_libraries(ares-version PRIVATE libco nall)
+
+target_link_libraries(ares PRIVATE ares-version)
 
 option(ARES_PROFILE_ACCURACY "Build to prefer emulation accuracy over performance in certain specific areas" OFF)
 option(ARES_PRECOMPILE_HEADERS "Precompile ares/ares.hpp header for performance" OFF)
@@ -31,7 +37,7 @@ endif()
 
 target_sources(
   ares
-  PRIVATE ares/ares.cpp ares/ares.cpp.in ares/ares.hpp ares/inline.hpp ares/platform.hpp ares/random.hpp ares/types.hpp
+  PRIVATE ares/ares.cpp.in ares/ares.hpp ares/inline.hpp ares/platform.hpp ares/random.hpp ares/types.hpp
 )
 
 target_sources(
@@ -307,7 +313,7 @@ target_sources(ares PRIVATE cmake/os-macos.cmake cmake/os-windows.cmake cmake/os
 
 set_source_files_properties(ares ${ARES_HEADER_SOURCES} PROPERTIES HEADER_FILE_ONLY TRUE)
 
-set_source_files_properties(ares ares/ares.cpp ares/memory/fixed-allocator.cpp PROPERTIES HEADER_FILE_ONLY FALSE)
+set_source_files_properties(ares ares/memory/fixed-allocator.cpp PROPERTIES HEADER_FILE_ONLY FALSE)
 
 target_include_directories(ares INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
 
