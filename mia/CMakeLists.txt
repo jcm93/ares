@@ -1,5 +1,6 @@
 add_library(mia STATIC mia.cpp mia.hpp resource/resource.cpp)
 add_library(ares::mia ALIAS mia)
+# target_enable_ipo(mia)
 
 add_sourcery_command(mia resource)
 
@@ -124,7 +125,7 @@ if(ARES_BUILD_OPTIONAL_TARGETS)
 
   target_link_libraries(
     mia-ui
-    PUBLIC ares::hiro ares::ares
+    PUBLIC ares::hiro ares::ares ares::version
     PRIVATE
       tzxfile
       "$<$<PLATFORM_ID:Darwin>:$<LINK_LIBRARY:FRAMEWORK,Carbon.framework>>"

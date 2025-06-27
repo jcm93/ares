@@ -1,5 +1,6 @@
 add_library(ruby STATIC)
 add_library(ares::ruby ALIAS ruby)
+# target_enable_ipo(ruby)
 
 option(ARES_ENABLE_LIBRASHADER "Configure with librashader and slang shaders" ON)
 

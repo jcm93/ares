@@ -10,6 +10,7 @@ add_executable(
   settings/settings.cpp
   tools/tools.cpp
 )
+# target_enable_ipo(desktop-ui)
 
 target_sources(desktop-ui PRIVATE cmake/sources.cmake cmake/os-macos.cmake cmake/os-linux.cmake cmake/os-windows.cmake)
 
@@ -47,7 +48,7 @@ endif()
 
 target_link_libraries(
   desktop-ui
-  PRIVATE ares::ruby ares::hiro ares::ares mia sljit
+  PRIVATE ares::ruby ares::hiro ares::ares ares::version mia sljit
 )
 
 if(ARES_ENABLE_CHD)

@@ -1,5 +1,6 @@
 add_library(hiro STATIC)
 add_library(ares::hiro ALIAS hiro)
+# target_enable_ipo(hiro)
 
 target_link_libraries(hiro PUBLIC ares::nall)
 

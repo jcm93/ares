@@ -1,4 +1,5 @@
 add_library(sljit STATIC sljit/sljit_src/sljitLir.c)
+# target_enable_ipo(sljit)
 
 target_include_directories(sljit PUBLIC ../thirdparty)
 target_compile_definitions(sljit PUBLIC SLJIT_HAVE_CONFIG_PRE=1 SLJIT_HAVE_CONFIG_POST=1)
@@ -81,6 +82,7 @@ add_library(
   TZXFile/TZXBlockTurboSpeedData.cpp
   TZXFile/TZXFile.cpp
 )
+# target_enable_ipo(tzxfile)
 
 target_include_directories(tzxfile PUBLIC ../thirdparty/TZXFile)
 
@@ -97,6 +99,8 @@ add_library(
   ymfm/src/ymfm_pcm.cpp
   ymfm/src/ymfm_ssg.cpp
 )
+
+# target_enable_ipo(ymfm)
 
 target_include_directories(ymfm PUBLIC ../thirdparty/ymfm/src)
 

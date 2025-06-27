@@ -1,0 +1,16 @@
+#include <nall/string.hpp>
+#include <nall/intrinsics.hpp>
+
+using namespace nall;
+
+namespace ares {
+
+extern const string Name       = "@ARES_NAME@";
+extern const string Version    = "@ARES_VERSION@";
+extern const string Copyright  = "@ARES_LEGAL_COPYRIGHT_SHORT@";
+extern const string License    = "ISC";
+extern const string LicenseURI = "https://opensource.org/licenses/ISC";
+extern const string Website    = "@ARES_WEBSITE@";
+extern const string WebsiteURI = "https://@ARES_WEBSITE@/";
+
+}

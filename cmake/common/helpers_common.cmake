@@ -144,6 +144,18 @@ function(target_disable_feature target feature_description)
   endif()
 endfunction()
 
+function(target_enable_ipo target)
+  if(ipo_supported)
+    message(STATUS "enabling IPO for target ${target}")
+    set_target_properties(
+      "${target}"
+      PROPERTIES
+      INTERPROCEDURAL_OPTIMIZATION
+        ON
+    )
+  endif()
+endfunction()
+
 # Find all direct and transitive dependencies of a target
 function(find_dependencies)
   set(oneValueArgs TARGET DEPS_LIST)

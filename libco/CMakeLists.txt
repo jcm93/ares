@@ -1,4 +1,5 @@
 add_library(libco STATIC libco.c)
+# target_enable_ipo(libco)
 
 string(TOLOWER ${CMAKE_SYSTEM_PROCESSOR} LOWERCASE_CMAKE_SYSTEM_PROCESSOR)
 
