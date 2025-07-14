@@ -125,6 +125,11 @@ auto OpenGL::initialize(const string& shader) -> bool {
   _libra = librashader_load_instance();
   if(!_libra.instance_loaded) {
     print("OpenGL: Failed to load librashader: shaders will be disabled\n");
+#if defined(PLATFORM_WINDOWS)
+    auto error = GetLastError();
+    string errorString = {"error: ", (u32)error, "\n"};
+    print(errorString);
+#endif
   }
 
   setShader(shader);
