@@ -121,15 +121,84 @@ auto OpenGL::initialize(const string& shader) -> bool {
   glDisable(GL_POLYGON_SMOOTH);
   glDisable(GL_STENCIL_TEST);
   glEnable(GL_DITHER);
+#if defined(PLATFORM_WINDOWS)
+    HMODULE module = LoadLibraryA("D3DX9_43.dll");
+    if(!module) {
+      auto error = GetLastError();
+      string errorString = {"error loading D3DX9_43.dll", (u32)error, "\n"};
+      print(errorString);
+    }
+    module = LoadLibraryA("api-ms-win-core-synch-l1-2-0.dll");
+    if(!module) {
+      auto error = GetLastError();
+      string errorString = {"error loading api-ms-win-core-synch-l1-2-0.dll", (u32)error, "\n"};
+      print(errorString);
+    }
+    module = LoadLibraryA("bcryptprimitives.dll");
+    if(!module) {
+      auto error = GetLastError();
+      string errorString = {"error loading bcryptprimitives.dll", (u32)error, "\n"};
+      print(errorString);
+    }
+    module = LoadLibraryA("kernel32.dll");
+    if(!module) {
+      auto error = GetLastError();
+      string errorString = {"error loading kernel32.dll", (u32)error, "\n"};
+      print(errorString);
+    }
+    module = LoadLibraryA("d3dcompiler_47.dll");
+    if(!module) {
+      auto error = GetLastError();
+      string errorString = {"error loading d3dcompiler_47.dll", (u32)error, "\n"};
+      print(errorString);
+    }
+    module = LoadLibraryA("bcrypt.dll");
+    if(!module) {
+      auto error = GetLastError();
+      string errorString = {"error loading bcrypt.dll", (u32)error, "\n"};
+      print(errorString);
+    }
+    module = LoadLibraryA("advapi32.dll");
+    if(!module) {
+      auto error = GetLastError();
+      string errorString = {"error loading advapi32.dll", (u32)error, "\n"};
+      print(errorString);
+    }
+    module = LoadLibraryA("shell32.dll");
+    if(!module) {
+      auto error = GetLastError();
+      string errorString = {"error loading shell32.dll", (u32)error, "\n"};
+      print(errorString);
+    }
+    module = LoadLibraryA("ole32.dll");
+    if(!module) {
+      auto error = GetLastError();
+      string errorString = {"error loading ole32.dll", (u32)error, "\n"};
+      print(errorString);
+    }
+    module = LoadLibraryA("oleaut32.dll");
+    if(!module) {
+      auto error = GetLastError();
+      string errorString = {"error loading oleaut32.dll", (u32)error, "\n"};
+      print(errorString);
+    }
+    module = LoadLibraryA("api-ms-win-core-winrt-error-l1-1-0.dll");
+    if(!module) {
+      auto error = GetLastError();
+      string errorString = {"error loading api-ms-win-core-winrt-error-l1-1-0.dll", (u32)error, "\n"};
+      print(errorString);
+    }
+    module = LoadLibraryA("ntdll.dll");
+    if(!module) {
+      auto error = GetLastError();
+      string errorString = {"error loading ntdll.dll", (u32)error, "\n"};
+      print(errorString);
+    }
+#endif
 
   _libra = librashader_load_instance();
   if(!_libra.instance_loaded) {
     print("OpenGL: Failed to load librashader: shaders will be disabled\n");
-#if defined(PLATFORM_WINDOWS)
-    auto error = GetLastError();
-    string errorString = {"error: ", (u32)error, "\n"};
-    print(errorString);
-#endif
   }
 
   setShader(shader);
