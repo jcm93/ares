@@ -31,6 +31,7 @@ ares_add_sources(
     md
   INCLUDED #
     md.hpp
+    mcd/json.hpp
     CMakeLists.txt
 )
 
@@ -142,6 +143,7 @@ ares_add_sources(
     mcd/cdc.cpp
     mcd/cdd-dac.cpp
     mcd/cdd.cpp
+    mcd/megald.cpp
     mcd/debugger.cpp
     mcd/gpu.cpp
     mcd/io-external.cpp

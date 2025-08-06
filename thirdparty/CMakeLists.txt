@@ -98,6 +98,12 @@ add_library(
   ymfm/src/ymfm_ssg.cpp
 )
 
+add_library(
+  qoi
+  INTERFACE
+    qoi.h
+)
+
 target_include_directories(ymfm PUBLIC ../thirdparty/ymfm/src)
 
 target_compile_options(ymfm PRIVATE $<$<CXX_COMPILER_ID:Clang,AppleClang>:-Wno-unreachable-code>)
@@ -105,6 +111,7 @@ target_compile_options(ymfm PRIVATE $<$<CXX_COMPILER_ID:Clang,AppleClang>:-Wno-u
 set_target_properties(ymfm PROPERTIES FOLDER thirdparty PREFIX "")
 set_target_properties(tzxfile PROPERTIES FOLDER thirdparty PREFIX "")
 set_target_properties(sljit PROPERTIES FOLDER thirdparty PREFIX "")
+set_target_properties(qoi PROPERTIES FOLDER thirdparty PREFIX "")
 if(ARES_ENABLE_CHD)
   set_target_properties(chdr-static PROPERTIES FOLDER thirdparty PREFIX "")
   if(NOT WITH_SYSTEM_ZLIB)

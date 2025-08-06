@@ -35,6 +35,7 @@ private:
 #if defined(ARES_ENABLE_CHD)
   auto readDataSectorCHD(string filename, u32 sectorID) -> vector<u8>;
 #endif
+  auto readDataSectorZIP(string filename, u32 sectorID) -> vector<u8>;
 };
 
 struct FloppyDisk : Medium {
