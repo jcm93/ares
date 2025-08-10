@@ -1,44 +1,37 @@
-ares_components(
-  wdc65816
-  spc700
-  arm7tdmi
-  gsu
-  hg51b
-  upd96050
+add_core_target(sfc)
+
+set(
+  sfc_PRIMARY_SOURCES
+  system/system.cpp
+  controller/controller.cpp
+  cartridge/cartridge.cpp
+  memory/memory.cpp
+  cpu/cpu.cpp
+  smp/smp.cpp
+  dsp/dsp.cpp
+  ppu/ppu.cpp
+  ppu-performance/ppu-performance.cpp
+  coprocessor/coprocessor.cpp
+  expansion/expansion.cpp
+  slot/slot.cpp
+)
+target_sources(sfc PRIVATE ${sfc_PRIMARY_SOURCES})
+
+ares_add_components(
+  CORE sfc
+  COMPONENT processor/wdc65816 processor/spc700 processor/arm7tdmi processor/gsu processor/hg51b processor/upd96050
 )
 
-ares_add_sources(
-  CORE #
-    sfc
-  UNITY #
-    sfc.cpp
-  PRIMARY #
-    system/system.cpp
-    controller/controller.cpp
-    cartridge/cartridge.cpp
-    memory/memory.cpp
-    cpu/cpu.cpp
-    smp/smp.cpp
-    dsp/dsp.cpp
-    ppu/ppu.cpp
-    ppu-performance/ppu.cpp
-    coprocessor/coprocessor.cpp
-    expansion/expansion.cpp
-    slot/slot.cpp
-)
-
-ares_add_sources(
-  CORE #
-    sfc
-  INCLUDED #
+target_sources(
+  sfc
+  PRIVATE #
     sfc.hpp
     CMakeLists.txt
 )
 
-ares_add_sources(
-  CORE #
-    sfc
-  INCLUDED #
+target_sources(
+  sfc
+  PRIVATE #
     cartridge/cartridge.hpp
     cartridge/debugger.cpp
     cartridge/load.cpp
@@ -48,10 +41,9 @@ ares_add_sources(
     cartridge/slot.hpp
 )
 
-ares_add_sources(
-  CORE #
-    sfc
-  INCLUDED #
+target_sources(
+  sfc
+  PRIVATE #
     controller/controller.hpp
     controller/port.cpp
     controller/port.hpp
@@ -73,10 +65,9 @@ ares_add_sources(
     controller/twin-tap/twin-tap.hpp
 )
 
-ares_add_sources(
-  CORE #
-    sfc
-  INCLUDED #
+target_sources(
+  sfc
+  PRIVATE #
     coprocessor/coprocessor.hpp
     coprocessor/armdsp/armdsp.cpp
     coprocessor/armdsp/armdsp.hpp
@@ -157,10 +148,9 @@ ares_add_sources(
     coprocessor/superfx/timing.cpp
 )
 
-ares_add_sources(
-  CORE #
-    sfc
-  INCLUDED #
+target_sources(
+  sfc
+  PRIVATE #
     cpu/cpu.hpp
     cpu/debugger.cpp
     cpu/dma.cpp
@@ -171,10 +161,9 @@ ares_add_sources(
     cpu/timing.cpp
 )
 
-ares_add_sources(
-  CORE #
-    sfc
-  INCLUDED #
+target_sources(
+  sfc
+  PRIVATE #
     dsp/brr.cpp
     dsp/counter.cpp
     dsp/debugger.cpp
@@ -188,10 +177,9 @@ ares_add_sources(
     dsp/voice.cpp
 )
 
-ares_add_sources(
-  CORE #
-    sfc
-  INCLUDED #
+target_sources(
+  sfc
+  PRIVATE #
     expansion/expansion.hpp
     expansion/port.cpp
     expansion/port.hpp
@@ -201,10 +189,9 @@ ares_add_sources(
     expansion/satellaview/satellaview.hpp
 )
 
-ares_add_sources(
-  CORE #
-    sfc
-  INCLUDED #
+target_sources(
+  sfc
+  PRIVATE #
     memory/inline.hpp
     memory/memory.hpp
     memory/protectable.hpp
@@ -212,10 +199,9 @@ ares_add_sources(
     memory/writable.hpp
 )
 
-ares_add_sources(
-  CORE #
-    sfc
-  INCLUDED #
+target_sources(
+  sfc
+  PRIVATE #
     ppu/background.cpp
     ppu/color.cpp
     ppu/dac.cpp
@@ -234,10 +220,9 @@ ares_add_sources(
     ppu/counter/serialization.cpp
 )
 
-ares_add_sources(
-  CORE #
-    sfc
-  INCLUDED #
+target_sources(
+  sfc
+  PRIVATE #
     ppu-performance/background.cpp
     ppu-performance/color.cpp
     ppu-performance/dac.cpp
@@ -252,10 +237,9 @@ ares_add_sources(
     ppu-performance/window.cpp
 )
 
-ares_add_sources(
-  CORE #
-    sfc
-  INCLUDED #
+target_sources(
+  sfc
+  PRIVATE #
     slot/slot.hpp
     slot/bsmemory/bsmemory.cpp
     slot/bsmemory/bsmemory.hpp
@@ -270,10 +254,9 @@ ares_add_sources(
     slot/sufamiturbo/sufamiturbo.hpp
 )
 
-ares_add_sources(
-  CORE #
-    sfc
-  INCLUDED #
+target_sources(
+  sfc
+  PRIVATE #
     smp/debugger.cpp
     smp/io.cpp
     smp/memory.cpp
@@ -282,11 +265,12 @@ ares_add_sources(
     smp/timing.cpp
 )
 
-ares_add_sources(
-  CORE #
-    sfc
-  INCLUDED #
+target_sources(
+  sfc
+  PRIVATE #
     system/controls.cpp
     system/serialization.cpp
     system/system.hpp
 )
+
+organize_core_sources(CORE sfc)

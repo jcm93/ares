@@ -1,31 +1,23 @@
-ares_components(mos6502)
+add_core_target(a26)
 
-ares_add_sources(
-  CORE #
-    a26
-  UNITY #
-    a26.cpp
-  PRIMARY #
-    system/system.cpp
-    controller/controller.cpp
-    cartridge/cartridge.cpp
-    cpu/cpu.cpp
-    tia/tia.cpp
-    riot/riot.cpp
+set(
+  a26_PRIMARY_SOURCES
+  system/system.cpp
+  controller/controller.cpp
+  cartridge/cartridge.cpp
+  cpu/cpu.cpp
+  tia/tia.cpp
+  riot/riot.cpp
 )
+target_sources(a26 PRIVATE ${a26_PRIMARY_SOURCES})
 
-ares_add_sources(
-  CORE #
-    a26
-  INCLUDED #
-    a26.hpp
-    CMakeLists.txt
-)
+ares_add_components(CORE a26 COMPONENT processor/mos6502)
 
-ares_add_sources(
-  CORE #
-    a26
-  INCLUDED #
+target_sources(a26 PRIVATE a26.hpp CMakeLists.txt)
+
+target_sources(
+  a26
+  PRIVATE
     cartridge/cartridge.hpp
     cartridge/serialization.cpp
     cartridge/slot.cpp
@@ -41,10 +33,9 @@ ares_add_sources(
     cartridge/board/tigervision.cpp
 )
 
-ares_add_sources(
-  CORE #
-    a26
-  INCLUDED #
+target_sources(
+  a26
+  PRIVATE
     controller/controller.hpp
     controller/port.cpp
     controller/port.hpp
@@ -52,39 +43,18 @@ ares_add_sources(
     controller/gamepad/gamepad.hpp
 )
 
-ares_add_sources(
-  CORE #
-    a26
-  INCLUDED #
-    cpu/cpu.hpp
-    cpu/debugger.cpp
-    cpu/memory.cpp
-    cpu/serialization.cpp
-    cpu/timing.cpp
+target_sources(
+  a26
+  PRIVATE cpu/cpu.hpp cpu/debugger.cpp cpu/memory.cpp cpu/serialization.cpp cpu/timing.cpp
 )
 
-ares_add_sources(
-  CORE #
-    a26
-  INCLUDED #
-    riot/io.cpp
-    riot/riot.hpp
-    riot/serialization.cpp
-)
+target_sources(a26 PRIVATE riot/io.cpp riot/riot.hpp riot/serialization.cpp)
 
-ares_add_sources(
-  CORE #
-    a26
-  INCLUDED #
-    system/controls.cpp
-    system/serialization.cpp
-    system/system.hpp
-)
+target_sources(a26 PRIVATE system/controls.cpp system/serialization.cpp system/system.hpp)
 
-ares_add_sources(
-  CORE #
-    a26
-  INCLUDED #
+target_sources(
+  a26
+  PRIVATE
     tia/audio.cpp
     tia/ball.cpp
     tia/color.cpp
@@ -96,3 +66,5 @@ ares_add_sources(
     tia/tia.hpp
     tia/write-queue.cpp
 )
+
+organize_core_sources(CORE a26)

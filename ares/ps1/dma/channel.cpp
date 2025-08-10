@@ -112,6 +112,7 @@ auto DMA::Channel::transferBlock() -> void {
 
   if(synchronization == 0 && chopping.enable == 0) {
     enable = 0;
+    print("poop");
   }
 
   if(synchronization == 0 && chopping.enable == 1) {

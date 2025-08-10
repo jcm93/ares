@@ -1,41 +1,37 @@
-ares_components(tlcs900h z80 t6w28)
+add_core_target(ngp)
 
-ares_add_sources(
-  CORE #
-    ngp
-  UNITY #
-    ngp.cpp
-  PRIMARY #
-    system/system.cpp
-    cartridge/cartridge.cpp
-    cpu/cpu.cpp
-    apu/apu.cpp
-    kge/kge.cpp
-    psg/psg.cpp
+set(
+  ngp_PRIMARY_SOURCES
+  system/system.cpp
+  cartridge/cartridge.cpp
+  cpu/cpu.cpp
+  apu/apu.cpp
+  kge/kge.cpp
+  psg/psg.cpp
 )
+target_sources(ngp PRIVATE ${ngp_PRIMARY_SOURCES})
 
-ares_add_sources(
-  CORE #
-    ngp
-  INCLUDED #
+ares_add_components(CORE ngp COMPONENT processor/tlcs900h processor/z80 audio/t6w28)
+
+target_sources(
+  ngp
+  PRIVATE #
     ngp.hpp
     CMakeLists.txt
 )
 
-ares_add_sources(
-  CORE #
-    ngp
-  INCLUDED #
+target_sources(
+  ngp
+  PRIVATE #
     apu/apu.hpp
     apu/debugger.cpp
     apu/memory.cpp
     apu/serialization.cpp
 )
 
-ares_add_sources(
-  CORE #
-    ngp
-  INCLUDED #
+target_sources(
+  ngp
+  PRIVATE #
     cartridge/cartridge.hpp
     cartridge/debugger.cpp
     cartridge/flash.cpp
@@ -45,10 +41,9 @@ ares_add_sources(
     cartridge/slot.hpp
 )
 
-ares_add_sources(
-  CORE #
-    ngp
-  INCLUDED #
+target_sources(
+  ngp
+  PRIVATE #
     cpu/adc.cpp
     cpu/cpu.hpp
     cpu/debugger.cpp
@@ -63,10 +58,9 @@ ares_add_sources(
     cpu/watchdog.cpp
 )
 
-ares_add_sources(
-  CORE #
-    ngp
-  INCLUDED #
+target_sources(
+  ngp
+  PRIVATE #
     kge/color.cpp
     kge/dac.cpp
     kge/kge.hpp
@@ -77,20 +71,20 @@ ares_add_sources(
     kge/window.cpp
 )
 
-ares_add_sources(
-  CORE #
-    ngp
-  INCLUDED #
+target_sources(
+  ngp
+  PRIVATE #
     psg/psg.hpp
     psg/serialization.cpp
 )
 
-ares_add_sources(
-  CORE #
-    ngp
-  INCLUDED #
+target_sources(
+  ngp
+  PRIVATE #
     system/controls.cpp
     system/debugger.cpp
     system/serialization.cpp
     system/system.hpp
 )
+
+organize_core_sources(CORE ngp)

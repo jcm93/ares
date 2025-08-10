@@ -1,33 +1,34 @@
-ares_components(sm5k)
+add_core_target(n64)
+target_include_directories(n64 PRIVATE vulkan)
 
-ares_add_sources(
-  CORE #
-    n64
-  UNITY #
-    n64.cpp
-  PRIMARY #
-    memory/memory.cpp
-    system/system.cpp
-    cartridge/cartridge.cpp
-    cic/cic.cpp
-    controller/controller.cpp
-    dd/dd.cpp
-    mi/mi.cpp
-    vi/vi.cpp
-    ai/ai.cpp
-    pi/pi.cpp
-    pif/pif.cpp
-    ri/ri.cpp
-    si/si.cpp
-    rdram/rdram.cpp
-    cpu/cpu.cpp
-    rsp/rsp.cpp
-    rdp/rdp.cpp
-    aleck64/aleck64.cpp
+set(
+  n64_PRIMARY_SOURCES
+  memory/memory.cpp
+  system/system.cpp
+  cartridge/cartridge.cpp
+  cic/cic.cpp
+  controller/controller.cpp
+  dd/dd.cpp
+  mi/mi.cpp
+  vi/vi.cpp
+  ai/ai.cpp
+  pi/pi.cpp
+  pif/pif.cpp
+  ri/ri.cpp
+  si/si.cpp
+  rdram/rdram.cpp
+  cpu/cpu.cpp
+  rsp/rsp.cpp
+  rdp/rdp.cpp
+  aleck64/aleck64.cpp
 )
 
+target_sources(n64 PRIVATE ${n64_PRIMARY_SOURCES})
+
+ares_add_components(CORE n64 COMPONENT processor/sm5k)
+
 target_enable_feature(ares "N64 Vulkan rendering with paraLLEl-RDP" VULKAN)
-target_compile_definitions(ares PUBLIC VULKAN)
+target_compile_definitions(n64 PUBLIC VULKAN)
 
 if(OS_WINDOWS)
   include(cmake/os-windows.cmake)
@@ -37,28 +38,28 @@ elseif(OS_LINUX OR OS_FREEBSD OR OS_OPENBSD)
   include(cmake/os-linux.cmake)
 endif()
 
-ares_add_sources(
-  CORE #
-    n64
-  INCLUDED #
+target_sources(
+  n64
+  PRIVATE #
     n64.hpp
     CMakeLists.txt
+    cmake/os-macos.cmake
+    cmake/os-windows.cmake
+    cmake/os-linux.cmake
 )
 
-ares_add_sources(
-  CORE #
-    n64
-  INCLUDED #
+target_sources(
+  n64
+  PRIVATE #
     ai/ai.hpp
     ai/debugger.cpp
     ai/io.cpp
     ai/serialization.cpp
 )
 
-ares_add_sources(
-  CORE #
-    n64
-  INCLUDED #
+target_sources(
+  n64
+  PRIVATE #
     aleck64/aleck64.hpp
     aleck64/controls.cpp
     aleck64/debugger.cpp
@@ -78,10 +79,9 @@ ares_add_sources(
     aleck64/game-config/mtetrisc.hpp
 )
 
-ares_add_sources(
-  CORE #
-    n64
-  INCLUDED #
+target_sources(
+  n64
+  PRIVATE #
     cartridge/cartridge.hpp
     cartridge/debugger.cpp
     cartridge/flash.cpp
@@ -93,54 +93,48 @@ ares_add_sources(
     cartridge/slot.hpp
 )
 
-ares_add_sources(
-  CORE #
-    n64
-  INCLUDED #
+target_sources(
+  n64
+  PRIVATE #
     cic/cic.hpp
     cic/commands.cpp
     cic/io.cpp
     cic/serialization.cpp
 )
 
-ares_add_sources(
-  CORE #
-    n64
-  INCLUDED #
+target_sources(
+  n64
+  PRIVATE #
     controller/controller.hpp
     controller/port.cpp
     controller/port.hpp
 )
 
-ares_add_sources(
-  CORE #
-    n64
-  INCLUDED #
+target_sources(
+  n64
+  PRIVATE #
     controller/aleck64/aleck64.cpp
     controller/aleck64/aleck64.hpp
 )
 
-ares_add_sources(
-  CORE #
-    n64
-  INCLUDED #
+target_sources(
+  n64
+  PRIVATE #
     controller/gamepad/gamepad.cpp
     controller/gamepad/gamepad.hpp
     controller/gamepad/transfer-pak.cpp
 )
 
-ares_add_sources(
-  CORE #
-    n64
-  INCLUDED #
+target_sources(
+  n64
+  PRIVATE #
     controller/mouse/mouse.cpp
     controller/mouse/mouse.hpp
 )
 
-ares_add_sources(
-  CORE #
-    n64
-  INCLUDED #
+target_sources(
+  n64
+  PRIVATE #
     cpu/algorithms.cpp
     cpu/context.cpp
     cpu/cpu.hpp
@@ -159,10 +153,9 @@ ares_add_sources(
     cpu/tlb.cpp
 )
 
-ares_add_sources(
-  CORE #
-    n64
-  INCLUDED #
+target_sources(
+  n64
+  PRIVATE #
     dd/controller.cpp
     dd/dd.hpp
     dd/debugger.cpp
@@ -172,10 +165,9 @@ ares_add_sources(
     dd/serialization.cpp
 )
 
-ares_add_sources(
-  CORE #
-    n64
-  INCLUDED #
+target_sources(
+  n64
+  PRIVATE #
     memory/bus.hpp
     memory/io.hpp
     memory/memory.hpp
@@ -185,20 +177,18 @@ ares_add_sources(
     memory/msb/writable.hpp
 )
 
-ares_add_sources(
-  CORE #
-    n64
-  INCLUDED #
+target_sources(
+  n64
+  PRIVATE #
     mi/debugger.cpp
     mi/io.cpp
     mi/mi.hpp
     mi/serialization.cpp
 )
 
-ares_add_sources(
-  CORE #
-    n64
-  INCLUDED #
+target_sources(
+  n64
+  PRIVATE #
     pi/bus.hpp
     pi/debugger.cpp
     pi/dma.cpp
@@ -207,10 +197,9 @@ ares_add_sources(
     pi/serialization.cpp
 )
 
-ares_add_sources(
-  CORE #
-    n64
-  INCLUDED #
+target_sources(
+  n64
+  PRIVATE #
     pif/debugger.cpp
     pif/hle.cpp
     pif/io.cpp
@@ -218,10 +207,9 @@ ares_add_sources(
     pif/serialization.cpp
 )
 
-ares_add_sources(
-  CORE #
-    n64
-  INCLUDED #
+target_sources(
+  n64
+  PRIVATE #
     rdp/debugger.cpp
     rdp/io.cpp
     rdp/rdp.hpp
@@ -229,30 +217,27 @@ ares_add_sources(
     rdp/serialization.cpp
 )
 
-ares_add_sources(
-  CORE #
-    n64
-  INCLUDED #
+target_sources(
+  n64
+  PRIVATE #
     rdram/debugger.cpp
     rdram/io.cpp
     rdram/rdram.hpp
     rdram/serialization.cpp
 )
 
-ares_add_sources(
-  CORE #
-    n64
-  INCLUDED #
+target_sources(
+  n64
+  PRIVATE #
     ri/debugger.cpp
     ri/io.cpp
     ri/ri.hpp
     ri/serialization.cpp
 )
 
-ares_add_sources(
-  CORE #
-    n64
-  INCLUDED #
+target_sources(
+  n64
+  PRIVATE #
     rsp/debugger.cpp
     rsp/decoder.cpp
     rsp/disassembler.cpp
@@ -267,10 +252,9 @@ ares_add_sources(
     rsp/serialization.cpp
 )
 
-ares_add_sources(
-  CORE #
-    n64
-  INCLUDED #
+target_sources(
+  n64
+  PRIVATE #
     si/debugger.cpp
     si/dma.cpp
     si/io.cpp
@@ -278,18 +262,16 @@ ares_add_sources(
     si/si.hpp
 )
 
-ares_add_sources(
-  CORE #
-    n64
-  INCLUDED #
+target_sources(
+  n64
+  PRIVATE #
     system/serialization.cpp
     system/system.hpp
 )
 
-ares_add_sources(
-  CORE #
-    n64
-  INCLUDED #
+target_sources(
+  n64
+  PRIVATE #
     vi/debugger.cpp
     vi/io.cpp
     vi/serialization.cpp
@@ -340,26 +322,15 @@ set(
   vulkan/parallel-rdp/volk/volk.c
 )
 
-if(ARES_UNITY_CORES)
-  ares_add_sources(
-    CORE #
-      n64
-    UNITY #
-      ${_parallel_rdp_sources}
-  )
-else()
-  ares_add_sources(
-    CORE #
-      n64
-    PRIMARY #
-      ${_parallel_rdp_sources}
-  )
-endif()
+target_sources(n64 PRIVATE ${_parallel_rdp_sources})
 
-ares_add_sources(
-  CORE #
-    n64
-  PRIMARY #
+set(n64_PRIMARY_SOURCES ${n64_PRIMARY_SOURCES} ${_parallel_rdp_sources})
+
+target_compile_definitions(ares PRIVATE VULKAN)
+
+target_sources(
+  n64
+  PRIVATE
     vulkan/parallel-rdp/parallel-rdp/command_ring.hpp
     vulkan/parallel-rdp/parallel-rdp/rdp_device.hpp
     vulkan/parallel-rdp/parallel-rdp/rdp_dump_write.hpp
@@ -398,7 +369,7 @@ ares_add_sources(
 )
 
 target_include_directories(
-  ares
+  n64
   PRIVATE
     vulkan/parallel-rdp/parallel-rdp
     vulkan/parallel-rdp/volk
@@ -407,15 +378,24 @@ target_include_directories(
     vulkan/parallel-rdp/util
 )
 
-target_compile_options(ares PRIVATE $<$<CXX_COMPILER_ID:Clang,AppleClang>:-Wno-newline-eof>)
+set_source_files_properties(${_parallel_rdp_sources} PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
+
+target_compile_options(n64 PRIVATE $<$<CXX_COMPILER_ID:Clang,AppleClang>:-Wno-newline-eof>)
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
-target_link_libraries(ares PUBLIC Threads::Threads)
+target_link_libraries(n64 PUBLIC Threads::Threads)
 
 if(OS_WINDOWS)
-  target_compile_definitions(ares PRIVATE VK_USE_PLATFORM_WIN32_KHR)
-  target_link_libraries(ares PRIVATE winmm)
+  target_compile_definitions(n64 PRIVATE VK_USE_PLATFORM_WIN32_KHR)
+  target_link_libraries(n64 PRIVATE winmm)
 else()
-  target_link_libraries(ares PRIVATE dl)
+  target_link_libraries(n64 PRIVATE dl)
 endif()
+
+organize_core_sources(CORE n64)
+if(ARES_UNITY_CORES)
+  set_source_files_properties(n64 ${_parallel_rdp_sources} PROPERTIES HEADER_FILE_ONLY FALSE)
+endif()
+
+set_target_properties(n64 PROPERTIES FOLDER ares PREFIX "")

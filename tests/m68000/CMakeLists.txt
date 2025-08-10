@@ -1,12 +1,12 @@
-if(m68000 IN_LIST ARES_COMPONENTS_LIST)
-  add_executable(m68000 m68000.cpp)
+if(TARGET m68000)
+  add_executable(m68000-test m68000.cpp)
 
-  target_include_directories(m68000 PRIVATE ${CMAKE_SOURCE_DIR})
+  target_include_directories(m68000-test PRIVATE ${CMAKE_SOURCE_DIR})
 
   set(M68000_SOURCE_DIR "${CMAKE_SOURCE_DIR}/ares/component/processor/m68000")
 
   target_sources(
-    m68000
+    m68000-test
     PRIVATE
       ${M68000_SOURCE_DIR}/algorithms.cpp
       ${M68000_SOURCE_DIR}/conditions.cpp
@@ -23,16 +23,16 @@ if(m68000 IN_LIST ARES_COMPONENTS_LIST)
       run-tests.sh
   )
 
-  set_target_properties(m68000 PROPERTIES FOLDER tests PREFIX "")
-  get_target_property(m68k_SOURCES m68000 SOURCES)
+  set_target_properties(m68000-test PROPERTIES FOLDER tests PREFIX "")
+  get_target_property(m68k_SOURCES m68000-test SOURCES)
   list(REMOVE_ITEM m68k_SOURCES m68000.cpp)
   set_source_files_properties(${m68k_SOURCES} PROPERTIES HEADER_FILE_ONLY TRUE)
 
-  target_enable_subproject(m68000 "m68000 processor test harness")
+  target_enable_subproject(m68000-test "m68000 processor test harness")
 
-  target_link_libraries(m68000 PRIVATE ares::ares)
+  target_link_libraries(m68000-test PRIVATE ares::headers ares::ares ares::nall)
   set(CONSOLE TRUE)
-  ares_configure_executable(m68000)
+  ares_configure_executable(m68000-test)
 
   source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES m68000.cpp)
 endif()

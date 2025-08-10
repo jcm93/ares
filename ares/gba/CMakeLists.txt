@@ -1,33 +1,36 @@
-ares_components(arm7tdmi s3511a)
+add_core_target(gba)
 
-ares_add_sources(
-  CORE #
-    gba
-  UNITY #
-    gba.cpp
-  PRIMARY #
-    memory/memory.cpp
-    system/system.cpp
-    cartridge/cartridge.cpp
-    player/player.cpp
-    cpu/cpu.cpp
-    display/display.cpp
-    ppu/ppu.cpp
-    apu/apu.cpp
+set(
+  gba_PRIMARY_SOURCES
+  memory/memory.cpp
+  system/system.cpp
+  cartridge/cartridge.cpp
+  player/player.cpp
+  cpu/cpu.cpp
+  display/display.cpp
+  ppu/ppu.cpp
+  apu/apu.cpp
 )
 
-ares_add_sources(
-  CORE #
-    gba
-  INCLUDED #
+target_sources(gba PRIVATE ${gba_PRIMARY_SOURCES})
+
+ares_add_components(CORE gba COMPONENT processor/arm7tdmi rtc/s3511a)
+
+target_sources(
+  gba
+  PRIVATE #
+)
+
+target_sources(
+  gba
+  PRIVATE #
     gba.hpp
     CMakeLists.txt
 )
 
-ares_add_sources(
-  CORE #
-    gba
-  INCLUDED #
+target_sources(
+  gba
+  PRIVATE #
     apu/apu.hpp
     apu/fifo.cpp
     apu/io.cpp
@@ -40,10 +43,9 @@ ares_add_sources(
     apu/wave.cpp
 )
 
-ares_add_sources(
-  CORE #
-    gba
-  INCLUDED #
+target_sources(
+  gba
+  PRIVATE #
     cartridge/cartridge.hpp
     cartridge/eeprom.cpp
     cartridge/flash.cpp
@@ -57,10 +59,9 @@ ares_add_sources(
     cartridge/sram.cpp
 )
 
-ares_add_sources(
-  CORE #
-    gba
-  INCLUDED #
+target_sources(
+  gba
+  PRIVATE #
     cpu/bus.cpp
     cpu/coprocessor.cpp
     cpu/cpu.hpp
@@ -74,34 +75,30 @@ ares_add_sources(
     cpu/timer.cpp
 )
 
-ares_add_sources(
-  CORE #
-    gba
-  INCLUDED #
+target_sources(
+  gba
+  PRIVATE #
     display/display.hpp
     display/io.cpp
     display/serialization.cpp
 )
 
-ares_add_sources(
-  CORE #
-    gba
-  INCLUDED #
+target_sources(
+  gba
+  PRIVATE #
     memory/memory.hpp
 )
 
-ares_add_sources(
-  CORE #
-    gba
-  INCLUDED #
+target_sources(
+  gba
+  PRIVATE #
     player/player.hpp
     player/serialization.cpp
 )
 
-ares_add_sources(
-  CORE #
-    gba
-  INCLUDED #
+target_sources(
+  gba
+  PRIVATE #
     ppu/background.cpp
     ppu/color.cpp
     ppu/dac.cpp
@@ -114,12 +111,13 @@ ares_add_sources(
     ppu/window.cpp
 )
 
-ares_add_sources(
-  CORE #
-    gba
-  INCLUDED #
+target_sources(
+  gba
+  PRIVATE #
     system/bios.cpp
     system/controls.cpp
     system/serialization.cpp
     system/system.hpp
 )
+
+organize_core_sources(CORE gba)

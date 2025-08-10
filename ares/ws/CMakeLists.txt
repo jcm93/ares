@@ -1,33 +1,30 @@
-ares_components(v30mz m93lcx6)
+add_core_target(ws)
 
-ares_add_sources(
-  CORE #
-    ws
-  UNITY #
-    ws.cpp
-  PRIMARY #
-    system/system.cpp
-    memory/memory.cpp
-    eeprom/eeprom.cpp
-    cartridge/cartridge.cpp
-    cpu/cpu.cpp
-    ppu/ppu.cpp
-    apu/apu.cpp
-    serial/serial.cpp
+set(
+  ws_PRIMARY_SOURCES
+  system/system.cpp
+  memory/memory.cpp
+  eeprom/eeprom.cpp
+  cartridge/cartridge.cpp
+  cpu/cpu.cpp
+  ppu/ppu.cpp
+  apu/apu.cpp
+  serial/serial.cpp
 )
+target_sources(ws PRIVATE ${ws_PRIMARY_SOURCES})
 
-ares_add_sources(
-  CORE #
-    ws
-  INCLUDED #
+ares_add_components(CORE ws COMPONENT processor/v30mz eeprom/m93lcx6)
+
+target_sources(
+  ws
+  PRIVATE #
     ws.hpp
     CMakeLists.txt
 )
 
-ares_add_sources(
-  CORE #
-    ws
-  INCLUDED #
+target_sources(
+  ws
+  PRIVATE #
     apu/apu.hpp
     apu/channel1.cpp
     apu/channel2.cpp
@@ -40,10 +37,9 @@ ares_add_sources(
     apu/serialization.cpp
 )
 
-ares_add_sources(
-  CORE #
-    ws
-  INCLUDED #
+target_sources(
+  ws
+  PRIVATE #
     cartridge/cartridge.hpp
     cartridge/debugger.cpp
     cartridge/flash.cpp
@@ -56,10 +52,9 @@ ares_add_sources(
     cartridge/slot.hpp
 )
 
-ares_add_sources(
-  CORE #
-    ws
-  INCLUDED #
+target_sources(
+  ws
+  PRIVATE #
     cpu/cpu.hpp
     cpu/debugger.cpp
     cpu/dma.cpp
@@ -69,25 +64,22 @@ ares_add_sources(
     cpu/serialization.cpp
 )
 
-ares_add_sources(
-  CORE #
-    ws
-  INCLUDED #
+target_sources(
+  ws
+  PRIVATE #
     eeprom/eeprom.hpp
     eeprom/serialization.cpp
 )
 
-ares_add_sources(
-  CORE #
-    ws
-  INCLUDED #
+target_sources(
+  ws
+  PRIVATE #
     memory/memory.hpp
 )
 
-ares_add_sources(
-  CORE #
-    ws
-  INCLUDED #
+target_sources(
+  ws
+  PRIVATE #
     ppu/color.cpp
     ppu/dac.cpp
     ppu/debugger.cpp
@@ -101,22 +93,22 @@ ares_add_sources(
     ppu/window.cpp
 )
 
-ares_add_sources(
-  CORE #
-    ws
-  INCLUDED #
+target_sources(
+  ws
+  PRIVATE #
     serial/debugger.cpp
     serial/serial.hpp
     serial/serialization.cpp
 )
 
-ares_add_sources(
-  CORE #
-    ws
-  INCLUDED #
+target_sources(
+  ws
+  PRIVATE #
     system/controls.cpp
     system/debugger.cpp
     system/io.cpp
     system/serialization.cpp
     system/system.hpp
 )
+
+organize_core_sources(CORE ws)

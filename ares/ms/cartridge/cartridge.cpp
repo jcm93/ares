@@ -13,6 +13,7 @@ auto Cartridge::allocate(Node::Port parent) -> Node::Peripheral {
 
 auto Cartridge::connect() -> void {
   if(!node->setPak(pak = platform->pak(node))) return;
+  print("poop");
 
   information = {};
   information.title  = pak->attribute("title");

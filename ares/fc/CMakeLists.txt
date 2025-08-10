@@ -1,35 +1,34 @@
-ares_components(
-  mos6502
-  ym2149
-  ym2413
-  m24c
-  sst39sf0x0
+add_core_target(fc)
+
+set(
+  fc_PRIMARY_SOURCES
+  system/system.cpp
+  controller/controller.cpp
+  expansion/expansion.cpp
+  cartridge/cartridge.cpp
+  cpu/cpu.cpp
+  apu/apu.cpp
+  ppu/ppu.cpp
+  fds/fds.cpp
+)
+target_sources(fc PRIVATE ${fc_PRIMARY_SOURCES})
+
+ares_add_components(
+  CORE fc
+  COMPONENT processor/mos6502 audio/ym2149 audio/ym2413 eeprom/m24c flash/sst39sf0x0
 )
 
-target_link_libraries(ares PRIVATE ymfm)
+target_link_libraries(fc PRIVATE ymfm)
 
-ares_add_sources(
-  CORE #
-    fc
-  UNITY #
-    fc.cpp
-  PRIMARY #
-    system/system.cpp
-    controller/controller.cpp
-    expansion/expansion.cpp
-    cartridge/cartridge.cpp
-    cpu/cpu.cpp
-    apu/apu.cpp
-    ppu/ppu.cpp
-    fds/fds.cpp
+target_sources(
+  fc
+  PRIVATE #
+    fc.hpp
 )
 
-ares_add_sources(CORE fc INCLUDED fc.hpp CMakeLists.txt)
-
-ares_add_sources(
-  CORE #
-    fc
-  INCLUDED #
+target_sources(
+  fc
+  PRIVATE #
     apu/apu.hpp
     apu/dmc.cpp
     apu/envelope.cpp
@@ -42,20 +41,18 @@ ares_add_sources(
     apu/triangle.cpp
 )
 
-ares_add_sources(
-  CORE #
-    fc
-  INCLUDED #
+target_sources(
+  fc
+  PRIVATE #
     cartridge/cartridge.hpp
     cartridge/serialization.cpp
     cartridge/slot.cpp
     cartridge/slot.hpp
 )
 
-ares_add_sources(
-  CORE #
-    fc
-  INCLUDED #
+target_sources(
+  fc
+  PRIVATE #
     cartridge/board/action53.cpp
     cartridge/board/ave-nina-001.cpp
     cartridge/board/ave-nina-06.cpp
@@ -121,35 +118,31 @@ ares_add_sources(
     cartridge/board/unrom-512.cpp
 )
 
-ares_add_sources(
-  CORE #
-    fc
-  INCLUDED #
+target_sources(
+  fc
+  PRIVATE #
     cartridge/board/ic/jv001.hpp
     cartridge/board/ic/txc05-00002-010.hpp
 )
 
-ares_add_sources(
-  CORE #
-    fc
-  INCLUDED #
+target_sources(
+  fc
+  PRIVATE #
     controller/controller.hpp
     controller/port.cpp
     controller/port.hpp
 )
 
-ares_add_sources(
-  CORE #
-    fc
-  INCLUDED #
+target_sources(
+  fc
+  PRIVATE #
     controller/gamepad/gamepad.cpp
     controller/gamepad/gamepad.hpp
 )
 
-ares_add_sources(
-  CORE #
-    fc
-  INCLUDED #
+target_sources(
+  fc
+  PRIVATE #
     cpu/cpu.hpp
     cpu/debugger.cpp
     cpu/memory.cpp
@@ -157,35 +150,31 @@ ares_add_sources(
     cpu/timing.cpp
 )
 
-ares_add_sources(
-  CORE #
-    fc
-  INCLUDED #
+target_sources(
+  fc
+  PRIVATE #
     expansion/expansion.hpp
     expansion/port.cpp
     expansion/port.hpp
 )
 
-ares_add_sources(
-  CORE #
-    fc
-  INCLUDED #
+target_sources(
+  fc
+  PRIVATE #
     expansion/epsm/epsm.cpp
     expansion/epsm/epsm.hpp
 )
 
-ares_add_sources(
-  CORE #
-    fc
-  INCLUDED #
+target_sources(
+  fc
+  PRIVATE #
     expansion/family-keyboard/family-keyboard.cpp
     expansion/family-keyboard/family-keyboard.hpp
 )
 
-ares_add_sources(
-  CORE #
-    fc
-  INCLUDED #
+target_sources(
+  fc
+  PRIVATE #
     fds/audio.cpp
     fds/audio.hpp
     fds/drive.cpp
@@ -196,10 +185,9 @@ ares_add_sources(
     fds/timer.hpp
 )
 
-ares_add_sources(
-  CORE #
-    fc
-  INCLUDED #
+target_sources(
+  fc
+  PRIVATE #
     ppu/color.cpp
     ppu/debugger.cpp
     ppu/memory.cpp
@@ -210,11 +198,12 @@ ares_add_sources(
     ppu/sprite.cpp
 )
 
-ares_add_sources(
-  CORE #
-    fc
-  INCLUDED #
+target_sources(
+  fc
+  PRIVATE #
     system/controls.cpp
     system/serialization.cpp
     system/system.hpp
 )
+
+organize_core_sources(CORE fc)

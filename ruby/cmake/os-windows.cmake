@@ -1,13 +1,13 @@
 target_sources(
   ruby
-  PRIVATE # cmake-format: sortable
+  PRIVATE #
     video/direct3d9.cpp
     video/wgl.cpp
 )
 
 target_sources(
   ruby
-  PRIVATE # cmake-format: sortable
+  PRIVATE #
     audio/wasapi.cpp
     audio/xaudio2.cpp
     audio/xaudio2.hpp
@@ -18,7 +18,7 @@ target_sources(
 
 target_sources(
   ruby
-  PRIVATE # cmake-format: sortable
+  PRIVATE #
     input/sdl.cpp
     input/shared/rawinput.cpp
     input/windows.cpp
@@ -49,6 +49,7 @@ else()
   target_compile_definitions(ruby PRIVATE LIBRA_RUNTIME_OPENGL)
 endif()
 
+target_include_directories(ruby PRIVATE ${CMAKE_SOURCE_DIR}/thirdparty)
 target_link_libraries(
   ruby
   PRIVATE

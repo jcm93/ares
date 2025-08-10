@@ -1,6 +1,22 @@
 add_library(nall OBJECT main.cpp nall.cpp sljitAllocator.cpp)
 add_library(ares::nall ALIAS nall)
 
+add_library(nall-headers INTERFACE)
+add_library(ares::nall::headers ALIAS nall-headers)
+target_link_libraries(nall PRIVATE nall-headers)
+if(ARES_ENABLE_CHD)
+  target_compile_definitions(nall-headers INTERFACE ARES_ENABLE_CHD)
+endif()
+target_include_directories(nall-headers INTERFACE ${CMAKE_SOURCE_DIR}/nall)
+target_compile_definitions(
+  nall-headers
+  INTERFACE
+    $<$<CONFIG:Debug>:BUILD_DEBUG>
+    $<$<CONFIG:Release>:BUILD_RELEASE>
+    $<$<CONFIG:RelWithDebInfo>:BUILD_RELEASE>
+    $<$<CONFIG:MinSizeRel>:BUILD_MINIFIED>
+)
+
 include(cmake/sources.cmake)
 
 find_package(Threads REQUIRED)
@@ -11,7 +27,6 @@ if(ARES_ENABLE_CHD)
   target_link_libraries(nall PUBLIC chdr-static)
   target_compile_definitions(nall PUBLIC ARES_ENABLE_CHD)
 endif()
-target_compile_definitions(nall PUBLIC CMAKE)
 target_compile_options(
   nall
   PRIVATE
@@ -55,20 +70,11 @@ else()
 endif()
 
 # global compiler flags
-target_compile_features(nall PUBLIC c_std_11)
+target_compile_features(nall-headers INTERFACE c_std_11)
 set_target_properties(nall PROPERTIES C_EXTENSIONS OFF)
 
-target_compile_features(nall PUBLIC cxx_std_17)
+target_compile_features(nall-headers INTERFACE cxx_std_17)
 set_target_properties(nall PROPERTIES CXX_EXTENSIONS OFF)
-
-target_compile_definitions(
-  nall
-  PUBLIC
-    $<$<CONFIG:Debug>:BUILD_DEBUG>
-    $<$<CONFIG:Release>:BUILD_RELEASE>
-    $<$<CONFIG:RelWithDebInfo>:BUILD_RELEASE>
-    $<$<CONFIG:MinSizeRel>:BUILD_MINIFIED>
-)
 
 if(ARES_BUILD_LOCAL)
   target_compile_definitions(nall PUBLIC BUILD_LOCAL)

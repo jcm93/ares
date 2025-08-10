@@ -15,6 +15,7 @@ if(ARES_ENABLE_LIBRASHADER)
         bundled_shaders
         DEPENDS "${ARES_BUILD_OUTPUT_DIR}/${ARES_INSTALL_DATA_DESTINATION}/Shaders/bilinear.slangp"
       )
+      set_target_properties(bundled_shaders PROPERTIES FOLDER desktop-ui PREFIX "")
       add_dependencies(desktop-ui bundled_shaders)
       install(
         DIRECTORY "${slang_shaders_LOCATION}"

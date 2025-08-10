@@ -1,31 +1,33 @@
-ares_components(sm83 m93lcx6)
+add_core_target(gb)
 
-ares_add_sources(
-  CORE #
-    gb
-  UNITY #
-    gb.cpp
-  PRIMARY #
-    system/system.cpp
-    cartridge/cartridge.cpp
-    bus/bus.cpp
-    cpu/cpu.cpp
-    ppu/ppu.cpp
-    apu/apu.cpp
+set(
+  gb_PRIMARY_SOURCES
+  system/system.cpp
+  cartridge/cartridge.cpp
+  bus/bus.cpp
+  cpu/cpu.cpp
+  ppu/ppu.cpp
+  apu/apu.cpp
+)
+target_sources(gb PRIVATE ${gb_PRIMARY_SOURCES})
+
+ares_add_components(CORE gb COMPONENT processor/sm83 eeprom/m93lcx6)
+
+target_sources(
+  gb
+  PRIVATE #
 )
 
-ares_add_sources(
-  CORE #
-    gb
-  INCLUDED #
+target_sources(
+  gb
+  PRIVATE #
     gb.hpp
     CMakeLists.txt
 )
 
-ares_add_sources(
-  CORE #
-    gb
-  INCLUDED #
+target_sources(
+  gb
+  PRIVATE #
     apu/apu.hpp
     apu/io.cpp
     apu/noise.cpp
@@ -36,17 +38,15 @@ ares_add_sources(
     apu/wave.cpp
 )
 
-ares_add_sources(
-  CORE #
-    gb
-  INCLUDED #
+target_sources(
+  gb
+  PRIVATE #
     bus/bus.hpp
 )
 
-ares_add_sources(
-  CORE #
-    gb
-  INCLUDED #
+target_sources(
+  gb
+  PRIVATE #
     cartridge/cartridge.hpp
     cartridge/memory.cpp
     cartridge/serialization.cpp
@@ -54,10 +54,9 @@ ares_add_sources(
     cartridge/slot.hpp
 )
 
-ares_add_sources(
-  CORE #
-    gb
-  INCLUDED #
+target_sources(
+  gb
+  PRIVATE #
     cartridge/board/board.cpp
     cartridge/board/board.hpp
     cartridge/board/huc1.cpp
@@ -75,10 +74,9 @@ ares_add_sources(
     cartridge/board/tama.cpp
 )
 
-ares_add_sources(
-  CORE #
-    gb
-  INCLUDED #
+target_sources(
+  gb
+  PRIVATE #
     cpu/cpu.hpp
     cpu/debugger.cpp
     cpu/io.cpp
@@ -87,11 +85,12 @@ ares_add_sources(
     cpu/timing.cpp
 )
 
-ares_add_sources(
-  CORE #
-    gb
-  INCLUDED #
+target_sources(
+  gb
+  PRIVATE #
     system/controls.cpp
     system/serialization.cpp
     system/system.hpp
 )
+
+organize_core_sources(CORE gb)

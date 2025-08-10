@@ -8,7 +8,7 @@
 #include <sfc/smp/smp.cpp>
 #include <sfc/dsp/dsp.cpp>
 #include <sfc/ppu/ppu.cpp>
-#include <sfc/ppu-performance/ppu.cpp>
+#include <sfc/ppu-performance/ppu-performance.cpp>
 #include <sfc/coprocessor/coprocessor.cpp>
 #include <sfc/expansion/expansion.cpp>
 #include <sfc/slot/slot.cpp>

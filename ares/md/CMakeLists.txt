@@ -1,72 +1,61 @@
-ares_components(
-  m68000
-  z80
-  sh2
-  ssp1601
-  sn76489
-  ym2612
-  m24c
+add_core_target(md)
+
+set(
+  md_PRIMARY_SOURCES
+  bus/bus.cpp
+  cpu/cpu.cpp
+  apu/apu.cpp
+  vdp/vdp.cpp
+  opn2/opn2.cpp
+  m32x/m32x.cpp
+  mcd/mcd.cpp
+  system/system.cpp
+  cartridge/cartridge.cpp
+  controller/controller.cpp
+)
+target_sources(md PRIVATE ${md_PRIMARY_SOURCES})
+
+ares_add_components(
+  CORE md
+  COMPONENT processor/m68000 processor/z80 processor/sh2 processor/ssp1601 audio/sn76489 audio/ym2612 eeprom/m24c
 )
 
-ares_add_sources(
-  CORE #
-    md
-  UNITY #
-    md.cpp
-  PRIMARY #
-    bus/bus.cpp
-    cpu/cpu.cpp
-    apu/apu.cpp
-    vdp/vdp.cpp
-    opn2/opn2.cpp
-    m32x/m32x.cpp
-    mcd/mcd.cpp
-    system/system.cpp
-    cartridge/cartridge.cpp
-    controller/controller.cpp
-)
-
-ares_add_sources(
-  CORE #
-    md
-  INCLUDED #
+target_sources(
+  md
+  PRIVATE #
     md.hpp
     CMakeLists.txt
 )
 
-ares_add_sources(
-  CORE #
-    md
-  INCLUDED #
+target_sources(
+  md
+  PRIVATE #
     apu/apu.hpp
     apu/bus.cpp
     apu/debugger.cpp
     apu/serialization.cpp
 )
 
-ares_add_sources(
-  CORE #
-    md
-  INCLUDED #
+target_sources(
+  md
+  PRIVATE #
     bus/bus.hpp
     bus/inline.hpp
     bus/serialization.cpp
 )
 
-ares_add_sources(
-  CORE #
-    md
-  INCLUDED #
+target_sources(
+  md
+  PRIVATE #
     cartridge/cartridge.hpp
     cartridge/serialization.cpp
     cartridge/slot.cpp
     cartridge/slot.hpp
 )
 
-ares_add_sources(
-  CORE #
-    md
-  INCLUDED #
+target_sources(
+  md
+  PRIVATE #
     cartridge/board/banked.cpp
     cartridge/board/board.cpp
     cartridge/board/board.hpp
@@ -80,35 +69,31 @@ ares_add_sources(
     cartridge/board/svp.cpp
 )
 
-ares_add_sources(
-  CORE #
-    md
-  INCLUDED #
+target_sources(
+  md
+  PRIVATE #
     controller/controller.hpp
     controller/port.cpp
     controller/port.hpp
 )
 
-ares_add_sources(
-  CORE #
-    md
-  INCLUDED #
+target_sources(
+  md
+  PRIVATE #
     controller/control-pad/control-pad.cpp
     controller/control-pad/control-pad.hpp
 )
 
-ares_add_sources(
-  CORE #
-    md
-  INCLUDED #
+target_sources(
+  md
+  PRIVATE #
     controller/fighting-pad/fighting-pad.cpp
     controller/fighting-pad/fighting-pad.hpp
 )
 
-ares_add_sources(
-  CORE #
-    md
-  INCLUDED #
+target_sources(
+  md
+  PRIVATE #
     cpu/bus.cpp
     cpu/cpu.hpp
     cpu/debugger.cpp
@@ -116,10 +101,9 @@ ares_add_sources(
     cpu/serialization.cpp
 )
 
-ares_add_sources(
-  CORE #
-    md
-  INCLUDED #
+target_sources(
+  md
+  PRIVATE #
     m32x/bus-external.cpp
     m32x/bus-internal.cpp
     m32x/debugger.cpp
@@ -132,10 +116,9 @@ ares_add_sources(
     m32x/vdp.cpp
 )
 
-ares_add_sources(
-  CORE #
-    md
-  INCLUDED #
+target_sources(
+  md
+  PRIVATE #
     mcd/bus-external.cpp
     mcd/bus-internal.cpp
     mcd/cdc-transfer.cpp
@@ -153,27 +136,24 @@ ares_add_sources(
     mcd/timer.cpp
 )
 
-ares_add_sources(
-  CORE #
-    md
-  INCLUDED #
+target_sources(
+  md
+  PRIVATE #
     opn2/opn2.hpp
     opn2/serialization.cpp
 )
 
-ares_add_sources(
-  CORE #
-    md
-  INCLUDED #
+target_sources(
+  md
+  PRIVATE #
     system/controls.cpp
     system/serialization.cpp
     system/system.hpp
 )
 
-ares_add_sources(
-  CORE #
-    md
-  INCLUDED #
+target_sources(
+  md
+  PRIVATE #
     vdp/color.cpp
     vdp/dac.cpp
     vdp/debugger.cpp
@@ -193,10 +173,9 @@ ares_add_sources(
     vdp/window.cpp
 )
 
-ares_add_sources(
-  CORE #
-    md
-  INCLUDED #
+target_sources(
+  md
+  PRIVATE #
     vdp-performance/background.cpp
     vdp-performance/color.cpp
     vdp-performance/debugger.cpp
@@ -213,3 +192,7 @@ ares_add_sources(
     vdp-performance/vdp.cpp
     vdp-performance/vdp.hpp
 )
+
+organize_core_sources(CORE md)
+
+set_target_properties(md PROPERTIES FOLDER ares PREFIX "")

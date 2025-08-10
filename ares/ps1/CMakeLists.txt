@@ -1,43 +1,39 @@
-ares_components(m68hc05)
+add_core_target(ps1)
 
-ares_add_sources(
-  CORE #
-    ps1
-  UNITY #
-    ps1.cpp
-  PRIMARY #
-    memory/memory.cpp
-    system/system.cpp
-    disc/disc.cpp
-    cpu/cpu.cpp
-    gpu/gpu.cpp
-    spu/spu.cpp
-    mdec/mdec.cpp
-    interrupt/interrupt.cpp
-    peripheral/peripheral.cpp
-    dma/dma.cpp
-    timer/timer.cpp
+set(
+  ps1_PRIMARY_SOURCES
+  memory/memory.cpp
+  system/system.cpp
+  disc/disc.cpp
+  cpu/cpu.cpp
+  gpu/gpu.cpp
+  spu/spu.cpp
+  mdec/mdec.cpp
+  interrupt/interrupt.cpp
+  peripheral/peripheral.cpp
+  dma/dma.cpp
+  timer/timer.cpp
 )
+target_sources(ps1 PRIVATE ${ps1_PRIMARY_SOURCES})
 
-ares_add_sources(
-  CORE #
-    ps1
-  INCLUDED #
+ares_add_components(CORE ps1 COMPONENTS processor/m68hc05)
+
+target_sources(
+  ps1
+  PRIVATE #
     ps1.hpp
     CMakeLists.txt
 )
 
-ares_add_sources(
-  CORE #
-    ps1
-  INCLUDED #
+target_sources(
+  ps1
+  PRIVATE #
     accuracy.hpp
 )
 
-ares_add_sources(
-  CORE #
-    ps1
-  INCLUDED #
+target_sources(
+  ps1
+  PRIVATE #
     cpu/breakpoints.cpp
     cpu/cpu.hpp
     cpu/debugger.cpp
@@ -53,10 +49,9 @@ ares_add_sources(
     cpu/serialization.cpp
 )
 
-ares_add_sources(
-  CORE #
-    ps1
-  INCLUDED #
+target_sources(
+  ps1
+  PRIVATE #
     disc/cdda.cpp
     disc/cdxa.cpp
     disc/command.cpp
@@ -68,10 +63,9 @@ ares_add_sources(
     disc/serialization.cpp
 )
 
-ares_add_sources(
-  CORE #
-    ps1
-  INCLUDED #
+target_sources(
+  ps1
+  PRIVATE #
     dma/channel.cpp
     dma/debugger.cpp
     dma/dma.hpp
@@ -80,10 +74,9 @@ ares_add_sources(
     dma/serialization.cpp
 )
 
-ares_add_sources(
-  CORE #
-    ps1
-  INCLUDED #
+target_sources(
+  ps1
+  PRIVATE #
     gpu/blitter.cpp
     gpu/debugger.cpp
     gpu/gp0.cpp
@@ -94,19 +87,17 @@ ares_add_sources(
     gpu/serialization.cpp
 )
 
-ares_add_sources(
-  CORE #
-    ps1
-  INCLUDED #
+target_sources(
+  ps1
+  PRIVATE #
     interrupt/interrupt.hpp
     interrupt/io.cpp
     interrupt/serialization.cpp
 )
 
-ares_add_sources(
-  CORE #
-    ps1
-  INCLUDED #
+target_sources(
+  ps1
+  PRIVATE #
     mdec/decoder.cpp
     mdec/io.cpp
     mdec/mdec.hpp
@@ -114,10 +105,9 @@ ares_add_sources(
     mdec/tables.cpp
 )
 
-ares_add_sources(
-  CORE #
-    ps1
-  INCLUDED #
+target_sources(
+  ps1
+  PRIVATE #
     memory/bus.hpp
     memory/interface.hpp
     memory/io.cpp
@@ -128,10 +118,9 @@ ares_add_sources(
     memory/writable.hpp
 )
 
-ares_add_sources(
-  CORE #
-    ps1
-  INCLUDED #
+target_sources(
+  ps1
+  PRIVATE #
     peripheral/io.cpp
     peripheral/peripheral.hpp
     peripheral/port.cpp
@@ -145,10 +134,9 @@ ares_add_sources(
     peripheral/memory-card/memory-card.hpp
 )
 
-ares_add_sources(
-  CORE #
-    ps1
-  INCLUDED #
+target_sources(
+  ps1
+  PRIVATE #
     spu/adpcm.cpp
     spu/adsr.cpp
     spu/capture.cpp
@@ -164,19 +152,19 @@ ares_add_sources(
     spu/voice.cpp
 )
 
-ares_add_sources(
-  CORE #
-    ps1
-  INCLUDED #
+target_sources(
+  ps1
+  PRIVATE #
     system/serialization.cpp
     system/system.hpp
 )
 
-ares_add_sources(
-  CORE #
-    ps1
-  INCLUDED #
+target_sources(
+  ps1
+  PRIVATE #
     timer/io.cpp
     timer/serialization.cpp
     timer/timer.hpp
 )
+
+organize_core_sources(CORE ps1)

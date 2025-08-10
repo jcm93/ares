@@ -1,68 +1,68 @@
-ares_components(z80 tms9918 ay38910)
+add_core_target(myvision)
 
-ares_add_sources(
-  CORE #
-    myvision
-  UNITY #
-    myvision.cpp
-  PRIMARY #
-    cpu/cpu.cpp
-    vdp/vdp.cpp
-    psg/psg.cpp
-    system/system.cpp
-    cartridge/cartridge.cpp
+set(
+  myvision_PRIMARY_SOURCES
+  cpu/cpu.cpp
+  vdp/vdp.cpp
+  psg/psg.cpp
+  system/system.cpp
+  cartridge/cartridge.cpp
+)
+target_sources(myvision PRIVATE ${myvision_PRIMARY_SOURCES})
+
+ares_add_components(CORE myvision COMPONENT processor/z80 video/tms9918 audio/ay38910)
+
+target_sources(
+  myvision
+  PRIVATE #
 )
 
-ares_add_sources(
-  CORE #
-    myvision
-  INCLUDED #
+target_sources(
+  myvision
+  PRIVATE #
     myvision.hpp
     CMakeLists.txt
 )
 
-ares_add_sources(
-  CORE #
-    myvision
-  INCLUDED #
+target_sources(
+  myvision
+  PRIVATE #
     cartridge/cartridge.hpp
     cartridge/serialization.cpp
     cartridge/slot.cpp
     cartridge/slot.hpp
 )
 
-ares_add_sources(
-  CORE #
-    myvision
-  INCLUDED #
+target_sources(
+  myvision
+  PRIVATE #
     cpu/cpu.hpp
     cpu/debugger.cpp
     cpu/memory.cpp
     cpu/serialization.cpp
 )
 
-ares_add_sources(
-  CORE #
-    myvision
-  INCLUDED #
+target_sources(
+  myvision
+  PRIVATE #
     psg/psg.hpp
     psg/serialization.cpp
 )
 
-ares_add_sources(
-  CORE #
-    myvision
-  INCLUDED #
+target_sources(
+  myvision
+  PRIVATE #
     system/controls.cpp
     system/serialization.cpp
     system/system.hpp
 )
 
-ares_add_sources(
-  CORE #
-    myvision
-  INCLUDED #
+target_sources(
+  myvision
+  PRIVATE #
     vdp/color.cpp
     vdp/serialization.cpp
     vdp/vdp.hpp
 )
+
+organize_core_sources(CORE myvision)

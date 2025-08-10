@@ -14,8 +14,16 @@ function(add_sourcery_command target subdir)
     ${target}-resource
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${subdir}/resource.cpp ${CMAKE_CURRENT_SOURCE_DIR}/${subdir}/resource.hpp
   )
+  target_sources(
+    ${target}-resource
+    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/${subdir}/resource.hpp ${CMAKE_CURRENT_SOURCE_DIR}/${subdir}/resource.cpp
+  )
+  source_group(
+    TREE ${CMAKE_CURRENT_SOURCE_DIR}
+    FILES ${CMAKE_CURRENT_SOURCE_DIR}/${subdir}/resource.hpp ${CMAKE_CURRENT_SOURCE_DIR}/${subdir}/resource.cpp
+  )
+  set_target_properties(${target}-resource PROPERTIES FOLDER ${target} PREFIX "")
   add_dependencies(${target} ${target}-resource)
-  set_target_properties(${target}-resource PROPERTIES FOLDER resources PREFIX "")
 endfunction()
 
 # message_configuration: Function to print configuration outcome

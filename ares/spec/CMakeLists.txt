@@ -1,42 +1,38 @@
-ares_components(z80 ay38910)
+add_core_target(spec)
 
-ares_add_sources(
-  CORE #
-    spec
-  UNITY #
-    spec.cpp
-  PRIMARY #
-    keyboard/keyboard.cpp
-    expansion/expansion.cpp
-    system/system.cpp
-    cpu/cpu.cpp
-    ula/ula.cpp
-    psg/psg.cpp
-    tape/tape.cpp
+set(
+  spec_PRIMARY_SOURCES
+  keyboard/keyboard.cpp
+  expansion/expansion.cpp
+  system/system.cpp
+  cpu/cpu.cpp
+  ula/ula.cpp
+  psg/psg.cpp
+  tape/tape.cpp
 )
+target_sources(spec PRIVATE ${spec_PRIMARY_SOURCES})
 
-ares_add_sources(
-  CORE #
-    spec
-  INCLUDED #
+ares_add_components(CORE spec COMPONENT processor/z80 audio/ay38910)
+
+target_sources(
+  spec
+  PRIVATE #
     spec.hpp
     CMakeLists.txt
 )
 
-ares_add_sources(
-  CORE #
-    spec
-  INCLUDED #
+target_sources(
+  spec
+  PRIVATE #
     cpu/cpu.hpp
     cpu/debugger.cpp
     cpu/memory.cpp
     cpu/serialization.cpp
 )
 
-ares_add_sources(
-  CORE #
-    spec
-  INCLUDED #
+target_sources(
+  spec
+  PRIVATE #
     expansion/expansion.hpp
     expansion/port.cpp
     expansion/port.hpp
@@ -44,33 +40,29 @@ ares_add_sources(
     expansion/kempston/kempston.hpp
 )
 
-ares_add_sources(
-  CORE #
-    spec
-  INCLUDED #
+target_sources(
+  spec
+  PRIVATE #
     keyboard/keyboard.hpp
 )
 
-ares_add_sources(
-  CORE #
-    spec
-  INCLUDED #
+target_sources(
+  spec
+  PRIVATE #
     psg/psg.hpp
     psg/serialization.cpp
 )
 
-ares_add_sources(
-  CORE #
-    spec
-  INCLUDED #
+target_sources(
+  spec
+  PRIVATE #
     system/serialization.cpp
     system/system.hpp
 )
 
-ares_add_sources(
-  CORE #
-    spec
-  INCLUDED #
+target_sources(
+  spec
+  PRIVATE #
     tape/deck.cpp
     tape/deck.hpp
     tape/tape.hpp
@@ -78,11 +70,12 @@ ares_add_sources(
     tape/tray.hpp
 )
 
-ares_add_sources(
-  CORE #
-    spec
-  INCLUDED #
+target_sources(
+  spec
+  PRIVATE #
     ula/color.cpp
     ula/serialization.cpp
     ula/ula.hpp
 )
+
+organize_core_sources(CORE spec)

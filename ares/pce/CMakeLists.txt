@@ -1,49 +1,30 @@
-ares_components(huc6280 msm5205)
+add_core_target(pce)
 
-ares_add_sources(
-  CORE #
-    pce
-  UNITY #
-    pce.cpp
-  PRIMARY #
-    cpu/cpu.cpp
-    psg/psg.cpp
-    pcd/pcd.cpp
-    system/system.cpp
-    cartridge/cartridge.cpp
-    controller/controller.cpp
+set(
+  pce_PRIMARY_SOURCES
+  cpu/cpu.cpp
+  psg/psg.cpp
+  pcd/pcd.cpp
+  system/system.cpp
+  cartridge/cartridge.cpp
+  controller/controller.cpp
+  vdp/vdp.cpp
+  vdp-performance/vdp-performance.cpp
 )
+target_sources(pce PRIVATE ${pce_PRIMARY_SOURCES})
 
-if(ARES_UNITY_CORES)
-  ares_add_sources(
-    CORE #
-      pce
-    UNITY #
-      vdp/vdp.cpp
-      vdp-performance/vdp.cpp
-  )
-else()
-  ares_add_sources(
-    CORE #
-      pce
-    PRIMARY #
-      vdp/vdp.cpp
-      vdp-performance/vdp.cpp
-  )
-endif()
+ares_add_components(CORE pce COMPONENT processor/huc6280 audio/msm5205)
 
-ares_add_sources(
-  CORE #
-    pce
-  INCLUDED #
+target_sources(
+  pce
+  PRIVATE #
     pce.hpp
     CMakeLists.txt
 )
 
-ares_add_sources(
-  CORE #
-    pce
-  INCLUDED #
+target_sources(
+  pce
+  PRIVATE #
     cartridge/cartridge.hpp
     cartridge/serialization.cpp
     cartridge/slot.cpp
@@ -62,10 +43,9 @@ ares_add_sources(
     cartridge/board/system-card.cpp
 )
 
-ares_add_sources(
-  CORE #
-    pce
-  INCLUDED #
+target_sources(
+  pce
+  PRIVATE #
     controller/controller.hpp
     controller/port.cpp
     controller/port.hpp
@@ -77,10 +57,9 @@ ares_add_sources(
     controller/multitap/multitap.hpp
 )
 
-ares_add_sources(
-  CORE #
-    pce
-  INCLUDED #
+target_sources(
+  pce
+  PRIVATE #
     cpu/cpu.hpp
     cpu/debugger.cpp
     cpu/io.cpp
@@ -88,10 +67,9 @@ ares_add_sources(
     cpu/serialization.cpp
 )
 
-ares_add_sources(
-  CORE #
-    pce
-  INCLUDED #
+target_sources(
+  pce
+  PRIVATE #
     pcd/adpcm.cpp
     pcd/cdda.cpp
     pcd/debugger.cpp
@@ -103,28 +81,25 @@ ares_add_sources(
     pcd/serialization.cpp
 )
 
-ares_add_sources(
-  CORE #
-    pce
-  INCLUDED #
+target_sources(
+  pce
+  PRIVATE #
     psg/channel.cpp
     psg/io.cpp
     psg/psg.hpp
     psg/serialization.cpp
 )
 
-ares_add_sources(
-  CORE #
-    pce
-  INCLUDED #
+target_sources(
+  pce
+  PRIVATE #
     system/serialization.cpp
     system/system.hpp
 )
 
-ares_add_sources(
-  CORE #
-    pce
-  INCLUDED #
+target_sources(
+  pce
+  PRIVATE #
     vdp/background.cpp
     vdp/color.cpp
     vdp/debugger.cpp
@@ -141,10 +116,9 @@ ares_add_sources(
     vdp/vpc.hpp
 )
 
-ares_add_sources(
-  CORE #
-    pce
-  INCLUDED #
+target_sources(
+  pce
+  PRIVATE #
     vdp-performance/background.cpp
     vdp-performance/color.cpp
     vdp-performance/debugger.cpp
@@ -160,3 +134,8 @@ ares_add_sources(
     vdp-performance/vpc.cpp
     vdp-performance/vpc.hpp
 )
+
+organize_core_sources(CORE pce)
+if(ARES_UNITY_CORES)
+  set_source_files_properties(pce vdp/vdp.cpp vdp-performance/vdp-performance.cpp PROPERTIES HEADER_FILE_ONLY FALSE)
+endif()

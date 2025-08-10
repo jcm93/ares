@@ -1,43 +1,39 @@
-ares_components(z80 tms9918 sn76489 i8255)
+add_core_target(sg)
 
-ares_add_sources(
-  CORE #
-    sg
-  UNITY #
-    sg.cpp
-  PRIMARY #
-    cpu/cpu.cpp
-    vdp/vdp.cpp
-    psg/psg.cpp
-    ppi/ppi.cpp
-    system/system.cpp
-    cartridge/cartridge.cpp
-    controller/controller.cpp
-    keyboard/keyboard.cpp
+set(
+  sg_PRIMARY_SOURCES
+  cpu/cpu.cpp
+  vdp/vdp.cpp
+  psg/psg.cpp
+  ppi/ppi.cpp
+  system/system.cpp
+  cartridge/cartridge.cpp
+  controller/controller.cpp
+  keyboard/keyboard.cpp
 )
+target_sources(sg PRIVATE ${sg_PRIMARY_SOURCES})
 
-ares_add_sources(
-  CORE #
-    sg
-  INCLUDED #
+ares_add_components(CORE sg COMPONENT processor/z80 video/tms9918 audio/sn76489 io/i8255)
+
+target_sources(
+  sg
+  PRIVATE #
     sg.hpp
     CMakeLists.txt
 )
 
-ares_add_sources(
-  CORE #
-    sg
-  INCLUDED #
+target_sources(
+  sg
+  PRIVATE #
     cartridge/cartridge.hpp
     cartridge/serialization.cpp
     cartridge/slot.cpp
     cartridge/slot.hpp
 )
 
-ares_add_sources(
-  CORE #
-    sg
-  INCLUDED #
+target_sources(
+  sg
+  PRIVATE #
     cartridge/cartridge.hpp
     cartridge/serialization.cpp
     cartridge/slot.cpp
@@ -50,10 +46,9 @@ ares_add_sources(
     cartridge/board/taiwan-b.cpp
 )
 
-ares_add_sources(
-  CORE #
-    sg
-  INCLUDED #
+target_sources(
+  sg
+  PRIVATE #
     controller/controller.hpp
     controller/port.cpp
     controller/port.hpp
@@ -61,53 +56,49 @@ ares_add_sources(
     controller/gamepad/gamepad.hpp
 )
 
-ares_add_sources(
-  CORE #
-    sg
-  INCLUDED #
+target_sources(
+  sg
+  PRIVATE #
     keyboard/keyboard.hpp
 )
 
-ares_add_sources(
-  CORE #
-    sg
-  INCLUDED #
+target_sources(
+  sg
+  PRIVATE #
     cpu/cpu.hpp
     cpu/debugger.cpp
     cpu/memory.cpp
     cpu/serialization.cpp
 )
 
-ares_add_sources(
-  CORE #
-    sg
-  INCLUDED #
+target_sources(
+  sg
+  PRIVATE #
     ppi/ppi.hpp
     ppi/serialization.cpp
 )
 
-ares_add_sources(
-  CORE #
-    sg
-  INCLUDED #
+target_sources(
+  sg
+  PRIVATE #
     psg/psg.hpp
     psg/serialization.cpp
 )
 
-ares_add_sources(
-  CORE #
-    sg
-  INCLUDED #
+target_sources(
+  sg
+  PRIVATE #
     system/arcade-controls.cpp
     system/serialization.cpp
     system/system.hpp
 )
 
-ares_add_sources(
-  CORE #
-    sg
-  INCLUDED #
+target_sources(
+  sg
+  PRIVATE #
     vdp/color.cpp
     vdp/serialization.cpp
     vdp/vdp.hpp
 )
+
+organize_core_sources(CORE sg)

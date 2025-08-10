@@ -1,45 +1,41 @@
-ares_components(m68000 z80)
+add_core_target(ng)
 
-target_link_libraries(ares PRIVATE ymfm)
-
-ares_add_sources(
-  CORE #
-    ng
-  UNITY #
-    ng.cpp
-  PRIMARY #
-    system/system.cpp
-    cpu/cpu.cpp
-    apu/apu.cpp
-    lspc/lspc.cpp
-    opnb/opnb.cpp
-    cartridge/cartridge.cpp
-    controller/controller.cpp
-    card/card.cpp
+set(
+  ng_PRIMARY_SOURCES
+  system/system.cpp
+  cpu/cpu.cpp
+  apu/apu.cpp
+  lspc/lspc.cpp
+  opnb/opnb.cpp
+  cartridge/cartridge.cpp
+  controller/controller.cpp
+  card/card.cpp
 )
+target_sources(ng PRIVATE ${ng_PRIMARY_SOURCES})
 
-ares_add_sources(
-  CORE #
-    ng
-  INCLUDED #
+ares_add_components(CORE ng COMPONENT processor/m68000 processor/z80)
+
+target_link_libraries(ng PRIVATE ymfm)
+
+target_sources(
+  ng
+  PRIVATE #
     ng.hpp
     CMakeLists.txt
 )
 
-ares_add_sources(
-  CORE #
-    ng
-  INCLUDED #
+target_sources(
+  ng
+  PRIVATE #
     apu/apu.hpp
     apu/debugger.cpp
     apu/memory.cpp
     apu/serialization.cpp
 )
 
-ares_add_sources(
-  CORE #
-    ng
-  INCLUDED #
+target_sources(
+  ng
+  PRIVATE #
     card/card.hpp
     card/debugger.cpp
     card/serialization.cpp
@@ -47,10 +43,9 @@ ares_add_sources(
     card/slot.hpp
 )
 
-ares_add_sources(
-  CORE #
-    ng
-  INCLUDED #
+target_sources(
+  ng
+  PRIVATE #
     cartridge/cartridge.hpp
     cartridge/serialization.cpp
     cartridge/slot.cpp
@@ -62,37 +57,33 @@ ares_add_sources(
     cartridge/board/rom.cpp
 )
 
-ares_add_sources(
-  CORE #
-    ng
-  INCLUDED #
+target_sources(
+  ng
+  PRIVATE #
     controller/controller.hpp
     controller/port.cpp
     controller/port.hpp
 )
 
-ares_add_sources(
-  CORE #
-    ng
-  INCLUDED #
+target_sources(
+  ng
+  PRIVATE #
     controller/arcade-stick/arcade-stick.cpp
     controller/arcade-stick/arcade-stick.hpp
 )
 
-ares_add_sources(
-  CORE #
-    ng
-  INCLUDED #
+target_sources(
+  ng
+  PRIVATE #
     cpu/cpu.hpp
     cpu/debugger.cpp
     cpu/memory.cpp
     cpu/serialization.cpp
 )
 
-ares_add_sources(
-  CORE #
-    ng
-  INCLUDED #
+target_sources(
+  ng
+  PRIVATE #
     lspc/color.cpp
     lspc/debugger.cpp
     lspc/lspc.hpp
@@ -100,19 +91,19 @@ ares_add_sources(
     lspc/serialization.cpp
 )
 
-ares_add_sources(
-  CORE #
-    ng
-  INCLUDED #
+target_sources(
+  ng
+  PRIVATE #
     opnb/opnb.hpp
     opnb/serialization.cpp
 )
 
-ares_add_sources(
-  CORE #
-    ng
-  INCLUDED #
+target_sources(
+  ng
+  PRIVATE #
     system/debugger.cpp
     system/serialization.cpp
     system/system.hpp
 )
+
+organize_core_sources(CORE ng)

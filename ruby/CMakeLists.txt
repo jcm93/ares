@@ -40,7 +40,7 @@ endif()
 
 target_sources(ruby PRIVATE cmake/os-macos.cmake cmake/os-windows.cmake cmake/os-linux.cmake cmake/os-freebsd.cmake)
 
-target_link_libraries(ruby PUBLIC ares::nall)
+target_link_libraries(ruby PRIVATE ares::nall::headers)
 
 target_include_directories(ruby PRIVATE ${CMAKE_SOURCE_DIR})
 

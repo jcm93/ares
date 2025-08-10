@@ -82,6 +82,7 @@ if(ARES_ENABLE_LIBRASHADER)
         DEPENDS
           "${CMAKE_CURRENT_BINARY_DIR}/$<IF:$<BOOL:${XCODE}>,$<CONFIG>,>/ares.app/Contents/Resources/Shaders/bilinear.slangp"
       )
+      set_target_properties(bundled_shaders PROPERTIES FOLDER desktop-ui PREFIX "")
       add_dependencies(desktop-ui bundled_shaders)
     endif()
     unset(_required_macos)
