@@ -36,19 +36,22 @@ auto Settings::save() -> void {
   file::write(locate("settings.bml"), BML::serialize(*this, " "));
 }
 
-auto Settings::process(bool load) -> void {
-  if(load) {
-    //initialize non-static default settings
-    video.driver = ruby::Video::optimalDriver();
-    audio.driver = ruby::Audio::optimalDriver();
-    input.driver = ruby::Input::optimalDriver();
-  }
+auto Settings::processBasic(bool load, string prefix, nall::shared_pointer<Emulator> emulator) -> void {
 
   #define bind(type, path, name) \
     if(load) { \
-      if(auto node = operator[](path)) name = node.type(); \
+      if(auto node = operator[]({prefix, path})) { \
+        name = node.type(); \
+        if(prefix) emulator->settingsOverridesList.append(path); \
+      } \
     } else { \
-      operator()(path).setValue(name); \
+      if(prefix) { \
+        if(emulator->settingsOverridesList.contains(path)) { \
+          operator()({prefix, path}).setValue(name); \
+        } \
+      } else { \
+        operator()({prefix, path}).setValue(name); \
+      } \
     } \
 
   bind(string,  "Video/Driver", video.driver);
@@ -75,10 +78,6 @@ auto Settings::process(bool load) -> void {
   bind(boolean, "Video/InterframeBlending", video.interframeBlending);
   bind(boolean, "Video/Overscan", video.overscan);
   bind(boolean, "Video/PixelAccuracy", video.pixelAccuracy);
-  bind(string,  "Video/Quality", video.quality);
-  bind(boolean, "Video/Supersampling", video.supersampling);
-  bind(boolean, "Video/DisableVideoInterfaceProcessing", video.disableVideoInterfaceProcessing);
-  bind(boolean, "Video/WeaveDeinterlacing", video.weaveDeinterlacing);
 
   bind(string,  "Audio/Driver", audio.driver);
   bind(string,  "Audio/Device", audio.device);
@@ -113,21 +112,59 @@ auto Settings::process(bool load) -> void {
   bind(string,  "Paths/Saves", paths.saves);
   bind(string,  "Paths/Screenshots", paths.screenshots);
   bind(string,  "Paths/Debugging", paths.debugging);
-  bind(string,  "Paths/ArcadeRoms", paths.arcadeRoms);
-  bind(string,  "Paths/SuperFamicom/GameBoy", paths.superFamicom.gameBoy);
-  bind(string,  "Paths/SuperFamicom/BSMemory", paths.superFamicom.bsMemory);
-  bind(string,  "Paths/SuperFamicom/SufamiTurbo", paths.superFamicom.sufamiTurbo);
 
   bind(natural, "DebugServer/Port", debugServer.port);
   bind(boolean, "DebugServer/Enabled", debugServer.enabled);
   bind(boolean, "DebugServer/UseIPv4", debugServer.useIPv4);
 
-  bind(boolean, "Nintendo64/ExpansionPak", nintendo64.expansionPak);
-  bind(string, "Nintendo64/ControllerPakBankString", nintendo64.controllerPakBankString);
+  #undef bind
+}
 
-  bind(boolean, "GameBoyAdvance/Player", gameBoyAdvance.player);
+auto Settings::process(bool load) -> void {
+  if(load) {
+    //initialize non-static default settings
+    video.driver = ruby::Video::optimalDriver();
+    audio.driver = ruby::Audio::optimalDriver();
+    input.driver = ruby::Input::optimalDriver();
+  }
 
-  bind(boolean, "MegaDrive/TMSS", megadrive.tmss);
+  #define bind(type, path, name) \
+    if(load) { \
+      if(auto node = operator[](path)) name = node.type(); \
+    } else { \
+      operator()(path).setValue(name); \
+    } \
+
+  processBasic(load, "", nullptr);
+
+#ifdef CORE_N64
+  if(!nintendo64) nintendo64 = new N64Settings;
+  bind(string,  "Nintendo64/Video/Quality", nintendo64->video.quality);
+  bind(boolean, "Nintendo64/Video/Supersampling", nintendo64->video.supersampling);
+  bind(boolean, "Nintendo64/Video/DisableVideoInterfaceProcessing", nintendo64->video.disableVideoInterfaceProcessing);
+  bind(boolean, "Nintendo64/Video/WeaveDeinterlacing", nintendo64->video.weaveDeinterlacing);
+  bind(boolean, "Nintendo64/System/ExpansionPak", nintendo64->system.expansionPak);
+  bind(string,  "Nintendo64/System/ControllerPakBankString", nintendo64->system.controllerPakBankString);
+#endif
+
+#ifdef CORE_GBA
+  if(!gameBoyAdvance) gameBoyAdvance = new GBASettings;
+  bind(boolean, "GameBoyAdvance/Player", gameBoyAdvance->system.player);
+#endif
+
+#ifdef CORE_MD
+  if(!megaDrive) megaDrive = new MDSettings;
+  bind(boolean, "MegaDrive/TMSS", megaDrive->system.tmss);
+#endif
+
+#ifdef CORE_SFC
+  if(!superFamicom) superFamicom = new SFCSettings;
+  bind(string,  "Paths/SuperFamicom/GameBoy", superFamicom->paths.gameBoy);
+  bind(string,  "Paths/SuperFamicom/BSMemory", superFamicom->paths.bsMemory);
+  bind(string,  "Paths/SuperFamicom/SufamiTurbo", superFamicom->paths.sufamiTurbo);
+#endif
+
+  bind(string,  "Paths/ArcadeRoms", paths.arcadeRoms);
 
   for(u32 index : range(9)) {
     string name = {"Recent/Game-", 1 + index};
@@ -161,6 +198,9 @@ auto Settings::process(bool load) -> void {
   }
 
   for(auto& emulator : emulators) {
+    if(!emulator->settingsOverrides) {
+      emulator->settingsOverrides = new Settings;
+    }
     string base = string{emulator->name}.replace(" ", ""), name;
     name = {base, "/Visible"};
     bind(boolean, name, emulator->configuration.visible);
@@ -171,6 +211,7 @@ auto Settings::process(bool load) -> void {
       name.replace(" ", "-");
       bind(string, name, firmware.location);
     }
+    processBasic(load, {base, "/"}, emulator);
   }
 
   #undef bind

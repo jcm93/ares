@@ -78,50 +78,50 @@ auto VideoSettings::construct() -> void {
 
   renderQualityLayout.setPadding(12_sx, 0);
 
-  disableVideoInterfaceProcessingOption.setText("Disable Video Interface Processing").setChecked(settings.video.disableVideoInterfaceProcessing).onToggle([&] {
+  disableVideoInterfaceProcessingOption.setText("Disable Video Interface Processing").setChecked(settings.nintendo64->video.disableVideoInterfaceProcessing).onToggle([&] {
     Program::Guard guard;
-    settings.video.disableVideoInterfaceProcessing = disableVideoInterfaceProcessingOption.checked();
-    if(emulator) emulator->setBoolean("Disable Video Interface Processing", settings.video.disableVideoInterfaceProcessing);
+    settings.nintendo64->video.disableVideoInterfaceProcessing = disableVideoInterfaceProcessingOption.checked();
+    if(emulator) emulator->setBoolean("Disable Video Interface Processing", settings.nintendo64->video.disableVideoInterfaceProcessing);
   });
   disableVideoInterfaceProcessingLayout.setAlignment(1).setPadding(12_sx, 0);
   disableVideoInterfaceProcessingHint.setText("Disables Video Interface post processing to render image from VRAM directly").setFont(Font().setSize(7.0)).setForegroundColor(SystemColor::Sublabel);
 
-  weaveDeinterlacingOption.setText("Weave Deinterlacing").setChecked(settings.video.weaveDeinterlacing).onToggle([&] {
-    settings.video.weaveDeinterlacing = weaveDeinterlacingOption.checked();
+  weaveDeinterlacingOption.setText("Weave Deinterlacing").setChecked(settings.nintendo64->video.weaveDeinterlacing).onToggle([&] {
+    settings.nintendo64->video.weaveDeinterlacing = weaveDeinterlacingOption.checked();
     Program::Guard guard;
-    if(emulator) emulator->setBoolean("(Experimental) Double the perceived vertical resolution; disabled when supersampling is used", settings.video.weaveDeinterlacing);
+    if(emulator) emulator->setBoolean("(Experimental) Double the perceived vertical resolution; disabled when supersampling is used", settings.nintendo64->video.weaveDeinterlacing);
     if(weaveDeinterlacingOption.checked() == true) {
       renderSupersamplingOption.setChecked(false).setEnabled(false);
-      settings.video.supersampling = false;
+      settings.nintendo64->video.supersampling = false;
     } else {
-      if(settings.video.quality != "SD") renderSupersamplingOption.setEnabled(true);
+      if(settings.nintendo64->video.quality != "SD") renderSupersamplingOption.setEnabled(true);
     }
   });
   weaveDeinterlacingLayout.setAlignment(1).setPadding(12_sx, 0);
   weaveDeinterlacingHint.setText("Doubles the perceived vertical resolution; incompatible with supersampling").setFont(Font().setSize(7.0)).setForegroundColor(SystemColor::Sublabel);
 
   renderQuality1x.setText("1x Native").onActivate([&] {
-    settings.video.quality = "SD";
+    settings.nintendo64->video.quality = "SD";
     renderSupersamplingOption.setChecked(false).setEnabled(false);
-    settings.video.supersampling = false;
+    settings.nintendo64->video.supersampling = false;
     weaveDeinterlacingOption.setEnabled(true);
   });
   renderQuality2x.setText("2x Native").onActivate([&] {
-    settings.video.quality = "HD";
-    if(weaveDeinterlacingOption.checked() == false) renderSupersamplingOption.setChecked(settings.video.supersampling).setEnabled(true);
+    settings.nintendo64->video.quality = "HD";
+    if(weaveDeinterlacingOption.checked() == false) renderSupersamplingOption.setChecked(settings.nintendo64->video.supersampling).setEnabled(true);
   });
   renderQuality4x.setText("4x Native").onActivate([&] {
-    settings.video.quality = "UHD";
-    if(weaveDeinterlacingOption.checked() == false) renderSupersamplingOption.setChecked(settings.video.supersampling).setEnabled(true);
+    settings.nintendo64->video.quality = "UHD";
+    if(weaveDeinterlacingOption.checked() == false) renderSupersamplingOption.setChecked(settings.nintendo64->video.supersampling).setEnabled(true);
   });
-  if(settings.video.quality == "SD") renderQuality1x.setChecked();
-  if(settings.video.quality == "HD") renderQuality2x.setChecked();
-  if(settings.video.quality == "UHD") renderQuality4x.setChecked();
-  renderSupersamplingOption.setText("Supersampling").setChecked(settings.video.supersampling && settings.video.quality != "SD").setEnabled(settings.video.quality != "SD").onToggle([&] {
-    settings.video.supersampling = renderSupersamplingOption.checked();
+  if(settings.nintendo64->video.quality == "SD") renderQuality1x.setChecked();
+  if(settings.nintendo64->video.quality == "HD") renderQuality2x.setChecked();
+  if(settings.nintendo64->video.quality == "UHD") renderQuality4x.setChecked();
+  renderSupersamplingOption.setText("Supersampling").setChecked(settings.nintendo64->video.supersampling && settings.nintendo64->video.quality != "SD").setEnabled(settings.nintendo64->video.quality != "SD").onToggle([&] {
+    settings.nintendo64->video.supersampling = renderSupersamplingOption.checked();
     if(renderSupersamplingOption.checked() == true) {
       weaveDeinterlacingOption.setEnabled(false).setChecked(false);
-      settings.video.weaveDeinterlacing = false;
+      settings.nintendo64->video.weaveDeinterlacing = false;
     } else {
       weaveDeinterlacingOption.setEnabled(true);
     }

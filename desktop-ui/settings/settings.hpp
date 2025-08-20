@@ -1,3 +1,5 @@
+struct N64Settings;
+
 struct Settings : Markup::Node {
   using string = nall::string;
 
@@ -31,11 +33,6 @@ struct Settings : Markup::Node {
     bool interframeBlending = true;
     bool overscan = false;
     bool pixelAccuracy = false;
-
-    string quality = "SD";
-    bool supersampling = false;
-    bool disableVideoInterfaceProcessing = false;
-    bool weaveDeinterlacing = true;
   } video;
 
   struct Audio {
@@ -84,11 +81,6 @@ struct Settings : Markup::Node {
     string screenshots;
     string debugging;
     string arcadeRoms;
-    struct SuperFamicom {
-      string gameBoy;
-      string bsMemory;
-      string sufamiTurbo;
-    } superFamicom;
   } paths;
 
   struct Recent {
@@ -101,19 +93,21 @@ struct Settings : Markup::Node {
     bool useIPv4 = false; // forces IPv4 over IPv6
   } debugServer;
 
-  struct Nintendo64 {
-    bool expansionPak = true;
-    u8 controllerPakBankCount = 1;
-    string controllerPakBankString = "32KiB (Default)";
-  } nintendo64;
+  N64Settings *nintendo64 = {};
 
-  struct GameBoyAdvance {
-    bool player = false;
-  } gameBoyAdvance;
+  GBASettings *gameBoyAdvance = {};
 
-  struct MegaDrive {
-    bool tmss = false;
-  } megadrive;
+  MDSettings *megaDrive = {};
+
+  SFCSettings *superFamicom = {};
+
+private:
+  auto processBasic(bool load, string prefix, nall::shared_pointer<Emulator> emulator) -> void;
+};
+
+struct RootSettings : Markup::Node {
+  vector<Markup::Node> coreSettingsNodes;
+  Settings rootSettings;
 };
 
 struct VideoSettings : VerticalLayout {
