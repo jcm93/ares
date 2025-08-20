@@ -17,9 +17,6 @@ auto Program::create() -> void {
   audioDriverUpdate();
   inputDriverUpdate();
 
-  _isRunning = true;
-  worker = thread::create({&Program::emulatorRunLoop, this});
-
   if(startGameLoad) {
     Program::Guard guard;
     auto gameToLoad = startGameLoad.takeFirst();
@@ -69,7 +66,7 @@ auto Program::emulatorRunLoop(uintptr_t) -> void {
       continue;
     }
 
-    bool defocused = driverSettings.inputDefocusPause.checked() && !ruby::video.fullScreen() && !presentation.focused();
+    bool defocused = inputSettings.inputDefocusPause.checked() && !ruby::video.fullScreen() && !presentation.focused();
 
     if(!emulator || (paused && !program.requestFrameAdvance) || defocused) {
       ruby::audio.clear();

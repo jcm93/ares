@@ -67,7 +67,7 @@ auto GameBoyAdvance::load() -> LoadResult {
     return result;
   }
 
-  deviceName = settings.gameBoyAdvance.player ? "Game Boy Player" : "Game Boy Advance";
+  deviceName = settings.gameBoyAdvance->system.player ? "Game Boy Player" : "Game Boy Advance";
   ares::GameBoyAdvance::option("Pixel Accuracy", settings.video.pixelAccuracy);
 
   if(!ares::GameBoyAdvance::load(root, {"[Nintendo] ", deviceName})) return otherError;
