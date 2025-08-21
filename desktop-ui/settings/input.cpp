@@ -1,20 +1,18 @@
 auto InputSettings::construct() -> void {
   setCollapsible();
   setVisible(false);
-  
-  inputLabel.setText("Input").setFont(Font().setBold());
+
   inputDriverList.onChange([&] {
-    bool enabled = false;
-    if(inputDriverList.selected().text() != settings.input.driver) { enabled = true; }
-    inputDriverAssign.setEnabled(enabled);
-  });
-  inputDriverLabel.setText("Driver:");
-  inputDriverAssign.setText("Apply").setEnabled(false).onActivate([&] {
-    settings.input.driver = inputDriverList.selected().text();
-    if (inputDriverUpdate()) {
-      inputDriverAssign.setEnabled(false);
+    if(inputDriverList.selected().text() != settings.input.driver) {
+      auto old = settings.video.driver;
+      settings.input.driver = inputDriverList.selected().text();
+      if (inputDriverUpdate()) {
+        settings.video.driver = old;
+        inputRefresh();
+      }
     }
   });
+  inputDriverLabel.setText("Driver:");
   inputDefocusLabel.setText("When focus is lost:");
   inputDefocusPause.setText("Pause emulation").onActivate([&] {
     settings.input.defocus = "Pause";
@@ -28,9 +26,6 @@ auto InputSettings::construct() -> void {
   if(settings.input.defocus == "Pause") inputDefocusPause.setChecked();
   if(settings.input.defocus == "Block") inputDefocusBlock.setChecked();
   if(settings.input.defocus == "Allow") inputDefocusAllow.setChecked();
-  
-  inputDriverLayout.setPadding(12_sx, 0);
-  inputDefocusLayout.setPadding(12_sx, 0);
 
   systemList.append(ComboButtonItem().setText("Virtual Gamepads"));
   for(auto& emulator : emulators) {
@@ -253,9 +248,6 @@ auto InputSettings::inputRefresh() -> void {
     ComboButtonItem item{&inputDriverList};
     item.setText(driver);
     if(driver == ruby::input.driver()) item.setSelected();
-    if(settings.input.driver == ruby::input.driver()) {
-      inputDriverAssign.setEnabled(false);
-    }
   }
   VerticalLayout::resize();
 }

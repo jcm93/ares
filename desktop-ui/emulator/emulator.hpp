@@ -55,7 +55,7 @@ struct Emulator {
   vector<string> inputBlacklist;
   vector<string> portBlacklist;
   Settings *settingsOverrides;
-  vector<string> settingsOverridesList;
+  vector<string> settingsOverridesList = {};
 
   struct Configuration {
     bool visible = true;  //whether or not to show this emulator in the load menu
