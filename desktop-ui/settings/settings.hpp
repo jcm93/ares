@@ -2,6 +2,9 @@
 
 struct N64Settings;
 
+#define settingsWidth 875
+#define settingsHeight 465
+
 struct Settings : Markup::Node {
   using string = nall::string;
 
@@ -107,7 +110,7 @@ private:
   auto processBasic(bool load, string prefix, nall::shared_pointer<Emulator> emulator) -> void;
 };
 
-// MARK: "emulators.hpp"
+// MARK: emulators.hpp
 
 #include "emulators.hpp"
 
@@ -117,41 +120,53 @@ struct VideoSettings : VerticalLayout {
   auto construct() -> void;
   auto videoRefresh() -> void;
   auto videoDriverUpdate() -> bool;
-  
-  Label videoLabel{this, Size{~0, 0}, 5};
-  HorizontalLayout videoDriverLayout{this, Size{~0, 0}};
+
+  TableLayout videoDriverLayout{this, Size{~0, 0}};
+    Label placeholder{&videoDriverLayout, Size{(settingsWidth / 2) - 138, 0}};
+    Label videoLabel{&videoDriverLayout, Size{~0, 25}};
+
     Label videoDriverLabel{&videoDriverLayout, Size{0, 0}};
-    ComboButton videoDriverList{&videoDriverLayout, Size{0, 0}};
-    Button videoDriverAssign{&videoDriverLayout, Size{0, 0}};
-    Label videoDriverActive{&videoDriverLayout, Size{0, 0}};
-  HorizontalLayout videoPropertyLayout{this, Size{~0, 0}};
-    Label videoMonitorLabel{&videoPropertyLayout, Size{0, 0}};
-    ComboButton videoMonitorList{&videoPropertyLayout, Size{0, 0}};
-    Label videoFormatLabel{&videoPropertyLayout, Size{0, 0}};
-    ComboButton videoFormatList{&videoPropertyLayout, Size{0, 0}};
+    ComboButton videoDriverList{&videoDriverLayout, Size{150, 0}};
+
+    Label videoMonitorLabel{&videoDriverLayout, Size{0, 0}};
+    ComboButton videoMonitorList{&videoDriverLayout, Size{200, 0}};
+
+    Label videoFormatLabel{&videoDriverLayout, Size{0, 0}};
+    ComboButton videoFormatList{&videoDriverLayout, Size{100, 0}};
+
+#if defined(PLATFORM_MACOS)
+    Label videoColorSpaceToggleName{&videoDriverLayout, Size{0, 20}};
+    CheckLabel videoColorSpaceToggle{&videoDriverLayout, Size{0, 0}};
+
+    Label videoThreadedRendererToggleName{&videoDriverLayout, Size{0, 20}};
+    CheckLabel videoThreadedRendererToggle{&videoDriverLayout, Size{0, 0}};
+
+    Label videoNativeFullScreenToggleName{&videoDriverLayout, Size{0, 20}};
+    CheckLabel videoNativeFullScreenToggle{&videoDriverLayout, Size{0, 0}};
+#endif
   HorizontalLayout videoToggleLayout{this, Size{~0, 0}};
 #if !defined(PLATFORM_MACOS)
+    Label videoExclusiveToggleName{&videoDriverLayout, Size{0, 20}};
     CheckLabel videoExclusiveToggle{&videoToggleLayout, Size{0, 0}};
 #endif
-#if defined(PLATFORM_MACOS)
-    CheckLabel videoColorSpaceToggle{&videoToggleLayout, Size{0, 0}};
-    CheckLabel videoThreadedRendererToggle{&videoToggleLayout, Size{0, 0}};
-    CheckLabel videoNativeFullScreenToggle{&videoToggleLayout, Size{0, 0}};
-#endif
 
-  Label colorAdjustmentLabel{this, Size{~0, 0}, 5};
+
   TableLayout colorAdjustmentLayout{this, Size{~0, 0}};
+    Label placeholderOne{&colorAdjustmentLayout, Size{(settingsWidth / 2) - 138 - 57, 0}};
+    Label placeholderThree{&colorAdjustmentLayout, Size{0, 0}};
+    Label colorAdjustmentLabel{&colorAdjustmentLayout, Size{0, 25}};
+
     Label luminanceLabel{&colorAdjustmentLayout, Size{0, 0}};
     Label luminanceValue{&colorAdjustmentLayout, Size{50_sx, 0}};
-    HorizontalSlider luminanceSlider{&colorAdjustmentLayout, Size{~0, 0}};
+    HorizontalSlider luminanceSlider{&colorAdjustmentLayout, Size{400, 0}};
   //
     Label saturationLabel{&colorAdjustmentLayout, Size{0, 0}};
     Label saturationValue{&colorAdjustmentLayout, Size{50_sx, 0}};
-    HorizontalSlider saturationSlider{&colorAdjustmentLayout, Size{~0, 0}};
+    HorizontalSlider saturationSlider{&colorAdjustmentLayout, Size{400, 0}};
   //
     Label gammaLabel{&colorAdjustmentLayout, Size{0, 0}};
     Label gammaValue{&colorAdjustmentLayout, Size{50_sx, 0}};
-    HorizontalSlider gammaSlider{&colorAdjustmentLayout, Size{~0, 0}};
+    HorizontalSlider gammaSlider{&colorAdjustmentLayout, Size{400, 0}};
   //
 };
 
@@ -163,32 +178,37 @@ struct AudioSettings : VerticalLayout {
   auto audioDriverUpdate() -> bool;
   
   //
-  Label audioLabel{this, Size{~0, 0}, 5};
-  HorizontalLayout audioDriverLayout{this, Size{~0, 0}};
-    Label audioDriverLabel{&audioDriverLayout, Size{0, 0}};
-    ComboButton audioDriverList{&audioDriverLayout, Size{0, 0}};
-    Button audioDriverAssign{&audioDriverLayout, Size{0, 0}};
-    Label audioDriverActive{&audioDriverLayout, Size{0, 0}};
-  HorizontalLayout audioDeviceLayout{this, Size{~0, 0}};
-    Label audioDeviceLabel{&audioDeviceLayout, Size{0, 0}};
-    ComboButton audioDeviceList{&audioDeviceLayout, Size{0, 0}};
-  HorizontalLayout audioPropertyLayout{this, Size{~0, 0}};
-    Label audioFrequencyLabel{&audioPropertyLayout, Size{0, 0}};
-    ComboButton audioFrequencyList{&audioPropertyLayout, Size{0, 0}};
-    Label audioLatencyLabel{&audioPropertyLayout, Size{0, 0}};
-    ComboButton audioLatencyList{&audioPropertyLayout, Size{0, 0}};
-  HorizontalLayout audioToggleLayout{this, Size{~0, 0}};
-    CheckLabel audioExclusiveToggle{&audioToggleLayout, Size{0, 0}};
+  TableLayout audioDriverLayout{this, Size{~0, 0}};
+    Label placeholder{&audioDriverLayout, Size{(settingsWidth / 2) - 138, 0}};
+    Label audioLabel{&audioDriverLayout, Size{~0, 25}};
 
-  Label effectsLabel{this, Size{~0, 0}, 5};
+    Label audioDriverLabel{&audioDriverLayout, Size{0, 0}};
+    ComboButton audioDriverList{&audioDriverLayout, Size{125, 0}};
+
+    Label audioDeviceLabel{&audioDriverLayout, Size{0, 0}};
+    ComboButton audioDeviceList{&audioDriverLayout, Size{0, 0}};
+
+    Label audioFrequencyLabel{&audioDriverLayout, Size{0, 0}};
+    ComboButton audioFrequencyList{&audioDriverLayout, Size{125, 0}};
+
+    Label audioLatencyLabel{&audioDriverLayout, Size{0, 0}};
+    ComboButton audioLatencyList{&audioDriverLayout, Size{125, 0}};
+
+    Label audioExclusiveToggleName{&audioDriverLayout, Size{0, 0}};
+    CheckLabel audioExclusiveToggle{&audioDriverLayout, Size{0, 0}};
+
   TableLayout effectsLayout{this, Size{~0, 0}};
+    Label placeholderOne{&effectsLayout, Size{(settingsWidth / 2) - 138 - 57, 0}};
+    Label placeholderThree{&effectsLayout, Size{0, 0}};
+    Label effectsLabel{&effectsLayout, Size{~0, 25}};
+
     Label volumeLabel{&effectsLayout, Size{0, 0}};
     Label volumeValue{&effectsLayout, Size{50_sx, 0}};
-    HorizontalSlider volumeSlider{&effectsLayout, Size{~0, 0}};
+    HorizontalSlider volumeSlider{&effectsLayout, Size{400, 0}};
   //
     Label balanceLabel{&effectsLayout, Size{0, 0}};
     Label balanceValue{&effectsLayout, Size{50_sx, 0}};
-    HorizontalSlider balanceSlider{&effectsLayout, Size{~0, 0}};
+    HorizontalSlider balanceSlider{&effectsLayout, Size{400, 0}};
 };
 
 // MARK: Sync
@@ -198,8 +218,8 @@ struct SyncSettings : VerticalLayout {
   auto refresh() -> void;
   
   TableLayout syncAdjustmentLayout{this, Size{~0, 0}};
-    Label placeholder{&syncAdjustmentLayout, Size{250, 0}};
-    Label syncLabel{&syncAdjustmentLayout, Size{0, 0}};
+    Label placeholder{&syncAdjustmentLayout, Size{(settingsWidth / 2) - 138, 0}};
+    Label syncLabel{&syncAdjustmentLayout, Size{0, 25}};
   //
     Label syncDescriptionLabel{&syncAdjustmentLayout, Size{0, 0}};
     ComboButton syncOptionList{&syncAdjustmentLayout, Size{0, 0}};
@@ -235,18 +255,6 @@ struct InputSettings : VerticalLayout {
   auto inputDriverUpdate() -> bool;
   
   //
-  Label inputLabel{this, Size{~0, 0}, 5};
-  HorizontalLayout inputDriverLayout{this, Size{~0, 0}};
-    Label inputDriverLabel{&inputDriverLayout, Size{0, 0}};
-    ComboButton inputDriverList{&inputDriverLayout, Size{0, 0}};
-    Button inputDriverAssign{&inputDriverLayout, Size{0, 0}};
-    Label inputDriverActive{&inputDriverLayout, Size{0, 0}};
-  HorizontalLayout inputDefocusLayout{this, Size{~0, 0}};
-    Label inputDefocusLabel{&inputDefocusLayout, Size{0, 0}};
-    RadioLabel inputDefocusPause{&inputDefocusLayout, Size{0, 0}};
-    RadioLabel inputDefocusBlock{&inputDefocusLayout, Size{0, 0}};
-    RadioLabel inputDefocusAllow{&inputDefocusLayout, Size{0, 0}};
-    Group inputDefocusGroup{&inputDefocusPause, &inputDefocusBlock, &inputDefocusAllow};
 
   HorizontalLayout indexLayout{this, Size{~0, 0}};
     ComboButton systemList{&indexLayout, Size{~0, 0}};
@@ -254,10 +262,18 @@ struct InputSettings : VerticalLayout {
     ComboButton deviceList{&indexLayout, Size{~0, 0}};
   TableView inputList{this, Size{~0, ~0}};
   HorizontalLayout controlLayout{this, Size{~0, 0}};
+    Label inputDriverLabel{&controlLayout, Size{0, 0}};
+    ComboButton inputDriverList{&controlLayout, Size{0, 0}};
+    Label inputDefocusLabel{&controlLayout, Size{0, 0}};
+    RadioLabel inputDefocusPause{&controlLayout, Size{0, 0}};
+    RadioLabel inputDefocusBlock{&controlLayout, Size{0, 0}};
+    RadioLabel inputDefocusAllow{&controlLayout, Size{0, 0}};
     Label assignLabel{&controlLayout, Size{~0, 0}};
     Canvas spacer{&controlLayout, Size{1, 0}};
     Button assignButton{&controlLayout, Size{80, 0}};
     Button clearButton{&controlLayout, Size{80, 0}};
+
+  Group inputDefocusGroup{&inputDefocusPause, &inputDefocusBlock, &inputDefocusAllow};
 
   maybe<InputNode&> activeMapping;
   u32 activeBinding = 0;
@@ -419,7 +435,7 @@ struct HomePanel : VerticalLayout {
   Canvas canvas{this, Size{~0, ~0}};
 };
 
-// MARK: Parent Window
+// MARK: Settings Window
 
 struct SettingsWindow : Window {
   auto show(const string& panel) -> void;

@@ -3,8 +3,6 @@ auto EmulatorSettings::construct() -> void {
   setVisible(false);
   
   defaultSettings.construct();
-  n64Settings.construct();
-  mega32XMegaCD32XMegaCDMegaDriveSettings.construct();
   
   layout.setPadding(-20_sx, -20_sy);
   emulatorPanelContainer.setPadding(20_sx, 20_sy);
@@ -24,7 +22,7 @@ auto EmulatorSettings::construct() -> void {
   TableViewCell visible{&item};
   TableViewCell name{&item};
   name.setText("Defaults");
-  //TableViewCell manufacturer{&item};
+  item.setSelected();
   for(auto& emulator : emulators) {
     auto name = emulator->name;
     if(name == "arcadeSettings" ) arcadeSettings.system = emulator;
@@ -35,12 +33,18 @@ auto EmulatorSettings::construct() -> void {
     if(name == "gameBoyGameBoyColorSettings" ) gameBoyGameBoyColorSettings.system = emulator;
     if(name == "gameGearSettings" ) gameGearSettings.system = emulator;
     if(name == "masterSystemSettings" ) masterSystemSettings.system = emulator;
-    if(name == "Mega CD" ) mega32XMegaCD32XMegaCDMegaDriveSettings.system = emulator;
+    if(name == "Mega CD" ) {
+      mega32XMegaCD32XMegaCDMegaDriveSettings.system = emulator;
+      mega32XMegaCD32XMegaCDMegaDriveSettings.construct();
+    }
     if(name == "msxSettings" ) msxSettings.system = emulator;
     if(name == "msx2Settings" ) msx2Settings.system = emulator;
     if(name == "myVisionSettings" ) myVisionSettings.system = emulator;
     if(name == "neoGeoSettings" ) neoGeoSettings.system = emulator;
-    if(name == "Nintendo 64" ) n64Settings.system = emulator;
+    if(name == "Nintendo 64" ) {
+      n64Settings.system = emulator;
+      n64Settings.construct();
+    }
     if(name == "pcEngineSettings" ) pcEngineSettings.system = emulator;
     if(name == "playstationSettings" ) playstationSettings.system = emulator;
     if(name == "pocketChallengeV2Settings" ) pocketChallengeV2Settings.system = emulator;
@@ -63,6 +67,7 @@ auto EmulatorSettings::construct() -> void {
   }
   emulatorList.resizeColumns();
   emulatorList.column(0).setWidth(16);
+  eventChange();
 }
 
 auto EmulatorSettings::eventChange() -> void {
@@ -209,6 +214,8 @@ auto DefaultSettings::construct() -> void {
 auto Mega32XMegaCD32XMegaCDMegaDriveSettings::construct() -> void {
   setCollapsible();
   megaDriveSettingsLabel.setText("Mega Drive Settings").setFont(Font().setBold());
+  emulatorOptionsPane.append(TabFrameItem().setText("Emulator Settings"));
+  emulatorOptionsPane.append(TabFrameItem().setText("Overrides"));
 
   megaDriveTmssOption.setText("TMSS Boot Rom").setChecked(settings.megaDrive->system.tmss).onToggle([&] {
     settings.megaDrive->system.tmss = megaDriveTmssOption.checked();
@@ -234,14 +241,27 @@ auto N64SettingsLayout::construct() -> void {
   onItemHomebrew.setText("On");
   offItemHomebrew.setText("Off");
   inheritItemHomebrew.setText("Inherit");
+  if(system->settingsOverridesList.contains("General/HomebrewMode") &&
+     system->settingsOverrides->general.homebrewMode == true) {
+    onItemHomebrew.setSelected();
+  } else if(system->settingsOverridesList.contains("General/HomebrewMode") &&
+    system->settingsOverrides->general.homebrewMode == false) {
+    offItemHomebrew.setSelected();
+  } else {
+    inheritItemHomebrew.setSelected();
+  }
   homebrewMode.onChange([&] {
     auto selected = homebrewMode.selected().text();
     if(selected == "On") {
       system->settingsOverrides->general.homebrewMode = true;
+      system->settingsOverridesList.append("General/HomebrewMode");
     } else if(selected == "Off") {
       system->settingsOverrides->general.homebrewMode = false;
+      system->settingsOverridesList.append("General/HomebrewMode");
     } else if(selected == "Inherit") {
-      //system->systemSettingsObject.general.homebrewMode = nullptr;
+      if(system->settingsOverridesList.contains("General/HomebrewMode")) {
+        system->settingsOverridesList.removeByValue("General/HomebrewMode");
+      }
     }
   });
 

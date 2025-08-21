@@ -4,9 +4,6 @@ auto AudioSettings::audioRefresh() -> void {
     ComboButtonItem item{&audioDriverList};
     item.setText(driver);
     if(driver == ruby::audio.driver()) item.setSelected();
-    if(settings.audio.driver == ruby::audio.driver()) {
-      audioDriverAssign.setEnabled(false);
-    }
   }
   audioDeviceList.reset();
   for(auto& device : ruby::audio.hasDevices()) {
@@ -17,13 +14,13 @@ auto AudioSettings::audioRefresh() -> void {
   audioFrequencyList.reset();
   for(auto& frequency : ruby::audio.hasFrequencies()) {
     ComboButtonItem item{&audioFrequencyList};
-    item.setText(frequency);
+    item.setText({frequency, " Hz"});
     if(frequency == ruby::audio.frequency()) item.setSelected();
   }
   audioLatencyList.reset();
   for(auto& latency : ruby::audio.hasLatencies()) {
     ComboButtonItem item{&audioLatencyList};
-    item.setText(latency);
+    item.setText({latency, " ms"});
     if(latency == ruby::audio.latency()) item.setSelected();
   }
   audioDeviceList.setEnabled(audioDeviceList.itemCount() > 1);
@@ -47,17 +44,16 @@ auto AudioSettings::construct() -> void {
   
   audioLabel.setText("Audio").setFont(Font().setBold());
   audioDriverList.onChange([&] {
-    bool enabled = false;
-    if(audioDriverList.selected().text() != settings.audio.driver) { enabled = true; }
-    audioDriverAssign.setEnabled(enabled);
-  });
-  audioDriverLabel.setText("Driver:");
-  audioDriverAssign.setText("Apply").setEnabled(false).onActivate([&] {
-    settings.audio.driver = audioDriverList.selected().text();
-    if (audioDriverUpdate()) {
-      audioDriverAssign.setEnabled(false);
+    if(audioDriverList.selected().text() != settings.audio.driver) {
+      auto old = settings.video.driver;
+      settings.audio.driver = audioDriverList.selected().text();
+      if (!audioDriverUpdate()) {
+        settings.video.driver = old;
+        audioRefresh();
+      }
     }
   });
+  audioDriverLabel.setText("Driver:");
   audioDeviceLabel.setText("Output device:");
   audioDeviceList.onChange([&] {
     settings.audio.device = audioDeviceList.selected().text();
@@ -66,23 +62,24 @@ auto AudioSettings::construct() -> void {
   });
   audioFrequencyLabel.setText("Frequency:");
   audioFrequencyList.onChange([&] {
-    settings.audio.frequency = audioFrequencyList.selected().text().natural();
+    settings.audio.frequency = audioFrequencyList.selected().text().split(" ").first().natural();
     program.audioFrequencyUpdate();
     audioRefresh();
   });
   audioLatencyLabel.setText("Latency:");
   audioLatencyList.onChange([&] {
-    settings.audio.latency = audioLatencyList.selected().text().natural();
+    settings.audio.latency = audioLatencyList.selected().text().split(" ").first().natural();
     program.audioLatencyUpdate();
     audioRefresh();
   });
-  audioExclusiveToggle.setText("Exclusive mode").onToggle([&] {
+  audioExclusiveToggleName.setText("Exclusive mode:");
+  audioExclusiveToggle.setText("Grant exclusive control over system audio output").onToggle([&] {
     settings.audio.exclusive = audioExclusiveToggle.checked();
     ruby::audio.setExclusive(settings.audio.exclusive);
   });
 
   effectsLabel.setText("Effects").setFont(Font().setBold());
-  effectsLayout.setSize({3, 2}).setPadding(12_sx, 0);
+  effectsLayout.setSize({3, 3}).setPadding(12_sx, 0);
   effectsLayout.column(0).setAlignment(1.0);
 
   volumeLabel.setText("Volume:");
@@ -98,9 +95,8 @@ auto AudioSettings::construct() -> void {
     settings.audio.balance = ((s32)balanceSlider.position() - 50.0) / 50.0;
     balanceValue.setText({balanceSlider.position(), "%"});
   }).doChange();
-  
+
+  audioDriverLayout.setSize({2, 6});
   audioDriverLayout.setPadding(12_sx, 0);
-  audioDeviceLayout.setPadding(12_sx, 0);
-  audioPropertyLayout.setPadding(12_sx, 0);
-  audioToggleLayout.setPadding(12_sx, 0);
+  audioDriverLayout.column(0).setAlignment(1.0);
 }

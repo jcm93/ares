@@ -4,9 +4,6 @@ auto VideoSettings::videoRefresh() -> void {
     ComboButtonItem item{&videoDriverList};
     item.setText(driver);
     if(driver == ruby::video.driver()) item.setSelected();
-    if(settings.video.driver == ruby::video.driver()) {
-      videoDriverAssign.setEnabled(false);
-    }
   }
   videoMonitorList.reset();
   for(auto& monitor : ruby::video.hasMonitors()) {
@@ -50,16 +47,16 @@ auto VideoSettings::construct() -> void {
   videoLabel.setText("Video").setFont(Font().setBold());
   videoDriverList.onChange([&] {
     bool enabled = false;
-    if(videoDriverList.selected().text() != settings.video.driver) { enabled = true; }
-    videoDriverAssign.setEnabled(enabled);
-  });
-  videoDriverLabel.setText("Driver:");
-  videoDriverAssign.setText("Apply").setEnabled(false).onActivate([&] {
-    settings.video.driver = videoDriverList.selected().text();
-    if (videoDriverUpdate()) {
-      videoDriverAssign.setEnabled(false);
+    if(videoDriverList.selected().text() != settings.video.driver) {
+      auto old = settings.video.driver;
+      settings.video.driver = videoDriverList.selected().text();
+      if (!videoDriverUpdate()) {
+        settings.video.driver = old;
+        videoRefresh();
+      }
     }
   });
+  videoDriverLabel.setText("Driver:");
   videoMonitorLabel.setText("Fullscreen monitor:");
   videoMonitorList.onChange([&] {
     settings.video.monitor = videoMonitorList.selected().text();
@@ -73,36 +70,44 @@ auto VideoSettings::construct() -> void {
     videoRefresh();
   });
 #if !defined(PLATFORM_MACOS)
-  videoExclusiveToggle.setText("Exclusive mode").onToggle([&] {
+  videoExclusiveToggle.setText("Grant ares complete control over system video output").onToggle([&] {
     settings.video.exclusive = videoExclusiveToggle.checked();
     ruby::video.setExclusive(settings.video.exclusive);
   });
 #endif
 #if defined(PLATFORM_MACOS)
-  videoColorSpaceToggle.setText("Force sRGB").onToggle([&] {
+  videoColorSpaceToggleName.setText("Force sRGB:");
+  videoColorSpaceToggle.setText("Render the final texture output in the sRGB color space").onToggle([&] {
     settings.video.forceSRGB = videoColorSpaceToggle.checked();
     ruby::video.setForceSRGB(settings.video.forceSRGB);
   });
-  videoThreadedRendererToggle.setText("Threaded").onToggle([&] {
+  videoThreadedRendererToggleName.setText("Threaded:");
+  videoThreadedRendererToggle.setText("Perform rendering in a dedicated thread").onToggle([&] {
     settings.video.threadedRenderer = videoThreadedRendererToggle.checked();
     ruby::video.setThreadedRenderer(settings.video.threadedRenderer);
   });
-  videoNativeFullScreenToggle.setText("Use native fullscreen").onToggle([&] {
+  videoNativeFullScreenToggleName.setText("Use native fullscreen:");
+  videoNativeFullScreenToggle.setText("Disable to render around camera housing, or for use with bezel shaders.").onToggle([&] {
     settings.video.nativeFullScreen = videoNativeFullScreenToggle.checked();
     ruby::video.setNativeFullScreen(settings.video.nativeFullScreen);
     videoRefresh();
   });
+  videoDriverLayout.setSize({2, 7});
+#else
+  videoDriverLayout.setSize({2, 5});
+  videoExclusiveToggleName.setText("Exclusive mode:");
 #endif
-  
+
   videoDriverLayout.setPadding(12_sx, 0);
-  videoPropertyLayout.setPadding(12_sx, 0);
+  videoDriverLayout.column(0).setAlignment(1.0);
   videoToggleLayout.setPadding(12_sx, 0);
 
   colorAdjustmentLabel.setText("Color Adjustment").setFont(Font().setBold());
-  colorAdjustmentLayout.setSize({3, 3}).setPadding(12_sx, 0);
+  colorAdjustmentLayout.setSize({3, 5}).setPadding(12_sx, 0);
   colorAdjustmentLayout.column(0).setAlignment(1.0);
 
-  luminanceLabel.setText("Luminance:");
+  // ugly hack, todo remove
+  luminanceLabel.setText("                 Luminance:");
   luminanceValue.setAlignment(0.5);
   luminanceSlider.setLength(101).setPosition(settings.video.luminance * 100.0).onChange([&] {
     settings.video.luminance = luminanceSlider.position() / 100.0;
