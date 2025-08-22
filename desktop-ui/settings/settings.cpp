@@ -1,4 +1,5 @@
 #include "../desktop-ui.hpp"
+#include "general.cpp"
 #include "video.cpp"
 #include "audio.cpp"
 #include "input.cpp"
@@ -14,9 +15,9 @@
 Settings settings;
 namespace Instances { Instance<SettingsWindow> settingsWindow; }
 SettingsWindow& settingsWindow = Instances::settingsWindow();
+GeneralSettings& generalSettings = settingsWindow.generalSettings;
 VideoSettings& videoSettings = settingsWindow.videoSettings;
 AudioSettings& audioSettings = settingsWindow.audioSettings;
-SyncSettings& syncSettings = settingsWindow.syncSettings;
 InputSettings& inputSettings = settingsWindow.inputSettings;
 HotkeySettings& hotkeySettings = settingsWindow.hotkeySettings;
 EmulatorSettings& emulatorSettings = settingsWindow.emulatorSettings;
@@ -232,6 +233,7 @@ auto SettingsWindow::initialize() -> void {
   panelContainer.setPadding(20_sx, 20_sy);
   
 #if defined(PLATFORM_MACOS)
+  panelList.append(ToolbarItem().setText("General").setIcon(Icon::Action::Settings));
   panelList.append(ToolbarItem().setText("Video").setIcon(Icon::Device::Display));
   panelList.append(ToolbarItem().setText("Audio").setIcon(Icon::Device::Speaker));
   panelList.append(ToolbarItem().setText("Sync").setIcon(Icon::Action::Refresh));
@@ -243,6 +245,7 @@ auto SettingsWindow::initialize() -> void {
   panelList.append(ToolbarItem().setText("Debug").setIcon(Icon::Device::Network));
   panelList.setWindow(*this);
 #else
+  panelList.append(TabFrameItem().setText("General").setIcon(Icon::Action::Settings));
   panelList.append(TabFrameItem().setText("Video").setIcon(Icon::Device::Display));
   panelList.append(TabFrameItem().setText("Audio").setIcon(Icon::Device::Speaker));
   panelList.append(TabFrameItem().setText("Sync").setIcon(Icon::Action::Refresh));
@@ -255,9 +258,9 @@ auto SettingsWindow::initialize() -> void {
 #endif
   panelList.onChange([&] { eventChange(); });
 
+  panelContainer.append(generalSettings, Size{~0, ~0});
   panelContainer.append(videoSettings, Size{~0, ~0});
   panelContainer.append(audioSettings, Size{~0, ~0});
-  panelContainer.append(syncSettings, Size{~0, ~0});
   panelContainer.append(inputSettings, Size{~0, ~0});
   panelContainer.append(hotkeySettings, Size{~0, ~0});
   panelContainer.append(emulatorSettings, Size{~0, ~0});
@@ -266,9 +269,9 @@ auto SettingsWindow::initialize() -> void {
   panelContainer.append(debugSettings, Size{~0, ~0});
   panelContainer.append(homePanel, Size{~0, ~0});
 
+  generalSettings.construct();
   videoSettings.construct();
   audioSettings.construct();
-  syncSettings.construct();
   inputSettings.construct();
   hotkeySettings.construct();
   emulatorSettings.construct();
@@ -278,12 +281,12 @@ auto SettingsWindow::initialize() -> void {
   homePanel.construct();
 
   setDismissable();
-  setTitle("Configuration");
+  setTitle("Settings");
   setSize({875_sx, 465_sy});
   setAlignment({0.25, 0.25});
   videoSettings.videoRefresh();
   audioSettings.audioRefresh();
-  syncSettings.refresh();
+  generalSettings.refresh();
   inputSettings.inputRefresh();
   initialized = true;
   //setResizable(false);
@@ -304,9 +307,9 @@ auto SettingsWindow::show(const string& panel) -> void {
 }
 
 auto SettingsWindow::eventChange() -> void {
+  generalSettings.setVisible(false);
   videoSettings.setVisible(false);
   audioSettings.setVisible(false);
-  syncSettings.setVisible(false);
   inputSettings.setVisible(false);
   hotkeySettings.setVisible(false);
   emulatorSettings.setVisible(false);
@@ -317,15 +320,15 @@ auto SettingsWindow::eventChange() -> void {
 
   bool found = false;
   if(auto item = panelList.selected()) {
-    if(item.text() == "Video"    ) found = true, videoSettings.setVisible();
-    if(item.text() == "Audio"    ) found = true, audioSettings.setVisible();
-    if(item.text() == "Sync"     ) found = true, syncSettings.setVisible();
-    if(item.text() == "Input"    ) found = true, inputSettings.setVisible();
-    if(item.text() == "Hotkeys"  ) found = true, hotkeySettings.setVisible();
-    if(item.text() == "Emulators") found = true, emulatorSettings.setVisible();
-    if(item.text() == "Firmware" ) found = true, firmwareSettings.setVisible();
-    if(item.text() == "Paths"    ) found = true, pathSettings.setVisible();
-    if(item.text() == "Debug"    ) found = true, debugSettings.setVisible();
+    if(item.text() == "General"  ) found = true, generalSettings.setVisible(), *this->setSize(Size{settingsWidth, 375});
+    if(item.text() == "Video"    ) found = true, videoSettings.setVisible(), *this->setSize(Size{settingsWidth, 495});
+    if(item.text() == "Audio"    ) found = true, audioSettings.setVisible(), *this->setSize(Size{settingsWidth, 290});
+    if(item.text() == "Input"    ) found = true, inputSettings.setVisible(), *this->setSize(Size{settingsWidth, 475});
+    if(item.text() == "Hotkeys"  ) found = true, hotkeySettings.setVisible(), *this->setSize(Size{settingsWidth, 475});
+    if(item.text() == "Emulators") found = true, emulatorSettings.setVisible(), *this->setSize(Size{settingsWidth, 475});
+    if(item.text() == "Firmware" ) found = true, firmwareSettings.setVisible(), *this->setSize(Size{settingsWidth, 475});
+    if(item.text() == "Paths"    ) found = true, pathSettings.setVisible(), *this->setSize(Size{settingsWidth, 350});
+    if(item.text() == "Debug"    ) found = true, debugSettings.setVisible(), *this->setSize(Size{settingsWidth, 180});
   }
   if(!found) homePanel.setVisible();
 

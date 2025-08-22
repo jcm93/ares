@@ -114,6 +114,58 @@ private:
 
 #include "emulators.hpp"
 
+// MARK: General
+
+struct GeneralSettings: VerticalLayout {
+  auto construct() -> void;
+  auto refresh() -> void;
+  TableLayout syncAdjustmentLayout{this, Size{~0, 0}};
+    Label placeholder{&syncAdjustmentLayout, Size{(settingsWidth / 2) - 138, 0}};
+    Label syncLabel{&syncAdjustmentLayout, Size{0, 25}};
+  //
+    Label syncDescriptionLabel{&syncAdjustmentLayout, Size{0, 0}};
+    ComboButton syncOptionList{&syncAdjustmentLayout, Size{0, 0}};
+  //
+    Label placeholder2{&syncAdjustmentLayout, Size{0, 0}};
+    Label syncDescriptionHint{&syncAdjustmentLayout, Size{~0, 30}};
+  //
+    Label audioLatencyLabel{&syncAdjustmentLayout, Size{0, 0}};
+    ComboButton audioLatencyList{&syncAdjustmentLayout, Size{125, 0}};
+  //
+    Label gpuSyncDescription{&syncAdjustmentLayout, Size{0, 20}};
+    CheckLabel gpuSyncCheckLabel{&syncAdjustmentLayout, Size{0, 20}};
+  //
+    Label dynamicRateDescription{&syncAdjustmentLayout, Size{0, 20}};
+    CheckLabel dynamicRateCheckLabel{&syncAdjustmentLayout, Size{0, 20}};
+
+  HorizontalLayout syncDescriptionHintLayout{this, Size{~0, 0}};
+
+  TableLayout systemOptionsTableLayout{this, Size{~0, 0}};
+      Canvas placeholderTwo{&systemOptionsTableLayout, Size{(settingsWidth / 2) - 138, 0}};
+      Label commonSettingsLabel{&systemOptionsTableLayout, Size{~0, 20}};
+
+      Canvas placeholderThree{&systemOptionsTableLayout, Size{(settingsWidth / 2) - 138, 0}};
+      Label commonSettingsHint{&systemOptionsTableLayout, Size{~0, 15}};
+
+      Label rewindHint{&systemOptionsTableLayout, Size{0, 20}};
+      CheckLabel rewind{&systemOptionsTableLayout, Size{0, 20}};
+      //
+      Label runAheadHint{&systemOptionsTableLayout, Size{0, 20}};
+      CheckLabel runAhead{&systemOptionsTableLayout, Size{0, 20}};
+      //
+      Label autoSaveMemoryHint{&systemOptionsTableLayout, Size{0, 20}};
+      CheckLabel autoSaveMemory{&systemOptionsTableLayout, Size{0, 20}};
+      //
+      Label homebrewModeHint{&systemOptionsTableLayout, Size{0, 20}};
+      CheckLabel homebrewMode{&systemOptionsTableLayout, Size{0, 20}};
+      //
+      Label forceInterpreterHint{&systemOptionsTableLayout, Size{0, 20}};
+      CheckLabel forceInterpreter{&systemOptionsTableLayout, Size{0, 20}};
+      //
+      Label placeholderSystemOption{&systemOptionsTableLayout, Size{125, 20}};
+      Label placeholderSystemOption2{&systemOptionsTableLayout, Size{~0, 20}};
+};
+
 // MARK: Video
 
 struct VideoSettings : VerticalLayout {
@@ -167,6 +219,28 @@ struct VideoSettings : VerticalLayout {
     Label gammaLabel{&colorAdjustmentLayout, Size{0, 0}};
     Label gammaValue{&colorAdjustmentLayout, Size{50_sx, 0}};
     HorizontalSlider gammaSlider{&colorAdjustmentLayout, Size{400, 0}};
+
+  TableLayout renderingOptionsTableLayout{this, Size{~0, 0}};
+      Canvas placeholderFour{&renderingOptionsTableLayout, Size{(settingsWidth / 2) - 138, 0}};
+      Label emulatorSettingsLabel{&renderingOptionsTableLayout, Size{~0, 25}};
+
+      Label colorBleedHint{&renderingOptionsTableLayout, Size{0, 0}};
+      CheckLabel colorBleedOption{&renderingOptionsTableLayout, Size{0, 20}};
+      //
+      Label colorEmulationHint{&renderingOptionsTableLayout, Size{0, 0}};
+      CheckLabel colorEmulationOption{&renderingOptionsTableLayout, Size{0, 20}};
+      //
+      Label deepBlackBoostHint{&renderingOptionsTableLayout, Size{0, 0}};
+      CheckLabel deepBlackBoostOption{&renderingOptionsTableLayout, Size{0, 20}};
+      //
+      Label interframeBlendingHint{&renderingOptionsTableLayout, Size{0, 0}};
+      CheckLabel interframeBlendingOption{&renderingOptionsTableLayout, Size{0, 20}};
+      //
+      Label overscanHint{&renderingOptionsTableLayout, Size{0, 0}};
+      CheckLabel overscanOption{&renderingOptionsTableLayout, Size{0, 20}};
+      //
+      Label pixelAccuracyHint{&renderingOptionsTableLayout, Size{0, 0}};
+      CheckLabel pixelAccuracyOption{&renderingOptionsTableLayout, Size{0, 20}};
   //
 };
 
@@ -191,9 +265,6 @@ struct AudioSettings : VerticalLayout {
     Label audioFrequencyLabel{&audioDriverLayout, Size{0, 0}};
     ComboButton audioFrequencyList{&audioDriverLayout, Size{125, 0}};
 
-    Label audioLatencyLabel{&audioDriverLayout, Size{0, 0}};
-    ComboButton audioLatencyList{&audioDriverLayout, Size{125, 0}};
-
     Label audioExclusiveToggleName{&audioDriverLayout, Size{0, 0}};
     CheckLabel audioExclusiveToggle{&audioDriverLayout, Size{0, 0}};
 
@@ -209,31 +280,6 @@ struct AudioSettings : VerticalLayout {
     Label balanceLabel{&effectsLayout, Size{0, 0}};
     Label balanceValue{&effectsLayout, Size{50_sx, 0}};
     HorizontalSlider balanceSlider{&effectsLayout, Size{400, 0}};
-};
-
-// MARK: Sync
-
-struct SyncSettings : VerticalLayout {
-  auto construct() -> void;
-  auto refresh() -> void;
-  
-  TableLayout syncAdjustmentLayout{this, Size{~0, 0}};
-    Label placeholder{&syncAdjustmentLayout, Size{(settingsWidth / 2) - 138, 0}};
-    Label syncLabel{&syncAdjustmentLayout, Size{0, 25}};
-  //
-    Label syncDescriptionLabel{&syncAdjustmentLayout, Size{0, 0}};
-    ComboButton syncOptionList{&syncAdjustmentLayout, Size{0, 0}};
-  //
-    Label placeholder2{&syncAdjustmentLayout, Size{0, 0}};
-    Label syncDescriptionHint{&syncAdjustmentLayout, Size{~0, 30}};
-  //
-    Label gpuSyncDescription{&syncAdjustmentLayout, Size{0, 0}};
-    CheckLabel gpuSyncCheckLabel{&syncAdjustmentLayout, Size{0, 0}};
-  //
-    Label dynamicRateDescription{&syncAdjustmentLayout, Size{0, 0}};
-    CheckLabel dynamicRateCheckLabel{&syncAdjustmentLayout, Size{0, 0}};
-  
-  HorizontalLayout syncDescriptionHintLayout{this, Size{~0, 0}};
 };
 
 // MARK: Input
@@ -315,7 +361,6 @@ struct EmulatorSettings : VerticalLayout {
   HorizontalLayout layout{this, Size{700_sx, ~0}};
     TableView emulatorList{&layout, Size{200_sx, ~0}};
     VerticalLayout emulatorPanelContainer{&layout, Size{575_sx, ~0}};
-      DefaultSettings defaultSettings;
       ArcadeSettings arcadeSettings;
       A2600Settings a2600Settings;
       ColecoVisionSettings colecoVisionSettings;
@@ -448,9 +493,9 @@ struct SettingsWindow : Window {
     TabFrame panelList{&layout, Size{~0, 20_sy}};
 #endif
     VerticalLayout panelContainer{&layout, Size{~0, ~0}};
+      GeneralSettings generalSettings;
       VideoSettings videoSettings;
       AudioSettings audioSettings;
-      SyncSettings syncSettings;
       InputSettings inputSettings;
       HotkeySettings hotkeySettings;
       EmulatorSettings emulatorSettings;
@@ -468,9 +513,9 @@ private:
 extern Settings settings;
 namespace Instances { extern Instance<SettingsWindow> settingsWindow; }
 extern SettingsWindow& settingsWindow;
+extern GeneralSettings& generalSettings;
 extern VideoSettings& videoSettings;
 extern AudioSettings& audioSettings;
-extern SyncSettings& syncSettings;
 extern InputSettings& inputSettings;
 extern HotkeySettings& hotkeySettings;
 extern EmulatorSettings& emulatorSettings;

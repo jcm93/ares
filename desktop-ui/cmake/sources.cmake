@@ -33,6 +33,7 @@ target_sources(
     settings/emulators.cpp
     settings/emulators.hpp
     settings/firmware.cpp
+    settings/general.cpp
     settings/home.cpp
     settings/hotkeys.cpp
     settings/input.cpp

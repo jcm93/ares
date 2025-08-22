@@ -294,7 +294,7 @@ Presentation::Presentation() {
   #if defined(PLATFORM_MACOS)
   Application::Cocoa::onAbout([&] { aboutAction.doActivate(); });
   Application::Cocoa::onActivate([&] { setFocused(); });
-  Application::Cocoa::onPreferences([&] { settingsWindow.show("Video"); });
+  Application::Cocoa::onPreferences([&] { settingsWindow.show("General"); });
   Application::Cocoa::onQuit([&] { doClose(); });
   #endif
 }
