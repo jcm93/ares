@@ -1,52 +1,6 @@
 struct Emulator;
 
 // MARK: Default Settings
-struct DefaultSettings: VerticalLayout {
-  auto construct() -> void;
-  shared_pointer<Emulator> system;
-  Label commonSettingsLabel{this, Size{~0, 0}};
-  TableLayout systemOptionsTableLayout{this, Size{~0, 0}};
-      Label rewindHint{&systemOptionsTableLayout, Size{0, 0}};
-      CheckLabel rewind{&systemOptionsTableLayout, Size{0, 0}};
-      //
-      Label runAheadHint{&systemOptionsTableLayout, Size{0, 0}};
-      CheckLabel runAhead{&systemOptionsTableLayout, Size{0, 0}};
-      //
-      Label autoSaveMemoryHint{&systemOptionsTableLayout, Size{0, 0}};
-      CheckLabel autoSaveMemory{&systemOptionsTableLayout, Size{0, 0}};
-      //
-      Label homebrewModeHint{&systemOptionsTableLayout, Size{0, 0}};
-      CheckLabel homebrewMode{&systemOptionsTableLayout, Size{0, 0}};
-      //
-      Label forceInterpreterHint{&systemOptionsTableLayout, Size{0, 0}};
-      CheckLabel forceInterpreter{&systemOptionsTableLayout, Size{0, 0}};
-      //
-      Label placeholderSystemOption{&systemOptionsTableLayout, Size{125, 0}};
-      Label placeholderSystemOption2{&systemOptionsTableLayout, Size{~0, 0}};
-  
-  Label emulatorSettingsLabel{this, Size{~0, 0}};
-  TableLayout renderingOptionsTableLayout{this, Size{~0, 0}};
-      Label colorBleedHint{&renderingOptionsTableLayout, Size{0, 0}};
-      CheckLabel colorBleedOption{&renderingOptionsTableLayout, Size{0, 0}};
-      //
-      Label colorEmulationHint{&renderingOptionsTableLayout, Size{0, 0}};
-      CheckLabel colorEmulationOption{&renderingOptionsTableLayout, Size{0, 0}};
-      //
-      Label deepBlackBoostHint{&renderingOptionsTableLayout, Size{0, 0}};
-      CheckLabel deepBlackBoostOption{&renderingOptionsTableLayout, Size{0, 0}};
-      //
-      Label interframeBlendingHint{&renderingOptionsTableLayout, Size{0, 0}};
-      CheckLabel interframeBlendingOption{&renderingOptionsTableLayout, Size{0, 0}};
-      //
-      Label overscanHint{&renderingOptionsTableLayout, Size{0, 0}};
-      CheckLabel overscanOption{&renderingOptionsTableLayout, Size{0, 0}};
-      //
-      Label pixelAccuracyHint{&renderingOptionsTableLayout, Size{0, 0}};
-      CheckLabel pixelAccuracyOption{&renderingOptionsTableLayout, Size{0, 0}};
-      //
-      Label placeholderRenderOption{&renderingOptionsTableLayout, Size{115, 0}};
-      Label placeholderRenderOption2{&renderingOptionsTableLayout, Size{~0, 0}};
-};
 
 // MARK: Overrides
 struct OverrideSettings : VerticalLayout {

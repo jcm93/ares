@@ -1,13 +1,10 @@
 auto EmulatorSettings::construct() -> void {
   setCollapsible();
   setVisible(false);
-  
-  defaultSettings.construct();
-  
+
   layout.setPadding(-20_sx, -20_sy);
   emulatorPanelContainer.setPadding(20_sx, 20_sy);
-  
-  emulatorPanelContainer.append(defaultSettings, Size{~0, ~0});
+
   emulatorPanelContainer.append(n64Settings, Size{~0, ~0});
   emulatorPanelContainer.append(mega32XMegaCD32XMegaCDMegaDriveSettings, Size{~0, ~0});
 
@@ -18,11 +15,6 @@ auto EmulatorSettings::construct() -> void {
   emulatorList.append(TableViewColumn().setText("Name").setExpandable());
   emulatorList.append(TableViewColumn().setText("Manufacturer").setAlignment(1.0));
   emulatorList.setHeadered();
-  TableViewItem item{&emulatorList};
-  TableViewCell visible{&item};
-  TableViewCell name{&item};
-  name.setText("Defaults");
-  item.setSelected();
   for(auto& emulator : emulators) {
     auto name = emulator->name;
     if(name == "arcadeSettings" ) arcadeSettings.system = emulator;
@@ -71,7 +63,6 @@ auto EmulatorSettings::construct() -> void {
 }
 
 auto EmulatorSettings::eventChange() -> void {
-  defaultSettings.setVisible(false);
   arcadeSettings.setVisible(false);
   a2600Settings.setVisible(false);
   colecoVisionSettings.setVisible(false);
@@ -124,7 +115,6 @@ auto EmulatorSettings::eventChange() -> void {
     if(name == "wonderSwanSettings" ) found = true, wonderSwanSettings.setVisible();
     if(name == "zxSpectrumSettings" ) found = true, zxSpectrumSettings.setVisible();
   } else {
-    found = true, defaultSettings.setVisible();
   }
   emulatorPanelContainer.resize();
 }
@@ -134,79 +124,6 @@ auto EmulatorSettings::eventToggle(TableViewCell cell) -> void {
     emulator->configuration.visible = cell.checked();
     presentation.loadEmulators();
   }
-}
-
-/// MARK: Default settings
-
-auto DefaultSettings::construct() -> void {
-  setCollapsible();
-  commonSettingsLabel.setText("System Options").setFont(Font().setBold());
-  
-  systemOptionsTableLayout.setSize({2, 6}).setPadding(12_sx, 0);
-  systemOptionsTableLayout.column(0).setAlignment(1.0);
-  
-  renderingOptionsTableLayout.setSize({2, 6}).setPadding(12_sx, 0);
-  renderingOptionsTableLayout.column(0).setAlignment(1.0);
-
-  rewindHint.setText("Rewind:");
-  rewind.setText("Allow you to reverse time via the rewind hotkey").setChecked(settings.general.rewind).onToggle([&] {
-    settings.general.rewind = rewind.checked();
-    program.rewindReset();
-  }).doToggle();
-
-  runAheadHint.setText("Run-Ahead:");
-  runAhead.setText("Remove one frame of input lag, but double system requirements").setEnabled(co_serializable()).setChecked(settings.general.runAhead && co_serializable()).onToggle([&] {
-    settings.general.runAhead = runAhead.checked() && co_serializable();
-    program.runAheadUpdate();
-  });
-
-  autoSaveMemoryHint.setText("Auto-Save Memory:");
-  autoSaveMemory.setText("Periodically auto-save to prevent game saves from being lost").setChecked(settings.general.autoSaveMemory).onToggle([&] {
-    settings.general.autoSaveMemory = autoSaveMemory.checked();
-  });
-
-  homebrewModeHint.setText("Homebrew Mode:");
-  homebrewMode.setText("Activate core-specific features to help homebrew developers").setChecked(settings.general.homebrewMode).onToggle([&] {
-    settings.general.homebrewMode = homebrewMode.checked();
-  });
-
-  forceInterpreterHint.setText("Force Interpreter:");
-  forceInterpreter.setText("(Slow) Enable interpreter for cores that default to a recompiler").setChecked(settings.general.forceInterpreter).onToggle([&] {
-    settings.general.forceInterpreter = forceInterpreter.checked();
-  });
-  
-  emulatorSettingsLabel.setText("Rendering Options").setFont(Font().setBold());
-  colorBleedHint.setText("Color Bleed:");
-  colorBleedOption.setText("Blur adjacent pixels for translucency effects").setChecked(settings.video.colorBleed).onToggle([&] {
-    settings.video.colorBleed = colorBleedOption.checked();
-    if(emulator) emulator->setColorBleed(settings.video.colorBleed);
-  });
-  colorEmulationHint.setText("Color Emulation:");
-  colorEmulationOption.setText("Match colors to how they look on real hardware").setChecked(settings.video.colorEmulation).onToggle([&] {
-    settings.video.colorEmulation = colorEmulationOption.checked();
-    if(emulator) emulator->setBoolean("Color Emulation", settings.video.colorEmulation);
-  });
-  deepBlackBoostHint.setText("Deep Black Boost:");
-  deepBlackBoostOption.setText("Apply a gamma ramp to crush black levels (SNES/SFC)").setChecked(settings.video.deepBlackBoost).onToggle([&] {
-    settings.video.deepBlackBoost = deepBlackBoostOption.checked();
-    if(emulator) emulator->setBoolean("Deep Black Boost", settings.video.deepBlackBoost);
-  });
-  interframeBlendingHint.setText("Interframe Blending:");
-  interframeBlendingOption.setText("Emulate LCD translucency effects, but increase motion blur").setChecked(settings.video.interframeBlending).onToggle([&] {
-    settings.video.interframeBlending = interframeBlendingOption.checked();
-    if(emulator) emulator->setBoolean("Interframe Blending", settings.video.interframeBlending);
-  });
-  overscanHint.setText("Overscan:");
-  overscanOption.setText("Display the full frame without cropping 'undesirable' borders").setChecked(settings.video.overscan).onToggle([&] {
-    settings.video.overscan = overscanOption.checked();
-    if(emulator) emulator->setOverscan(settings.video.overscan);
-  });
-  pixelAccuracyHint.setText("Pixel Accuracy Mode:");
-  pixelAccuracyOption.setText("Use pixel-accurate emulation where available").setChecked(settings.video.pixelAccuracy).onToggle([&] {
-    settings.video.pixelAccuracy = pixelAccuracyOption.checked();
-    if(emulator) emulator->setBoolean("Pixel Accuracy", settings.video.pixelAccuracy);
-  });
-
 }
 
 /// MARK: MD settings

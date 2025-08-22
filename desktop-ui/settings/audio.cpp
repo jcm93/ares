@@ -17,9 +17,9 @@ auto AudioSettings::audioRefresh() -> void {
     item.setText({frequency, " Hz"});
     if(frequency == ruby::audio.frequency()) item.setSelected();
   }
-  audioLatencyList.reset();
+  generalSettings.audioLatencyList.reset();
   for(auto& latency : ruby::audio.hasLatencies()) {
-    ComboButtonItem item{&audioLatencyList};
+    ComboButtonItem item{&generalSettings.audioLatencyList};
     item.setText({latency, " ms"});
     if(latency == ruby::audio.latency()) item.setSelected();
   }
@@ -64,12 +64,6 @@ auto AudioSettings::construct() -> void {
   audioFrequencyList.onChange([&] {
     settings.audio.frequency = audioFrequencyList.selected().text().split(" ").first().natural();
     program.audioFrequencyUpdate();
-    audioRefresh();
-  });
-  audioLatencyLabel.setText("Latency:");
-  audioLatencyList.onChange([&] {
-    settings.audio.latency = audioLatencyList.selected().text().split(" ").first().natural();
-    program.audioLatencyUpdate();
     audioRefresh();
   });
   audioExclusiveToggleName.setText("Exclusive mode:");

@@ -131,5 +131,40 @@ auto VideoSettings::construct() -> void {
     program.paletteUpdate();
   }).doChange();
 
+  renderingOptionsTableLayout.setSize({2, 6}).setPadding(12_sx, 0);
+  renderingOptionsTableLayout.column(0).setAlignment(1.0);
+
+  emulatorSettingsLabel.setText("Rendering Options").setFont(Font().setBold());
+  colorBleedHint.setText("Color Bleed:");
+  colorBleedOption.setText("Blur adjacent pixels for translucency effects").setChecked(settings.video.colorBleed).onToggle([&] {
+    settings.video.colorBleed = colorBleedOption.checked();
+    if(emulator) emulator->setColorBleed(settings.video.colorBleed);
+  });
+  colorEmulationHint.setText("Color Emulation:");
+  colorEmulationOption.setText("Match colors to how they look on real hardware").setChecked(settings.video.colorEmulation).onToggle([&] {
+    settings.video.colorEmulation = colorEmulationOption.checked();
+    if(emulator) emulator->setBoolean("Color Emulation", settings.video.colorEmulation);
+  });
+  deepBlackBoostHint.setText("Deep Black Boost:");
+  deepBlackBoostOption.setText("Apply a gamma ramp to crush black levels (SNES/SFC)").setChecked(settings.video.deepBlackBoost).onToggle([&] {
+    settings.video.deepBlackBoost = deepBlackBoostOption.checked();
+    if(emulator) emulator->setBoolean("Deep Black Boost", settings.video.deepBlackBoost);
+  });
+  interframeBlendingHint.setText("Interframe Blending:");
+  interframeBlendingOption.setText("Emulate LCD translucency effects, but increase motion blur").setChecked(settings.video.interframeBlending).onToggle([&] {
+    settings.video.interframeBlending = interframeBlendingOption.checked();
+    if(emulator) emulator->setBoolean("Interframe Blending", settings.video.interframeBlending);
+  });
+  overscanHint.setText("Overscan:");
+  overscanOption.setText("Display the full frame without cropping 'undesirable' borders").setChecked(settings.video.overscan).onToggle([&] {
+    settings.video.overscan = overscanOption.checked();
+    if(emulator) emulator->setOverscan(settings.video.overscan);
+  });
+  pixelAccuracyHint.setText("Pixel Accuracy Mode:");
+  pixelAccuracyOption.setText("Use pixel-accurate emulation where available").setChecked(settings.video.pixelAccuracy).onToggle([&] {
+    settings.video.pixelAccuracy = pixelAccuracyOption.checked();
+    if(emulator) emulator->setBoolean("Pixel Accuracy", settings.video.pixelAccuracy);
+  });
+
   
 }

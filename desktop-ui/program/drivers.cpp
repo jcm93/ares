@@ -17,7 +17,7 @@ auto Program::videoDriverUpdate() -> void {
     settings.video.driver = "None";
     videoSettings.videoDriverUpdate();
   }
-  syncSettings.refresh();
+  generalSettings.refresh();
   presentation.loadShaders();
 }
 
@@ -89,7 +89,7 @@ auto Program::audioDriverUpdate() -> void {
     settings.audio.driver = "None";
     audioSettings.audioDriverUpdate();
   }
-  syncSettings.refresh();
+  generalSettings.refresh();
 }
 
 auto Program::audioDeviceUpdate() -> void {
