@@ -230,7 +230,7 @@ auto SettingsWindow::initialize() -> void {
 
   panelContainer.setPadding(20_sx, 20_sy);
   
-#if defined(PLATFORM_MACOS)
+#if defined(Hiro_Toolbar)
   panelList.append(ToolbarItem().setText("General").setIcon(Icon::Action::Settings));
   panelList.append(ToolbarItem().setText("Video").setIcon(Icon::Device::Display));
   panelList.append(ToolbarItem().setText("Audio").setIcon(Icon::Device::Speaker));

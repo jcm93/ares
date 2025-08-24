@@ -17,6 +17,9 @@ auto Program::create() -> void {
   audioDriverUpdate();
   inputDriverUpdate();
 
+  _isRunning = true;
+  worker = thread::create({&Program::emulatorRunLoop, this});
+
   if(startGameLoad) {
     Program::Guard guard;
     auto gameToLoad = startGameLoad.takeFirst();
