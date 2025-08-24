@@ -120,50 +120,50 @@ struct GeneralSettings: VerticalLayout {
   auto construct() -> void;
   auto refresh() -> void;
   TableLayout syncAdjustmentLayout{this, Size{~0, 0}};
-    Label placeholder{&syncAdjustmentLayout, Size{(settingsWidth / 2) - 138, 0}};
-    Label syncLabel{&syncAdjustmentLayout, Size{0, 25}};
+    Label placeholder{&syncAdjustmentLayout, Size{sx((settingsWidth / 2) - 138), 0}};
+    Label syncLabel{&syncAdjustmentLayout, Size{0, 25_sx}};
   //
     Label syncDescriptionLabel{&syncAdjustmentLayout, Size{0, 0}};
     ComboButton syncOptionList{&syncAdjustmentLayout, Size{0, 0}};
   //
     Label placeholder2{&syncAdjustmentLayout, Size{0, 0}};
-    Label syncDescriptionHint{&syncAdjustmentLayout, Size{~0, 30}};
+    Label syncDescriptionHint{&syncAdjustmentLayout, Size{~0, 30_sy}};
   //
     Label audioLatencyLabel{&syncAdjustmentLayout, Size{0, 0}};
-    ComboButton audioLatencyList{&syncAdjustmentLayout, Size{125, 0}};
+    ComboButton audioLatencyList{&syncAdjustmentLayout, Size{125_sy, 0}};
   //
-    Label gpuSyncDescription{&syncAdjustmentLayout, Size{0, 20}};
-    CheckLabel gpuSyncCheckLabel{&syncAdjustmentLayout, Size{0, 20}};
+    Label gpuSyncDescription{&syncAdjustmentLayout, Size{0, 20_sy}};
+    CheckLabel gpuSyncCheckLabel{&syncAdjustmentLayout, Size{0, 20_sy}};
   //
-    Label dynamicRateDescription{&syncAdjustmentLayout, Size{0, 20}};
-    CheckLabel dynamicRateCheckLabel{&syncAdjustmentLayout, Size{0, 20}};
+    Label dynamicRateDescription{&syncAdjustmentLayout, Size{0, 20_sy}};
+    CheckLabel dynamicRateCheckLabel{&syncAdjustmentLayout, Size{0, 20_sy}};
 
   HorizontalLayout syncDescriptionHintLayout{this, Size{~0, 0}};
 
   TableLayout systemOptionsTableLayout{this, Size{~0, 0}};
-      Canvas placeholderTwo{&systemOptionsTableLayout, Size{(settingsWidth / 2) - 138, 0}};
-      Label commonSettingsLabel{&systemOptionsTableLayout, Size{~0, 20}};
+      Canvas placeholderTwo{&systemOptionsTableLayout, Size{sx((settingsWidth / 2) - 138), 0}};
+      Label commonSettingsLabel{&systemOptionsTableLayout, Size{~0, 20_sy}};
 
-      Canvas placeholderThree{&systemOptionsTableLayout, Size{(settingsWidth / 2) - 138, 0}};
-      Label commonSettingsHint{&systemOptionsTableLayout, Size{~0, 15}};
+      Canvas placeholderThree{&systemOptionsTableLayout, Size{sx((settingsWidth / 2) - 138), 0}};
+      Label commonSettingsHint{&systemOptionsTableLayout, Size{~0, 15_sy}};
 
-      Label rewindHint{&systemOptionsTableLayout, Size{0, 20}};
-      CheckLabel rewind{&systemOptionsTableLayout, Size{0, 20}};
+      Label rewindHint{&systemOptionsTableLayout, Size{0, 20_sy}};
+      CheckLabel rewind{&systemOptionsTableLayout, Size{0, 20_sy}};
       //
-      Label runAheadHint{&systemOptionsTableLayout, Size{0, 20}};
-      CheckLabel runAhead{&systemOptionsTableLayout, Size{0, 20}};
+      Label runAheadHint{&systemOptionsTableLayout, Size{0, 20_sy}};
+      CheckLabel runAhead{&systemOptionsTableLayout, Size{0, 20_sy}};
       //
-      Label autoSaveMemoryHint{&systemOptionsTableLayout, Size{0, 20}};
-      CheckLabel autoSaveMemory{&systemOptionsTableLayout, Size{0, 20}};
+      Label autoSaveMemoryHint{&systemOptionsTableLayout, Size{0, 20_sy}};
+      CheckLabel autoSaveMemory{&systemOptionsTableLayout, Size{0, 20_sy}};
       //
-      Label homebrewModeHint{&systemOptionsTableLayout, Size{0, 20}};
-      CheckLabel homebrewMode{&systemOptionsTableLayout, Size{0, 20}};
+      Label homebrewModeHint{&systemOptionsTableLayout, Size{0, 20_sy}};
+      CheckLabel homebrewMode{&systemOptionsTableLayout, Size{0, 20_sy}};
       //
-      Label forceInterpreterHint{&systemOptionsTableLayout, Size{0, 20}};
-      CheckLabel forceInterpreter{&systemOptionsTableLayout, Size{0, 20}};
+      Label forceInterpreterHint{&systemOptionsTableLayout, Size{0, 20_sy}};
+      CheckLabel forceInterpreter{&systemOptionsTableLayout, Size{0, 20_sy}};
       //
-      Label placeholderSystemOption{&systemOptionsTableLayout, Size{125, 20}};
-      Label placeholderSystemOption2{&systemOptionsTableLayout, Size{~0, 20}};
+      Label placeholderSystemOption{&systemOptionsTableLayout, Size{125, 20_sy}};
+      Label placeholderSystemOption2{&systemOptionsTableLayout, Size{~0, 20_sy}};
 };
 
 // MARK: Video
@@ -174,73 +174,73 @@ struct VideoSettings : VerticalLayout {
   auto videoDriverUpdate() -> bool;
 
   TableLayout videoDriverLayout{this, Size{~0, 0}};
-    Label placeholder{&videoDriverLayout, Size{(settingsWidth / 2) - 138, 0}};
-    Label videoLabel{&videoDriverLayout, Size{~0, 25}};
+    Label placeholder{&videoDriverLayout, Size{sx((settingsWidth / 2) - 138), 0}};
+    Label videoLabel{&videoDriverLayout, Size{~0, 25_sy}};
 
     Label videoDriverLabel{&videoDriverLayout, Size{0, 0}};
-    ComboButton videoDriverList{&videoDriverLayout, Size{150, 0}};
+    ComboButton videoDriverList{&videoDriverLayout, Size{150_sx, 0}};
 
     Label videoMonitorLabel{&videoDriverLayout, Size{0, 0}};
-    ComboButton videoMonitorList{&videoDriverLayout, Size{200, 0}};
+    ComboButton videoMonitorList{&videoDriverLayout, Size{200_sx, 0}};
 
     Label videoFormatLabel{&videoDriverLayout, Size{0, 0}};
-    ComboButton videoFormatList{&videoDriverLayout, Size{100, 0}};
+    ComboButton videoFormatList{&videoDriverLayout, Size{100_sx, 0}};
 
 #if defined(PLATFORM_MACOS)
-    Label videoColorSpaceToggleName{&videoDriverLayout, Size{0, 20}};
+    Label videoColorSpaceToggleName{&videoDriverLayout, Size{0, 20_sy}};
     CheckLabel videoColorSpaceToggle{&videoDriverLayout, Size{0, 0}};
 
-    Label videoThreadedRendererToggleName{&videoDriverLayout, Size{0, 20}};
+    Label videoThreadedRendererToggleName{&videoDriverLayout, Size{0, 20_sy}};
     CheckLabel videoThreadedRendererToggle{&videoDriverLayout, Size{0, 0}};
 
-    Label videoNativeFullScreenToggleName{&videoDriverLayout, Size{0, 20}};
+    Label videoNativeFullScreenToggleName{&videoDriverLayout, Size{0, 20_sy}};
     CheckLabel videoNativeFullScreenToggle{&videoDriverLayout, Size{0, 0}};
 #endif
   HorizontalLayout videoToggleLayout{this, Size{~0, 0}};
 #if !defined(PLATFORM_MACOS)
-    Label videoExclusiveToggleName{&videoDriverLayout, Size{0, 20}};
+    Label videoExclusiveToggleName{&videoDriverLayout, Size{0, 20_sy}};
     CheckLabel videoExclusiveToggle{&videoToggleLayout, Size{0, 0}};
 #endif
 
 
   TableLayout colorAdjustmentLayout{this, Size{~0, 0}};
-    Label placeholderOne{&colorAdjustmentLayout, Size{(settingsWidth / 2) - 138 - 57, 0}};
+    Label placeholderOne{&colorAdjustmentLayout, Size{sx((settingsWidth / 2) - 138 - 57), 0}};
     Label placeholderThree{&colorAdjustmentLayout, Size{0, 0}};
-    Label colorAdjustmentLabel{&colorAdjustmentLayout, Size{0, 25}};
+    Label colorAdjustmentLabel{&colorAdjustmentLayout, Size{0, 25_sy}};
 
     Label luminanceLabel{&colorAdjustmentLayout, Size{0, 0}};
     Label luminanceValue{&colorAdjustmentLayout, Size{50_sx, 0}};
-    HorizontalSlider luminanceSlider{&colorAdjustmentLayout, Size{400, 0}};
+    HorizontalSlider luminanceSlider{&colorAdjustmentLayout, Size{400_sx, 0}};
   //
     Label saturationLabel{&colorAdjustmentLayout, Size{0, 0}};
     Label saturationValue{&colorAdjustmentLayout, Size{50_sx, 0}};
-    HorizontalSlider saturationSlider{&colorAdjustmentLayout, Size{400, 0}};
+    HorizontalSlider saturationSlider{&colorAdjustmentLayout, Size{400_sx, 0}};
   //
     Label gammaLabel{&colorAdjustmentLayout, Size{0, 0}};
     Label gammaValue{&colorAdjustmentLayout, Size{50_sx, 0}};
-    HorizontalSlider gammaSlider{&colorAdjustmentLayout, Size{400, 0}};
+    HorizontalSlider gammaSlider{&colorAdjustmentLayout, Size{400_sx, 0}};
 
   TableLayout renderingOptionsTableLayout{this, Size{~0, 0}};
       Canvas placeholderFour{&renderingOptionsTableLayout, Size{(settingsWidth / 2) - 138, 0}};
-      Label emulatorSettingsLabel{&renderingOptionsTableLayout, Size{~0, 25}};
+      Label emulatorSettingsLabel{&renderingOptionsTableLayout, Size{~0, 25_sy}};
 
       Label colorBleedHint{&renderingOptionsTableLayout, Size{0, 0}};
-      CheckLabel colorBleedOption{&renderingOptionsTableLayout, Size{0, 20}};
+      CheckLabel colorBleedOption{&renderingOptionsTableLayout, Size{0, 20_sy}};
       //
       Label colorEmulationHint{&renderingOptionsTableLayout, Size{0, 0}};
-      CheckLabel colorEmulationOption{&renderingOptionsTableLayout, Size{0, 20}};
+      CheckLabel colorEmulationOption{&renderingOptionsTableLayout, Size{0, 20_sy}};
       //
       Label deepBlackBoostHint{&renderingOptionsTableLayout, Size{0, 0}};
-      CheckLabel deepBlackBoostOption{&renderingOptionsTableLayout, Size{0, 20}};
+      CheckLabel deepBlackBoostOption{&renderingOptionsTableLayout, Size{0, 20_sy}};
       //
       Label interframeBlendingHint{&renderingOptionsTableLayout, Size{0, 0}};
-      CheckLabel interframeBlendingOption{&renderingOptionsTableLayout, Size{0, 20}};
+      CheckLabel interframeBlendingOption{&renderingOptionsTableLayout, Size{0, 20_sy}};
       //
       Label overscanHint{&renderingOptionsTableLayout, Size{0, 0}};
-      CheckLabel overscanOption{&renderingOptionsTableLayout, Size{0, 20}};
+      CheckLabel overscanOption{&renderingOptionsTableLayout, Size{0, 20_sy}};
       //
       Label pixelAccuracyHint{&renderingOptionsTableLayout, Size{0, 0}};
-      CheckLabel pixelAccuracyOption{&renderingOptionsTableLayout, Size{0, 20}};
+      CheckLabel pixelAccuracyOption{&renderingOptionsTableLayout, Size{0, 20_sy}};
   //
 };
 
@@ -253,33 +253,33 @@ struct AudioSettings : VerticalLayout {
   
   //
   TableLayout audioDriverLayout{this, Size{~0, 0}};
-    Label placeholder{&audioDriverLayout, Size{(settingsWidth / 2) - 138, 0}};
-    Label audioLabel{&audioDriverLayout, Size{~0, 25}};
+    Label placeholder{&audioDriverLayout, Size{sx((settingsWidth / 2) - 138), 0}};
+    Label audioLabel{&audioDriverLayout, Size{~0, 25_sy}};
 
     Label audioDriverLabel{&audioDriverLayout, Size{0, 0}};
-    ComboButton audioDriverList{&audioDriverLayout, Size{125, 0}};
+    ComboButton audioDriverList{&audioDriverLayout, Size{125_sx, 0}};
 
     Label audioDeviceLabel{&audioDriverLayout, Size{0, 0}};
     ComboButton audioDeviceList{&audioDriverLayout, Size{0, 0}};
 
     Label audioFrequencyLabel{&audioDriverLayout, Size{0, 0}};
-    ComboButton audioFrequencyList{&audioDriverLayout, Size{125, 0}};
+    ComboButton audioFrequencyList{&audioDriverLayout, Size{125_sx, 0}};
 
     Label audioExclusiveToggleName{&audioDriverLayout, Size{0, 0}};
     CheckLabel audioExclusiveToggle{&audioDriverLayout, Size{0, 0}};
 
   TableLayout effectsLayout{this, Size{~0, 0}};
-    Label placeholderOne{&effectsLayout, Size{(settingsWidth / 2) - 138 - 57, 0}};
+    Label placeholderOne{&effectsLayout, Size{sx((settingsWidth / 2) - 138 - 57), 0}};
     Label placeholderThree{&effectsLayout, Size{0, 0}};
-    Label effectsLabel{&effectsLayout, Size{~0, 25}};
+    Label effectsLabel{&effectsLayout, Size{~0, 25_sy}};
 
     Label volumeLabel{&effectsLayout, Size{0, 0}};
     Label volumeValue{&effectsLayout, Size{50_sx, 0}};
-    HorizontalSlider volumeSlider{&effectsLayout, Size{400, 0}};
+    HorizontalSlider volumeSlider{&effectsLayout, Size{400_sx, 0}};
   //
     Label balanceLabel{&effectsLayout, Size{0, 0}};
     Label balanceValue{&effectsLayout, Size{50_sx, 0}};
-    HorizontalSlider balanceSlider{&effectsLayout, Size{400, 0}};
+    HorizontalSlider balanceSlider{&effectsLayout, Size{400_sx, 0}};
 };
 
 // MARK: Input
@@ -343,8 +343,8 @@ struct HotkeySettings : VerticalLayout {
   HorizontalLayout controlLayout{this, Size{~0, 0}};
     Label assignLabel{&controlLayout, Size{~0, 0}};
     Canvas spacer{&controlLayout, Size{1, 0}};
-    Button assignButton{&controlLayout, Size{80, 0}};
-    Button clearButton{&controlLayout, Size{80, 0}};
+    Button assignButton{&controlLayout, Size{80_sx, 0}};
+    Button clearButton{&controlLayout, Size{80_sx, 0}};
 
   maybe<InputHotkey&> activeMapping;
   u32 activeBinding = 0;
@@ -398,13 +398,13 @@ struct FirmwareSettings : VerticalLayout {
   auto eventScan() -> void;
   auto findFirmware(string sha256) -> string;
 
-  Label firmwareLabel{this, Size{~0, 0}, 5};
+  Label firmwareLabel{this, Size{~0, 0}, 5_sy};
   TableView firmwareList{this, Size{~0, ~0}};
   HorizontalLayout controlLayout{this, Size{~0, 0}};
-    Button scanButton{&controlLayout, Size{80, 0}};
+    Button scanButton{&controlLayout, Size{80_sx, 0}};
     Canvas spacer{&controlLayout, Size{~0, 0}};
-    Button assignButton{&controlLayout, Size{80, 0}};
-    Button clearButton{&controlLayout, Size{80, 0}};
+    Button assignButton{&controlLayout, Size{80_sx, 0}};
+    Button clearButton{&controlLayout, Size{80_sx, 0}};
 
   map<string, string> fileHashes;
 };
@@ -418,33 +418,33 @@ struct PathSettings : VerticalLayout {
   Label homeLabel{this, Size{~0, 0}, 5};
   HorizontalLayout homeLayout{this, Size{~0, 0}};
     LineEdit homePath{&homeLayout, Size{~0, 0}};
-    Button homeAssign{&homeLayout, Size{80, 0}};
-    Button homeReset{&homeLayout, Size{80, 0}};
+    Button homeAssign{&homeLayout, Size{80_sx, 0}};
+    Button homeReset{&homeLayout, Size{80_sx, 0}};
   Label firmwareLabel{this, Size{~0, 0}, 5};
     HorizontalLayout firmwareLayout{this, Size{~0, 0}};
     LineEdit firmwarePath{&firmwareLayout, Size{~0, 0}};
-    Button firmwareAssign{&firmwareLayout, Size{80, 0}};
-    Button firmwareReset{&firmwareLayout, Size{80, 0}};
+    Button firmwareAssign{&firmwareLayout, Size{80_sx, 0}};
+    Button firmwareReset{&firmwareLayout, Size{80_sx, 0}};
   Label savesLabel{this, Size{~0, 0}, 5};
   HorizontalLayout savesLayout{this, Size{~0, 0}};
     LineEdit savesPath{&savesLayout, Size{~0, 0}};
-    Button savesAssign{&savesLayout, Size{80, 0}};
-    Button savesReset{&savesLayout, Size{80, 0}};
+    Button savesAssign{&savesLayout, Size{80_sx, 0}};
+    Button savesReset{&savesLayout, Size{80_sx, 0}};
   Label screenshotsLabel{this, Size{~0, 0}, 5};
   HorizontalLayout screenshotsLayout{this, Size{~0, 0}};
     LineEdit screenshotsPath{&screenshotsLayout, Size{~0, 0}};
-    Button screenshotsAssign{&screenshotsLayout, Size{80, 0}};
-    Button screenshotsReset{&screenshotsLayout, Size{80, 0}};
+    Button screenshotsAssign{&screenshotsLayout, Size{80_sx, 0}};
+    Button screenshotsReset{&screenshotsLayout, Size{80_sx, 0}};
   Label debuggingLabel{this, Size{~0, 0}, 5};
   HorizontalLayout debuggingLayout{this, Size{~0, 0}};
     LineEdit debuggingPath{&debuggingLayout, Size{~0, 0}};
-    Button debuggingAssign{&debuggingLayout, Size{80, 0}};
-    Button debuggingReset{&debuggingLayout, Size{80, 0}};
+    Button debuggingAssign{&debuggingLayout, Size{80_sx, 0}};
+    Button debuggingReset{&debuggingLayout, Size{80_sx, 0}};
   Label arcadeRomsLabel{this, Size{~0, 0}, 5};
   HorizontalLayout arcadeRomsLayout{this, Size{~0, 0}};
     LineEdit arcadeRomsPath{&arcadeRomsLayout, Size{~0, 0}};
-    Button arcadeRomsAssign{&arcadeRomsLayout, Size{80, 0}};
-    Button arcadeRomsReset{&arcadeRomsLayout, Size{80, 0}};
+    Button arcadeRomsAssign{&arcadeRomsLayout, Size{80_sx, 0}};
+    Button arcadeRomsReset{&arcadeRomsLayout, Size{80_sx, 0}};
 };
 
 // MARK: Debug
@@ -457,19 +457,19 @@ struct DebugSettings : VerticalLayout {
   Label debugLabel{this, Size{~0, 0}, 5};
 
   HorizontalLayout portLayout{this, Size{~0, 0}};
-    Label portLabel{&portLayout, Size{48, 20}};
+    Label portLabel{&portLayout, Size{48_sx, 20_sy}};
     LineEdit port{&portLayout, Size{~0, 0}};
     Label portHint{&portLayout, Size{~0, 0}};
 
   HorizontalLayout ipv4Layout{this, Size{~0, 0}};
-    Label ipv4Label{&ipv4Layout, Size{48, 20}};
+    Label ipv4Label{&ipv4Layout, Size{48_sx, 20_sy}};
     CheckLabel ipv4{&ipv4Layout, Size{~0, 0}};
 
   HorizontalLayout enabledLayout{this, Size{~0, 0}};
-    Label enabledLabel{&enabledLayout, Size{48, 20}};
+    Label enabledLabel{&enabledLayout, Size{48_sx, 20_sy}};
     CheckLabel enabled{&enabledLayout, Size{~0, 0}};
 
-  Label connectInfo{this, Size{~0, 30}, 5};
+  Label connectInfo{this, Size{~0, 30_sy}, 5};
 };
 
 // MARK: Home
@@ -487,7 +487,7 @@ struct SettingsWindow : Window {
   auto eventChange() -> void;
 
   VerticalLayout layout{this};
-#if defined(PLATFORM_MACOS)
+#if defined(Hiro_Toolbar)
     Toolbar panelList{&layout, Size{~0, -5_sy}};
 #else
     TabFrame panelList{&layout, Size{~0, 20_sy}};
