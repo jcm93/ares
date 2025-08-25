@@ -58,7 +58,7 @@ auto EmulatorSettings::construct() -> void {
     manufacturer.setText(emulator->manufacturer);
   }
   emulatorList.resizeColumns();
-  emulatorList.column(0).setWidth(16);
+  emulatorList.column(0).setWidth(16_sx);
   eventChange();
 }
 

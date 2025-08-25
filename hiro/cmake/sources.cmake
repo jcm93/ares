@@ -267,6 +267,10 @@ if(OS_MACOS)
       cocoa/widget/combo-button-item.hpp
       cocoa/widget/combo-button.cpp
       cocoa/widget/combo-button.hpp
+      cocoa/widget/combo-edit-item.cpp
+      cocoa/widget/combo-edit-item.hpp
+      cocoa/widget/combo-edit.cpp
+      cocoa/widget/combo-edit.hpp
       cocoa/widget/console.cpp
       cocoa/widget/console.hpp
       cocoa/widget/frame.cpp

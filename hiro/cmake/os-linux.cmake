@@ -27,8 +27,9 @@ else()
     PRIVATE X11::X11 Qt6::Core Qt6::Gui Qt6::Widgets
   )
 
-  target_enable_feature(hiro "Qt6 UI backend")
-  target_compile_definitions(hiro PUBLIC HIRO_QT=6)
+  target_compile_definitions(hiro PUBLIC HIRO_QT)
+
+  target_enable_feature(hiro "Qt5 UI backend" HIRO_QT=5)
 endif()
 
 get_target_property(hiro_SOURCES hiro SOURCES)

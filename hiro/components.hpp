@@ -82,8 +82,11 @@
   #undef Hiro_Toolbar
 #endif
 
-#if defined(HIRO_WINDOWS) || defined(HIRO_COCOA) || defined(HIRO_QT)
+#if defined(HIRO_QT)
   #undef Hiro_ComboEdit
+#endif
+
+#if defined(HIRO_WINDOWS) || defined(HIRO_COCOA) || defined(HIRO_QT)
   #undef Hiro_Console
   #undef Hiro_IconView
   #undef Hiro_SourceEdit
