@@ -204,6 +204,15 @@ auto Settings::process(bool load) -> void {
       emulator->settingsOverrides = new Settings;
     }
     string base = string{emulator->name}.replace(" ", ""), name;
+    string overrides;
+    if(load == 0) for(auto& settingOverride : emulator->settingsOverridesList) overrides.append(settingOverride, ";");
+    if(load == 0) overrides.trimRight(";", 1L);
+    name = {base, "/Overrides"};
+    bind(string, base, overrides);
+    if(load) {
+      auto overridesList = overrides.split(";");
+      emulator->settingsOverridesList = overridesList;
+    }
     name = {base, "/Visible"};
     bind(boolean, name, emulator->configuration.visible);
     name = {base, "/Path"};
