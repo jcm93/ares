@@ -100,7 +100,6 @@ auto VideoSettings::construct() -> void {
 
   videoDriverLayout.setPadding(12_sx, 0);
   videoDriverLayout.column(0).setAlignment(1.0);
-  videoToggleLayout.setPadding(12_sx, 0);
 
   colorAdjustmentLabel.setText("Color Adjustment").setFont(Font().setBold());
   colorAdjustmentLayout.setSize({3, 5}).setPadding(12_sx, 0);

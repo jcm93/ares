@@ -196,7 +196,6 @@ struct VideoSettings : VerticalLayout {
     Label videoNativeFullScreenToggleName{&videoDriverLayout, Size{0, 20_sy}};
     CheckLabel videoNativeFullScreenToggle{&videoDriverLayout, Size{0, 0}};
 #endif
-  HorizontalLayout videoToggleLayout{this, Size{~0, 0}};
 #if !defined(PLATFORM_MACOS)
     Label videoExclusiveToggleName{&videoDriverLayout, Size{0, 20_sy}};
     CheckLabel videoExclusiveToggle{&videoToggleLayout, Size{0, 0}};
@@ -221,7 +220,7 @@ struct VideoSettings : VerticalLayout {
     HorizontalSlider gammaSlider{&colorAdjustmentLayout, Size{400_sx, 0}};
 
   TableLayout renderingOptionsTableLayout{this, Size{~0, 0}};
-      Canvas placeholderFour{&renderingOptionsTableLayout, Size{(settingsWidth / 2) - 138, 0}};
+      Canvas placeholderFour{&renderingOptionsTableLayout, Size{sx((settingsWidth / 2) - 138), 0}};
       Label emulatorSettingsLabel{&renderingOptionsTableLayout, Size{~0, 25_sy}};
 
       Label colorBleedHint{&renderingOptionsTableLayout, Size{0, 0}};
