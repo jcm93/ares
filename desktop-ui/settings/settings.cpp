@@ -320,15 +320,15 @@ auto SettingsWindow::eventChange() -> void {
 
   bool found = false;
   if(auto item = panelList.selected()) {
-    if(item.text() == "General"  ) found = true, generalSettings.setVisible(), *this->setSize(Size{settingsWidth, 375});
-    if(item.text() == "Video"    ) found = true, videoSettings.setVisible(), *this->setSize(Size{settingsWidth, 495});
-    if(item.text() == "Audio"    ) found = true, audioSettings.setVisible(), *this->setSize(Size{settingsWidth, 290});
-    if(item.text() == "Input"    ) found = true, inputSettings.setVisible(), *this->setSize(Size{settingsWidth, 475});
-    if(item.text() == "Hotkeys"  ) found = true, hotkeySettings.setVisible(), *this->setSize(Size{settingsWidth, 475});
-    if(item.text() == "Emulators") found = true, emulatorSettings.setVisible(), *this->setSize(Size{settingsWidth, 475});
-    if(item.text() == "Firmware" ) found = true, firmwareSettings.setVisible(), *this->setSize(Size{settingsWidth, 475});
-    if(item.text() == "Paths"    ) found = true, pathSettings.setVisible(), *this->setSize(Size{settingsWidth, 350});
-    if(item.text() == "Debug"    ) found = true, debugSettings.setVisible(), *this->setSize(Size{settingsWidth, 180});
+    if(item.text() == "General"  ) found = true, generalSettings.setVisible(), *this->setSize(Size{sx(settingsWidth), 375_sy});
+    if(item.text() == "Video"    ) found = true, videoSettings.setVisible(), *this->setSize(Size{sx(settingsWidth), 495_sy});
+    if(item.text() == "Audio"    ) found = true, audioSettings.setVisible(), *this->setSize(Size{sx(settingsWidth), 290_sy});
+    if(item.text() == "Input"    ) found = true, inputSettings.setVisible(), *this->setSize(Size{sx(settingsWidth), 475_sy});
+    if(item.text() == "Hotkeys"  ) found = true, hotkeySettings.setVisible(), *this->setSize(Size{sx(settingsWidth), 475_sy});
+    if(item.text() == "Emulators") found = true, emulatorSettings.setVisible(), *this->setSize(Size{sx(settingsWidth), 475_sy});
+    if(item.text() == "Firmware" ) found = true, firmwareSettings.setVisible(), *this->setSize(Size{sx(settingsWidth), 475_sy});
+    if(item.text() == "Paths"    ) found = true, pathSettings.setVisible(), *this->setSize(Size{sx(settingsWidth), 350_sy});
+    if(item.text() == "Debug"    ) found = true, debugSettings.setVisible(), *this->setSize(Size{sx(settingsWidth), 180_sy});
   }
   if(!found) homePanel.setVisible();
 
