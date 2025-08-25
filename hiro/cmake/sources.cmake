@@ -403,6 +403,10 @@ if(OS_MACOS)
       windows/widget/combo-button-item.hpp
       windows/widget/combo-button.cpp
       windows/widget/combo-button.hpp
+      windows/widget/combo-edit-item.cpp
+      windows/widget/combo-edit-item.hpp
+      windows/widget/combo-edit.cpp
+      windows/widget/combo-edit.hpp
       windows/widget/frame.cpp
       windows/widget/frame.hpp
       windows/widget/hex-edit.cpp
