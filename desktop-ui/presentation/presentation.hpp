@@ -1,5 +1,5 @@
 struct Presentation : Window {
-  enum : u32 { StatusHeight = 24 };
+  u32 StatusHeight = 24_sy;
 
   Presentation();
   auto resizeWindow() -> void;

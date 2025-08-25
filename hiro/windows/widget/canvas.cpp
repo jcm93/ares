@@ -173,16 +173,16 @@ auto pCanvas::_rasterize() -> void {
   if(auto& icon = state().icon) {
     auto lowDPIMatch = icon.width() == width && icon.height() == height;
     if(!lowDPIMatch) {
-      multiFactorImage& copy{icon};
-      if(copy.highDPI()) {
+      if(icon.highDPI()) {
+        multiFactorImage& copy{icon};
         auto highDPI = copy.highDPI();
         highDPI.scale(width, height);
         memory::copy<u32>(pixels.data(), highDPI.data(), width * height);
       } else {
-        memory::copy<u32>(pixels.data(), copy.data(), width * height);
+        memory::copy<u32>(pixels.data(), icon.data(), width * height);
       }
     } else {
-      memory::copy<u32>(pixels.data(), copy.data(), width * height);
+      memory::copy<u32>(pixels.data(), icon.data(), width * height);
     }
   } else if(auto& gradient = state().gradient) {
     auto& colors = gradient.state.colors;
