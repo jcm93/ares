@@ -12,8 +12,8 @@ auto mToolbar::destruct() -> void {
 //
 
 auto mToolbar::append(sToolbarItem item) -> type& {
-  if(!state.items) item->state.selected = true;
-  state.items.append(item);
+  if(state.items.empty()) item->state.selected = true;
+  state.items.push_back(item);
   item->setParent(this, itemCount() - 1);
   signal(append, item);
   return *this;
@@ -36,16 +36,17 @@ auto mToolbar::doMove(sToolbarItem from, sToolbarItem to) const -> void {
 }
 
 auto mToolbar::item(unsigned position) const -> ToolbarItem {
-  return state.items(position, {});
+  if(position < state.items.size()) return state.items[position];
+  return {};
 }
 
 auto mToolbar::itemCount() const -> unsigned {
   return state.items.size();
 }
 
-auto mToolbar::items() const -> vector<ToolbarItem> {
-  vector<ToolbarItem> items;
-  for(auto& item : state.items) items.append(item);
+auto mToolbar::items() const -> std::vector<ToolbarItem> {
+  std::vector<ToolbarItem> items;
+  for(auto& item : state.items) items.push_back(item);
   return items;
 }
 
@@ -82,7 +83,7 @@ auto mToolbar::remove(sToolbarItem item) -> type& {
   auto offset = item->offset();
   item->setParent();
   signal(remove, item);
-  state.items.remove(item->offset());
+  state.items.erase(state.items.begin() + item->offset());
   for(auto n : range(offset, itemCount())) {
     state.items[n]->adjustOffset(-1);
   }
@@ -90,7 +91,7 @@ auto mToolbar::remove(sToolbarItem item) -> type& {
 }
 
 auto mToolbar::reset() -> type& {
-  while(state.items) remove(state.items.right());
+  while(!state.items.empty()) remove(state.items.back());
   return *this;
 }
 
@@ -120,7 +121,7 @@ auto mToolbar::setNavigation(Navigation navigation) -> type& {
 }
 
 auto mToolbar::setParent(mObject* parent, s32 offset) -> type& {
-  for(auto& item : reverse(state.items)) item->destruct();
+  for(auto& item : state.items | std::views::reverse) item->destruct();
   mObject::setParent(parent, offset);
   for(auto& item : state.items) item->setParent(this, item->offset());
   return *this;

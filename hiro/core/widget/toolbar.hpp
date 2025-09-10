@@ -10,7 +10,7 @@ struct mToolbar : mWidget {
   auto doMove(sToolbarItem from, sToolbarItem to) const -> void;
   auto item(uint position) const -> ToolbarItem;
   auto itemCount() const -> uint;
-  auto items() const -> vector<ToolbarItem>;
+  auto items() const -> std::vector<ToolbarItem>;
   auto navigation() const -> Navigation;
   auto onChange(const function<void ()>& callback = {}) -> type&;
   auto onClose(const function<void (ToolbarItem)>& callback = {}) -> type&;
@@ -28,7 +28,7 @@ struct mToolbar : mWidget {
 
 //private:
   struct State {
-    vector<sToolbarItem> items;
+    std::vector<sToolbarItem> items;
     Navigation navigation = Navigation::Top;
     function<void ()> onChange;
     function<void (ToolbarItem)> onClose;
