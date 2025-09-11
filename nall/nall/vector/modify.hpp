@@ -90,6 +90,7 @@ template<typename T> auto vector<T>::removeRight(u64 length) -> void {
 template<typename T> auto vector<T>::remove(u64 offset, u64 length) -> void {
   if(offset == 0) return removeLeft(length);
   if(offset == size() - 1) return removeRight(length);
+  assert(offset <= size());
 
   for(u64 n = offset; n < size(); n++) {
     if(n + length < size()) {
