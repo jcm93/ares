@@ -98,7 +98,7 @@
       "binaryDir": "${sourceDir}/build",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": {"type": "STRING", "value": "RelWithDebInfo"},
-        "ENABLE_CCACHE": true,
+        "ENABLE_CCACHE": false,
         "ARES_BUILD_LOCAL": false,
         "ARES_BUILD_OPTIONAL_TARGETS": true,
         "ARES_UNITY_CORES": true,
