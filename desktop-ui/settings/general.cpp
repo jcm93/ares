@@ -2,7 +2,7 @@
 auto GeneralSettings::construct() -> void {
   setCollapsible();
   commonSettingsLabel.setText("System Options").setFont(Font().setBold());
-  commonSettingsHint.setText("Different values for most options may also be set on a per-core basis in Emulators settings.").setFont(Font().setSize(7.0)).setForegroundColor(SystemColor::Sublabel);
+  commonSettingsHint.setText("These options may be overridden for particular systems in Emulators settings.").setFont(Font().setSize(7.0)).setForegroundColor(SystemColor::Sublabel);
 
   systemOptionsTableLayout.setSize({2, 7}).setPadding(12_sx, 0);
   systemOptionsTableLayout.column(0).setAlignment(1.0);
@@ -41,7 +41,7 @@ auto GeneralSettings::construct() -> void {
 
   syncLabel.setText("Synchronisation").setFont(Font().setBold());
 
-  syncAdjustmentLayout.setSize({2, 6}).setPadding(12_sx, 0);
+  syncAdjustmentLayout.setSize({2, 5}).setPadding(12_sx, 0);
   syncAdjustmentLayout.column(0).setAlignment(1.0);
 
   syncDescriptionLabel.setText("Sync to:");
@@ -50,9 +50,11 @@ auto GeneralSettings::construct() -> void {
   ComboButtonItem audioItem{&syncOptionList};
   ComboButtonItem videoItem{&syncOptionList};
   ComboButtonItem dualItem{&syncOptionList};
+  ComboButtonItem noneItem{&syncOptionList};
   audioItem.setText("Audio");
   videoItem.setText("Video");
   dualItem.setText("Dual (VRR or high refresh rate)");
+  noneItem.setText("None");
 
   syncDescriptionHint.setFont(Font().setSize(7.0)).setForegroundColor(SystemColor::Sublabel);
   //syncDescriptionHint.setEditable(false);
@@ -62,15 +64,23 @@ auto GeneralSettings::construct() -> void {
     if(selected.text() == "Audio") {
       settings.audio.blocking = true;
       settings.video.blocking = false;
+      settings.audio.dynamic = false;
     } else if(selected.text() == "Video") {
       settings.audio.blocking = false;
       settings.video.blocking = true;
+      settings.audio.dynamic = true;
     } else if(selected.text() == "Dual (VRR or high refresh rate)") {
       settings.audio.blocking = true;
       settings.video.blocking = true;
+      settings.audio.dynamic = false;
+    } else {
+      settings.audio.blocking = false;
+      settings.video.blocking = false;
+      settings.audio.dynamic = true;
     }
     ruby::video.setBlocking(settings.video.blocking);
     ruby::audio.setBlocking(settings.audio.blocking);
+    ruby::audio.setDynamic(settings.audio.dynamic);
     refresh();
   });
 
@@ -88,25 +98,21 @@ auto GeneralSettings::construct() -> void {
     ruby::video.setFlush(settings.video.flush);
   });
 
-  dynamicRateDescription.setText("Dynamic rate audio:");
-  dynamicRateCheckLabel.setText("Audio will speed up or slow down to match the running rate of the emulated system");
-  dynamicRateCheckLabel.onToggle([&] {
-    settings.audio.dynamic = dynamicRateCheckLabel.checked();
-    ruby::audio.setDynamic(settings.audio.dynamic);
-  });
-
 }
 
 auto GeneralSettings::refresh() -> void {
   if(ruby::video.blocking() && ruby::audio.blocking()) {
     syncOptionList.item(2).setSelected();
-    syncDescriptionHint.setText("The guest will synchronize to both host audio and host refresh rate.\nGenerally requires a VRR or high refresh rate display.");
+    syncDescriptionHint.setText("The guest will synchronize with both host audio and host refresh rate.\nGenerally requires a VRR or high refresh rate display.");
   } else if(ruby::video.blocking()) {
     syncOptionList.item(1).setSelected();
-    syncDescriptionHint.setText("The guest system will run in sync with host display refresh rate.");
+    syncDescriptionHint.setText("The guest system will run in sync with host display refresh rate.\nAudio will speed up or slow down to match the running rate of the emulated system.");
   } else if(ruby::audio.blocking()) {
     syncOptionList.item(0).setSelected();
     syncDescriptionHint.setText("The guest system will run in sync with host audio playback.");
+  } else {
+    syncOptionList.item(3).setSelected();
+    syncDescriptionHint.setText("The guest system will run at an unbounded rate.");
   }
   //TODO
   if(ruby::video.hasBlocking()) {
@@ -119,7 +125,6 @@ auto GeneralSettings::refresh() -> void {
   } else {
 
   }
-  dynamicRateCheckLabel.setChecked(ruby::audio.dynamic()).setEnabled(ruby::audio.hasDynamic());
   gpuSyncCheckLabel.setChecked(ruby::video.flush()).setEnabled(ruby::video.hasFlush());
 }
 

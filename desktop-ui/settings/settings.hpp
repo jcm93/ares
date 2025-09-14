@@ -135,8 +135,6 @@ struct GeneralSettings: VerticalLayout {
     Label gpuSyncDescription{&syncAdjustmentLayout, Size{0, 20_sy}};
     CheckLabel gpuSyncCheckLabel{&syncAdjustmentLayout, Size{0, 20_sy}};
   //
-    Label dynamicRateDescription{&syncAdjustmentLayout, Size{0, 20_sy}};
-    CheckLabel dynamicRateCheckLabel{&syncAdjustmentLayout, Size{0, 20_sy}};
 
   HorizontalLayout syncDescriptionHintLayout{this, Size{~0, 0}};
 
@@ -352,37 +350,42 @@ struct HotkeySettings : VerticalLayout {
 
 // MARK: Emulators
 
+#include "overrides.hpp"
+
 struct EmulatorSettings : VerticalLayout {
   auto construct() -> void;
   auto eventToggle(TableViewCell cell) -> void;
   auto eventChange() -> void;
 
-  HorizontalLayout layout{this, Size{700_sx, ~0}};
+  HorizontalLayout layout{this, Size{~0, ~0}};
     TableView emulatorList{&layout, Size{200_sx, ~0}};
-    VerticalLayout emulatorPanelContainer{&layout, Size{575_sx, ~0}};
-      ArcadeSettings arcadeSettings;
-      A2600Settings a2600Settings;
-      ColecoVisionSettings colecoVisionSettings;
-      FamicomSettings famicomSettings;
-      GameBoyAdvanceSettings gameBoyAdvanceSettings;
-      GameBoyGameBoyColorSettings gameBoyGameBoyColorSettings;
-      GameGearSettings gameGearSettings;
-      MasterSystemSettings masterSystemSettings;
-      Mega32XMegaCD32XMegaCDMegaDriveSettings mega32XMegaCD32XMegaCDMegaDriveSettings;
-      MSXSettings msxSettings;
-      MSX2Settings msx2Settings;
-      MyVisionSettings myVisionSettings;
-      NeoGeoSettings neoGeoSettings;
-      N64SettingsLayout n64Settings;
-      PCEngineSettings pcEngineSettings;
-      PlaystationSettings playstationSettings;
-      PocketChallengeV2Settings pocketChallengeV2Settings;
-      SaturnSettings saturnSettings;
-      SG1000Settings sg1000Settings;
-      SuperFamicomSettings superFamicomSettings;
-      SuperGrafxSettings superGrafxSettings;
-      WonderSwanSettings wonderSwanSettings;
-      ZXSpectrumSettings zxSpectrumSettings;
+    VerticalLayout emulatorSettingsContainer{&layout, Size{~0, ~0}};
+      TabFrame emulatorTabFrame{&emulatorSettingsContainer, Size{~0, 20_sy}};
+
+  OverrideSettings overrideSettings;
+  ArcadeSettings arcadeSettings;
+  A2600Settings a2600Settings;
+  ColecoVisionSettings colecoVisionSettings;
+  FamicomSettings famicomSettings;
+  GameBoyAdvanceSettings gameBoyAdvanceSettings;
+  GameBoyGameBoyColorSettings gameBoyGameBoyColorSettings;
+  GameGearSettings gameGearSettings;
+  MasterSystemSettings masterSystemSettings;
+  Mega32XMegaCD32XMegaCDMegaDriveSettings mega32XMegaCD32XMegaCDMegaDriveSettings;
+  MSXSettings msxSettings;
+  MSX2Settings msx2Settings;
+  MyVisionSettings myVisionSettings;
+  NeoGeoSettings neoGeoSettings;
+  N64SettingsLayout n64Settings;
+  PCEngineSettings pcEngineSettings;
+  PlaystationSettings playstationSettings;
+  PocketChallengeV2Settings pocketChallengeV2Settings;
+  SaturnSettings saturnSettings;
+  SG1000Settings sg1000Settings;
+  SuperFamicomSettings superFamicomSettings;
+  SuperGrafxSettings superGrafxSettings;
+  WonderSwanSettings wonderSwanSettings;
+  ZXSpectrumSettings zxSpectrumSettings;
 };
 
 // MARK: Firmware

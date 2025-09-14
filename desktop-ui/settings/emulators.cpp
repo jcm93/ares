@@ -3,10 +3,16 @@ auto EmulatorSettings::construct() -> void {
   setVisible(false);
 
   layout.setPadding(-20_sx, -20_sy);
-  emulatorPanelContainer.setPadding(20_sx, 20_sy);
+  emulatorSettingsContainer.setPadding(20_sx, 20_sy);
 
-  emulatorPanelContainer.append(n64Settings, Size{~0, ~0});
-  emulatorPanelContainer.append(mega32XMegaCD32XMegaCDMegaDriveSettings, Size{~0, ~0});
+  emulatorTabFrame.append(TabFrameItem().setText("System Settings"));
+  emulatorTabFrame.append(TabFrameItem().setText("Overrides"));
+  emulatorTabFrame.onChange([&] { eventChange(); });
+
+  emulatorSettingsContainer.append(n64Settings, Size{~0, ~0});
+  emulatorSettingsContainer.append(mega32XMegaCD32XMegaCDMegaDriveSettings, Size{~0, ~0});
+  emulatorSettingsContainer.append(overrideSettings, Size{~0, ~0});
+  overrideSettings.construct();
 
   //emulatorLabel.setText("Load Menu Emulators").setFont(Font().setBold());
   emulatorList.onToggle([&](auto cell) { eventToggle(cell); });
@@ -63,6 +69,7 @@ auto EmulatorSettings::construct() -> void {
 }
 
 auto EmulatorSettings::eventChange() -> void {
+  overrideSettings.setVisible(false);
   arcadeSettings.setVisible(false);
   a2600Settings.setVisible(false);
   colecoVisionSettings.setVisible(false);
@@ -90,33 +97,38 @@ auto EmulatorSettings::eventChange() -> void {
   bool found = false;
   auto item = emulatorList.selected();
   if(auto emulator = item.attribute<shared_pointer<Emulator>>("emulator")) {
-    auto name = emulator->name;
-    if(name == "arcadeSettings" ) found = true, arcadeSettings.setVisible();
-    if(name == "a2600Settings" ) found = true, a2600Settings.setVisible();
-    if(name == "colecoVisionSettings" ) found = true, colecoVisionSettings.setVisible();
-    if(name == "famicomSettings" ) found = true, famicomSettings.setVisible();
-    if(name == "gameBoyAdvanceSettings" ) found = true, gameBoyAdvanceSettings.setVisible();
-    if(name == "gameBoyGameBoyColorSettings" ) found = true, gameBoyGameBoyColorSettings.setVisible();
-    if(name == "gameGearSettings" ) found = true, gameGearSettings.setVisible();
-    if(name == "masterSystemSettings" ) found = true, masterSystemSettings.setVisible();
-    if(name == "Mega CD" ) found = true, mega32XMegaCD32XMegaCDMegaDriveSettings.setVisible();
-    if(name == "msxSettings" ) found = true, msxSettings.setVisible();
-    if(name == "msx2Settings" ) found = true, msx2Settings.setVisible();
-    if(name == "myVisionSettings" ) found = true, myVisionSettings.setVisible();
-    if(name == "neoGeoSettings" ) found = true, neoGeoSettings.setVisible();
-    if(name == "Nintendo 64" ) found = true, n64Settings.setVisible();
-    if(name == "pcEngineSettings" ) found = true, pcEngineSettings.setVisible();
-    if(name == "playstationSettings" ) found = true, playstationSettings.setVisible();
-    if(name == "pocketChallengeV2Settings" ) found = true, pocketChallengeV2Settings.setVisible();
-    if(name == "saturnSettings" ) found = true, saturnSettings.setVisible();
-    if(name == "sg1000Settings" ) found = true, sg1000Settings.setVisible();
-    if(name == "superFamicomSettings" ) found = true, superFamicomSettings.setVisible();
-    if(name == "superGrafxSettings" ) found = true, superGrafxSettings.setVisible();
-    if(name == "wonderSwanSettings" ) found = true, wonderSwanSettings.setVisible();
-    if(name == "zxSpectrumSettings" ) found = true, zxSpectrumSettings.setVisible();
-  } else {
+    if(emulatorTabFrame.selected().text() == "System Settings") {
+      auto name = emulator->name;
+      if(name == "arcadeSettings" ) found = true, arcadeSettings.setVisible();
+      if(name == "a2600Settings" ) found = true, a2600Settings.setVisible();
+      if(name == "colecoVisionSettings" ) found = true, colecoVisionSettings.setVisible();
+      if(name == "famicomSettings" ) found = true, famicomSettings.setVisible();
+      if(name == "gameBoyAdvanceSettings" ) found = true, gameBoyAdvanceSettings.setVisible();
+      if(name == "gameBoyGameBoyColorSettings" ) found = true, gameBoyGameBoyColorSettings.setVisible();
+      if(name == "gameGearSettings" ) found = true, gameGearSettings.setVisible();
+      if(name == "masterSystemSettings" ) found = true, masterSystemSettings.setVisible();
+      if(name == "Mega CD" ) found = true, mega32XMegaCD32XMegaCDMegaDriveSettings.setVisible();
+      if(name == "msxSettings" ) found = true, msxSettings.setVisible();
+      if(name == "msx2Settings" ) found = true, msx2Settings.setVisible();
+      if(name == "myVisionSettings" ) found = true, myVisionSettings.setVisible();
+      if(name == "neoGeoSettings" ) found = true, neoGeoSettings.setVisible();
+      if(name == "Nintendo 64" ) found = true, n64Settings.setVisible();
+      if(name == "pcEngineSettings" ) found = true, pcEngineSettings.setVisible();
+      if(name == "playstationSettings" ) found = true, playstationSettings.setVisible();
+      if(name == "pocketChallengeV2Settings" ) found = true, pocketChallengeV2Settings.setVisible();
+      if(name == "saturnSettings" ) found = true, saturnSettings.setVisible();
+      if(name == "sg1000Settings" ) found = true, sg1000Settings.setVisible();
+      if(name == "superFamicomSettings" ) found = true, superFamicomSettings.setVisible();
+      if(name == "superGrafxSettings" ) found = true, superGrafxSettings.setVisible();
+      if(name == "wonderSwanSettings" ) found = true, wonderSwanSettings.setVisible();
+      if(name == "zxSpectrumSettings" ) found = true, zxSpectrumSettings.setVisible();
+    } else if(emulatorTabFrame.selected().text() == "Overrides") {
+      overrideSettings.setVisible();
+    }
+  } else if(emulatorTabFrame.selected().text() == "Overrides") {
+    overrideSettings.setVisible();
   }
-  emulatorPanelContainer.resize();
+  emulatorSettingsContainer.resize();
 }
 
 auto EmulatorSettings::eventToggle(TableViewCell cell) -> void {
@@ -131,67 +143,18 @@ auto EmulatorSettings::eventToggle(TableViewCell cell) -> void {
 auto Mega32XMegaCD32XMegaCDMegaDriveSettings::construct() -> void {
   setCollapsible();
   megaDriveSettingsLabel.setText("Mega Drive Settings").setFont(Font().setBold());
-  emulatorOptionsPane.append(TabFrameItem().setText("Emulator Settings"));
-  emulatorOptionsPane.append(TabFrameItem().setText("Overrides"));
 
   megaDriveTmssOption.setText("TMSS Boot Rom").setChecked(settings.megaDrive->system.tmss).onToggle([&] {
     settings.megaDrive->system.tmss = megaDriveTmssOption.checked();
   });
   megaDriveTmssLayout.setAlignment(1).setPadding(12_sx, 0);
-    megaDriveTmssHint.setText("Enable/Disable the TMSS Boot Rom at system initialization").setFont(Font().setSize(7.0)).setForegroundColor(SystemColor::Sublabel);
+  megaDriveTmssHint.setText("Enable/Disable the TMSS Boot Rom at system initialization").setFont(Font().setSize(7.0)).setForegroundColor(SystemColor::Sublabel);
 }
 
 /// MARK: N64 settings
 
 auto N64SettingsLayout::construct() -> void {
   setCollapsible();
-  
-  systemOptionsTableLayout.setSize({2, 6}).setPadding(12_sx, 0);
-  systemOptionsTableLayout.column(0).setAlignment(1.0);
-  
-  commonSettingsLabel.setText("System Options (N64)").setFont(Font().setBold());
-  
-  homebrewModeHint.setText("Homebrew Mode:");
-  ComboButtonItem onItemHomebrew{&homebrewMode};
-  ComboButtonItem offItemHomebrew{&homebrewMode};
-  ComboButtonItem inheritItemHomebrew{&homebrewMode};
-  onItemHomebrew.setText("On");
-  offItemHomebrew.setText("Off");
-  inheritItemHomebrew.setText("Inherit");
-  if(system->settingsOverridesList.contains("General/HomebrewMode") &&
-     system->settingsOverrides->general.homebrewMode == true) {
-    onItemHomebrew.setSelected();
-  } else if(system->settingsOverridesList.contains("General/HomebrewMode") &&
-    system->settingsOverrides->general.homebrewMode == false) {
-    offItemHomebrew.setSelected();
-  } else {
-    inheritItemHomebrew.setSelected();
-  }
-  homebrewMode.onChange([&] {
-    auto selected = homebrewMode.selected().text();
-    if(selected == "On") {
-      system->settingsOverrides->general.homebrewMode = true;
-      system->settingsOverridesList.append("General/HomebrewMode");
-    } else if(selected == "Off") {
-      system->settingsOverrides->general.homebrewMode = false;
-      system->settingsOverridesList.append("General/HomebrewMode");
-    } else if(selected == "Inherit") {
-      if(system->settingsOverridesList.contains("General/HomebrewMode")) {
-        system->settingsOverridesList.removeByValue("General/HomebrewMode");
-      }
-    }
-  });
-
-  forceInterpreterHint.setText("Force Interpreter:");
-  ComboButtonItem onItemInterpreter{&forceInterpreter};
-  ComboButtonItem offItemInterpreter{&forceInterpreter};
-  ComboButtonItem inheritItemInterpreter{&forceInterpreter};
-  onItemInterpreter.setText("On");
-  offItemInterpreter.setText("Off");
-  inheritItemInterpreter.setText("Inherit");
-  /*forceInterpreter.setText("(Slow) Use the interpreter instead of the recompiler for the N64 core").onChange([&] {
-    emulator->systemSettingsObject.general.forceInterpreter = forceInterpreter.checked();
-  });*/
   
   renderSettingsLabel.setText("N64 Render Settings").setFont(Font().setBold());
 

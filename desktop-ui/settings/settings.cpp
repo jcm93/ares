@@ -5,8 +5,8 @@
 #include "input.cpp"
 #include "hotkeys.cpp"
 #include "emulators.cpp"
-#include "sync.cpp"
 #include "firmware.cpp"
+#include "overrides.cpp"
 #include "paths.cpp"
 #include "drivers.cpp"
 #include "debug.cpp"
@@ -245,7 +245,6 @@ auto SettingsWindow::initialize() -> void {
   panelList.append(ToolbarItem().setText("General").setIcon(Icon::Action::Settings));
   panelList.append(ToolbarItem().setText("Video").setIcon(Icon::Device::Display));
   panelList.append(ToolbarItem().setText("Audio").setIcon(Icon::Device::Speaker));
-  panelList.append(ToolbarItem().setText("Sync").setIcon(Icon::Action::Refresh));
   panelList.append(ToolbarItem().setText("Input").setIcon(Icon::Device::Joypad));
   panelList.append(ToolbarItem().setText("Hotkeys").setIcon(Icon::Device::Keyboard));
   panelList.append(ToolbarItem().setText("Emulators").setIcon(Icon::Place::Server));
@@ -257,7 +256,6 @@ auto SettingsWindow::initialize() -> void {
   panelList.append(TabFrameItem().setText("General").setIcon(Icon::Action::Settings));
   panelList.append(TabFrameItem().setText("Video").setIcon(Icon::Device::Display));
   panelList.append(TabFrameItem().setText("Audio").setIcon(Icon::Device::Speaker));
-  panelList.append(TabFrameItem().setText("Sync").setIcon(Icon::Action::Refresh));
   panelList.append(TabFrameItem().setText("Input").setIcon(Icon::Device::Joypad));
   panelList.append(TabFrameItem().setText("Hotkeys").setIcon(Icon::Device::Keyboard));
   panelList.append(TabFrameItem().setText("Emulators").setIcon(Icon::Place::Server));
