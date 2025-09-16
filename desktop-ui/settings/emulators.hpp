@@ -1,0 +1,283 @@
+struct Emulator;
+
+// MARK: Arcade Settings
+struct ArcadeSettings : VerticalLayout {
+  auto construct(std::shared_ptr<Emulator>) -> void;
+  std::shared_ptr<Emulator> system;
+};
+
+// MARK: A2600 Settings
+struct A2600Settings : VerticalLayout {
+  auto construct(std::shared_ptr<Emulator>) -> void;
+  std::shared_ptr<Emulator> system;
+};
+
+// MARK: ColecoVision Settings
+struct ColecoVisionSettings : VerticalLayout {
+  auto construct(std::shared_ptr<Emulator>) -> void;
+  std::shared_ptr<Emulator> system;
+};
+
+// MARK: Famicom Settings
+struct FamicomSettings : VerticalLayout {
+  auto construct(std::shared_ptr<Emulator>) -> void;
+  std::shared_ptr<Emulator> system;
+};
+
+// MARK: Famicom Disk System Settings
+struct FamicomDiskSystemSettings : VerticalLayout {
+  auto construct(std::shared_ptr<Emulator>) -> void;
+  std::shared_ptr<Emulator> system;
+};
+
+// MARK: Game Boy Settings
+struct GameBoySettings : VerticalLayout {
+  auto construct(std::shared_ptr<Emulator>) -> void;
+  std::shared_ptr<Emulator> system;
+};
+
+// MARK: Game Boy Color Settings
+struct GameBoyColorSettings : VerticalLayout {
+  auto construct(std::shared_ptr<Emulator>) -> void;
+  std::shared_ptr<Emulator> system;
+};
+
+// MARK: Game Boy Advance Settings
+struct GameBoyAdvanceSettings : VerticalLayout {
+  auto construct(std::shared_ptr<Emulator>) -> void;
+  std::shared_ptr<Emulator> system;
+};
+
+// MARK: Game Gear Settings
+struct GameGearSettings : VerticalLayout {
+  auto construct(std::shared_ptr<Emulator>) -> void;
+  std::shared_ptr<Emulator> system;
+};
+
+// MARK: MegaLD Settings
+struct MegaLDSettings : VerticalLayout {
+  auto construct(std::shared_ptr<Emulator>) -> void;
+  std::shared_ptr<Emulator> system;
+};
+
+// MARK: MasterSystem Settings
+struct MasterSystemSettings : VerticalLayout {
+  auto construct(std::shared_ptr<Emulator>) -> void;
+  std::shared_ptr<Emulator> system;
+};
+
+// MARK: MegaDrive Settings
+struct MegaDriveSettings : VerticalLayout {
+  auto construct(std::shared_ptr<Emulator>) -> void;
+  auto eventChange() -> void;
+  std::shared_ptr<Emulator> system;
+  Label megaDriveSettingsLabel{this, Size{~0, 0}, 5};
+    HorizontalLayout megaDriveTmssLayout{this, Size{~0, 0}, 5};
+      CheckLabel megaDriveTmssOption{&megaDriveTmssLayout, Size{0, 0}, 5};
+      Label megaDriveTmssHint{&megaDriveTmssLayout, Size{0, 0}};
+};
+
+// MARK: Mega 32X Settings
+struct Mega32XSettings : VerticalLayout {
+  auto construct(std::shared_ptr<Emulator>) -> void;
+  auto eventChange() -> void;
+  std::shared_ptr<Emulator> system;
+  Label forceInterpreterLabel{this, Size{~0, 0}};
+  CheckLabel forceInterpreterCheck{this, Size{0, 0}, 5};
+};
+
+// MARK: Mega CD Settings
+struct MegaCDSettings : VerticalLayout {
+  auto construct(std::shared_ptr<Emulator>) -> void;
+  auto eventChange() -> void;
+  std::shared_ptr<Emulator> system;
+};
+
+// MARK: Mega CD 32X Settings
+struct MegaCD32XSettings : VerticalLayout {
+  auto construct(std::shared_ptr<Emulator>) -> void;
+  auto eventChange() -> void;
+  std::shared_ptr<Emulator> system;
+  Label forceInterpreterLabel{this, Size{~0, 0}};
+  CheckLabel forceInterpreterCheck{this, Size{0, 0}, 5};
+};
+
+// MARK: MSX Settings
+struct MSXSettings : VerticalLayout {
+  auto construct(std::shared_ptr<Emulator>) -> void;
+  std::shared_ptr<Emulator> system;
+};
+
+// MARK: MSX2 Settings
+struct MSX2Settings : VerticalLayout {
+  auto construct(std::shared_ptr<Emulator>) -> void;
+  std::shared_ptr<Emulator> system;
+};
+
+// MARK: MyVision Settings
+struct MyVisionSettings : VerticalLayout {
+  auto construct(std::shared_ptr<Emulator>) -> void;
+  std::shared_ptr<Emulator> system;
+};
+
+// MARK: Neo Geo Settings
+struct NeoGeoSettings : VerticalLayout {
+  auto construct(std::shared_ptr<Emulator>) -> void;
+  std::shared_ptr<Emulator> system;
+};
+
+// MARK: Neo Geo Pocket Settings
+struct NeoGeoPocketSettings : VerticalLayout {
+  auto construct(std::shared_ptr<Emulator>) -> void;
+  std::shared_ptr<Emulator> system;
+};
+
+// MARK: Neo Geo Pocket Color Settings
+struct NeoGeoPocketColorSettings : VerticalLayout {
+  auto construct(std::shared_ptr<Emulator>) -> void;
+  std::shared_ptr<Emulator> system;
+};
+
+// MARK: N64 Settings
+struct N64SettingsLayout : VerticalLayout {
+  auto construct(std::shared_ptr<Emulator>) -> void;
+  std::shared_ptr<Emulator> system;
+
+  TableLayout nintendo64SettingsLayout{this, Size{~0, 0}};
+    Label nintendo64SettingsLabel{&nintendo64SettingsLayout, Size{0, 0}};
+    Label placeholder{&nintendo64SettingsLayout, Size{0, 0}};
+
+    Label forceInterpreterLabel{&nintendo64SettingsLayout, Size{0, 0}};
+    CheckLabel forceInterpreterCheck{&nintendo64SettingsLayout, Size{0, 0}};
+
+    Label homebrewLabel{&nintendo64SettingsLayout, Size{0, 0}};
+    CheckLabel homebrewCheck{&nintendo64SettingsLayout, Size{0, 0}};
+
+    Label expansionPakLabel{&nintendo64SettingsLayout, Size{0, 0}};
+    CheckLabel expansionPakCheck{&nintendo64SettingsLayout, Size{0, 0}};
+
+    Label controllerPakBankLabel{&nintendo64SettingsLayout, Size{0, 0}};
+    ComboButton controllerPakBankOption{&nintendo64SettingsLayout, Size{0, 0}};
+
+  Label renderSettingsLabel{this, Size{0, 20_sy}, 10_sy};
+  TableLayout nintendo64RenderSettingsLayout{this, Size{~0, 0}};
+
+    Label disableVideoInterfaceProcessingLabel{&nintendo64RenderSettingsLayout, Size{0, 0}};
+    CheckLabel disableVideoInterfaceProcessingCheck{&nintendo64RenderSettingsLayout, Size{0, 0}};
+
+    Label weaveDeinterlacingLabel{&nintendo64RenderSettingsLayout, Size{0, 0}};
+    CheckLabel weaveDeinterlacingCheck{&nintendo64RenderSettingsLayout, Size{0, 0}};
+
+    Label renderQualityLabel{&nintendo64RenderSettingsLayout, Size{0, 0}};
+    ComboButton renderQualityOption{&nintendo64RenderSettingsLayout, Size{0, 0}};
+
+    Label renderSupersamplingLabel{&nintendo64RenderSettingsLayout, Size{0, 0}};
+    CheckLabel renderSupersamplingCheck{&nintendo64RenderSettingsLayout, Size{0, 0}};
+
+    Label placeholder2{&nintendo64RenderSettingsLayout, Size{0, 0}};
+    Label renderSettingsHint{&nintendo64RenderSettingsLayout, Size{0, 0}};
+};
+
+// MARK: N64DD Settings
+struct N64DDSettingsLayout : VerticalLayout {
+  auto construct(std::shared_ptr<Emulator>) -> void;
+  std::shared_ptr<Emulator> system;
+};
+
+// MARK: PCEngine Settings
+struct PCEngineSettings : VerticalLayout {
+  auto construct(std::shared_ptr<Emulator>) -> void;
+  std::shared_ptr<Emulator> system;
+};
+
+// MARK: PCEngine CD Settings
+struct PCEngineCDSettings : VerticalLayout {
+  auto construct(std::shared_ptr<Emulator>) -> void;
+  std::shared_ptr<Emulator> system;
+};
+
+// MARK: NEC PAC Settings
+struct NECPACSettings : VerticalLayout {
+  auto construct(std::shared_ptr<Emulator>) -> void;
+  std::shared_ptr<Emulator> system;
+};
+
+// MARK: PlayStation Settings
+struct PlayStationSettings : VerticalLayout {
+  auto construct(std::shared_ptr<Emulator>) -> void;
+  std::shared_ptr<Emulator> system;
+};
+
+// MARK: PocketChallengeV2 Settings
+struct PocketChallengeV2Settings : VerticalLayout {
+  auto construct(std::shared_ptr<Emulator>) -> void;
+  std::shared_ptr<Emulator> system;
+};
+
+// MARK: Saturn Settings
+struct SaturnSettings : VerticalLayout {
+  auto construct(std::shared_ptr<Emulator>) -> void;
+  std::shared_ptr<Emulator> system;
+};
+
+// MARK: SG1000 Settings
+struct SG1000Settings : VerticalLayout {
+  auto construct(std::shared_ptr<Emulator>) -> void;
+  std::shared_ptr<Emulator> system;
+};
+
+// MARK: SC3000 Settings
+struct SC3000Settings : VerticalLayout {
+  auto construct(std::shared_ptr<Emulator>) -> void;
+  std::shared_ptr<Emulator> system;
+};
+
+// MARK: SuperFamicom Settings
+struct SuperFamicomSettings : VerticalLayout {
+  auto construct(std::shared_ptr<Emulator>) -> void;
+  std::shared_ptr<Emulator> system;
+
+  TableLayout sfcRenderSettingsLayout{this, Size{~0, 0}};
+    Label pixelAccuracyHint{&sfcRenderSettingsLayout, Size{0, 0}};
+    CheckLabel pixelAccuracyOption{&sfcRenderSettingsLayout, Size{0, 20_sy}};
+    //
+    Label colorBleedHint{&sfcRenderSettingsLayout, Size{0, 0}};
+    CheckLabel colorBleedOption{&sfcRenderSettingsLayout, Size{0, 20_sy}};
+};
+
+// MARK: SuperGrafx Settings
+struct SuperGrafxSettings : VerticalLayout {
+  auto construct(std::shared_ptr<Emulator>) -> void;
+  std::shared_ptr<Emulator> system;
+};
+
+// MARK: SuperGrafx CD Settings
+struct SuperGrafxCDSettings : VerticalLayout {
+  auto construct(std::shared_ptr<Emulator>) -> void;
+  std::shared_ptr<Emulator> system;
+};
+
+// MARK: WonderSwan Settings
+struct WonderSwanSettings : VerticalLayout {
+  auto construct(std::shared_ptr<Emulator>) -> void;
+  std::shared_ptr<Emulator> system;
+};
+
+// MARK: WonderSwan Color Settings
+struct WonderSwanColorSettings : VerticalLayout {
+  auto construct(std::shared_ptr<Emulator>) -> void;
+  std::shared_ptr<Emulator> system;
+};
+
+// MARK: ZXSpectrum Settings
+struct ZXSpectrumSettings : VerticalLayout {
+  auto construct(std::shared_ptr<Emulator>) -> void;
+  std::shared_ptr<Emulator> system;
+};
+
+// MARK: ZX Spectrum 128 Settings
+struct ZXSpectrum128Settings : VerticalLayout {
+  auto construct(std::shared_ptr<Emulator>) -> void;
+  std::shared_ptr<Emulator> system;
+};
+

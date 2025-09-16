@@ -1,12 +1,14 @@
 #include "../desktop-ui.hpp"
 #include <nall/vector-helpers.hpp>
+#include "general.cpp"
 #include "video.cpp"
 #include "audio.cpp"
 #include "input.cpp"
+#include "input-systems.cpp"
 #include "hotkeys.cpp"
 #include "emulators.cpp"
-#include "options.cpp"
 #include "firmware.cpp"
+#include "overrides.cpp"
 #include "paths.cpp"
 #include "drivers.cpp"
 #include "debug.cpp"
@@ -15,16 +17,15 @@
 Settings settings;
 namespace Instances { Instance<SettingsWindow> settingsWindow; }
 SettingsWindow& settingsWindow = Instances::settingsWindow();
+GeneralSettings& generalSettings = settingsWindow.generalSettings;
 VideoSettings& videoSettings = settingsWindow.videoSettings;
 AudioSettings& audioSettings = settingsWindow.audioSettings;
 InputSettings& inputSettings = settingsWindow.inputSettings;
 HotkeySettings& hotkeySettings = settingsWindow.hotkeySettings;
 EmulatorSettings& emulatorSettings = settingsWindow.emulatorSettings;
-OptionSettings& optionSettings = settingsWindow.optionSettings;
 FirmwareSettings& firmwareSettings = settingsWindow.firmwareSettings;
 PathSettings& pathSettings = settingsWindow.pathSettings;
 DebugSettings& debugSettings = settingsWindow.debugSettings;
-DriverSettings& driverSettings = settingsWindow.driverSettings;
 
 auto Settings::load() -> void {
   auto settingsPath = locate("settings.bml");
@@ -39,19 +40,22 @@ auto Settings::save() -> void {
   file::write(settingsPath, BML::serialize(*this, " "));
 }
 
-auto Settings::process(bool load) -> void {
-  if(load) {
-    //initialize non-static default settings
-    video.driver = ruby::Video::optimalDriver();
-    audio.driver = ruby::Audio::optimalDriver();
-    input.driver = ruby::Input::optimalDriver();
-  }
+auto Settings::processBasic(bool load, string prefix, std::shared_ptr<Emulator> emulator) -> void {
 
   #define bind(type, path, name) \
     if(load) { \
-      if(auto node = operator[](path)) name = node.type(); \
+      if(auto node = operator[]({prefix, path})) { \
+        name = node.type(); \
+        if(prefix) emulator->settingsOverridesList.push_back(path); \
+      } \
     } else { \
-      operator()(path).setValue(name); \
+      if(prefix) { \
+        if(std::find(emulator->settingsOverridesList.begin(), emulator->settingsOverridesList.end(), path) != emulator->settingsOverridesList.end()) { \
+          operator()({prefix, path}).setValue(name); \
+        } \
+      } else { \
+        operator()({prefix, path}).setValue(name); \
+      } \
     } \
 
   bind(string,  "Video/Driver", video.driver);
@@ -78,10 +82,6 @@ auto Settings::process(bool load) -> void {
   bind(boolean, "Video/InterframeBlending", video.interframeBlending);
   bind(boolean, "Video/Overscan", video.overscan);
   bind(boolean, "Video/PixelAccuracy", video.pixelAccuracy);
-  bind(string,  "Video/Quality", video.quality);
-  bind(boolean, "Video/Supersampling", video.supersampling);
-  bind(boolean, "Video/DisableVideoInterfaceProcessing", video.disableVideoInterfaceProcessing);
-  bind(boolean, "Video/WeaveDeinterlacing", video.weaveDeinterlacing);
 
   bind(string,  "Audio/Driver", audio.driver);
   bind(string,  "Audio/Device", audio.device);
@@ -117,21 +117,59 @@ auto Settings::process(bool load) -> void {
   bind(string,  "Paths/Saves", paths.saves);
   bind(string,  "Paths/Screenshots", paths.screenshots);
   bind(string,  "Paths/Debugging", paths.debugging);
-  bind(string,  "Paths/ArcadeRoms", paths.arcadeRoms);
-  bind(string,  "Paths/SuperFamicom/GameBoy", paths.superFamicom.gameBoy);
-  bind(string,  "Paths/SuperFamicom/BSMemory", paths.superFamicom.bsMemory);
-  bind(string,  "Paths/SuperFamicom/SufamiTurbo", paths.superFamicom.sufamiTurbo);
 
   bind(natural, "DebugServer/Port", debugServer.port);
   bind(boolean, "DebugServer/Enabled", debugServer.enabled);
   bind(boolean, "DebugServer/UseIPv4", debugServer.useIPv4);
 
-  bind(boolean, "Nintendo64/ExpansionPak", nintendo64.expansionPak);
-  bind(string, "Nintendo64/ControllerPakBankString", nintendo64.controllerPakBankString);
+  #undef bind
+}
 
-  bind(boolean, "GameBoyAdvance/Player", gameBoyAdvance.player);
+auto Settings::process(bool load) -> void {
+  if(load) {
+    //initialize non-static default settings
+    video.driver = ruby::Video::optimalDriver();
+    audio.driver = ruby::Audio::optimalDriver();
+    input.driver = ruby::Input::optimalDriver();
+  }
 
-  bind(boolean, "MegaDrive/TMSS", megadrive.tmss);
+  #define bind(type, path, name) \
+    if(load) { \
+      if(auto node = operator[](path)) name = node.type(); \
+    } else { \
+      operator()(path).setValue(name); \
+    } \
+
+  processBasic(load, "", nullptr);
+
+#ifdef CORE_N64
+  if(!nintendo64) nintendo64 = new N64Settings;
+  bind(string,  "Nintendo64/Video/Quality", nintendo64->video.quality);
+  bind(boolean, "Nintendo64/Video/Supersampling", nintendo64->video.supersampling);
+  bind(boolean, "Nintendo64/Video/DisableVideoInterfaceProcessing", nintendo64->video.disableVideoInterfaceProcessing);
+  bind(boolean, "Nintendo64/Video/WeaveDeinterlacing", nintendo64->video.weaveDeinterlacing);
+  bind(boolean, "Nintendo64/System/ExpansionPak", nintendo64->system.expansionPak);
+  bind(string,  "Nintendo64/System/ControllerPakBankString", nintendo64->system.controllerPakBankString);
+#endif
+
+#ifdef CORE_GBA
+  if(!gameBoyAdvance) gameBoyAdvance = new GBASettings;
+  bind(boolean, "GameBoyAdvance/Player", gameBoyAdvance->system.player);
+#endif
+
+#ifdef CORE_MD
+  if(!megaDrive) megaDrive = new MDSettings;
+  bind(boolean, "MegaDrive/TMSS", megaDrive->system.tmss);
+#endif
+
+#ifdef CORE_SFC
+  if(!superFamicom) superFamicom = new SFCSettings;
+  bind(string,  "Paths/SuperFamicom/GameBoy", superFamicom->paths.gameBoy);
+  bind(string,  "Paths/SuperFamicom/BSMemory", superFamicom->paths.bsMemory);
+  bind(string,  "Paths/SuperFamicom/SufamiTurbo", superFamicom->paths.sufamiTurbo);
+#endif
+
+  bind(string,  "Paths/ArcadeRoms", paths.arcadeRoms);
 
   for(u32 index : range(9)) {
     string name = {"Recent/Game-", 1 + index};
@@ -177,8 +215,19 @@ auto Settings::process(bool load) -> void {
   }
 
   for(auto& emulator : emulators) {
+    if(!emulator->settingsOverrides) {
+      emulator->settingsOverrides = new Settings;
+    }
     string base = string{emulator->name}.replace(" ", ""), name;
-    base.replace("(", "").replace(")", "");
+    string overrides;
+    if(load == 0) for(auto& settingOverride : emulator->settingsOverridesList) overrides.append(settingOverride, ";");
+    if(load == 0) overrides.trimRight(";", 1L);
+    name = {base, "/Overrides"};
+    bind(string, base, overrides);
+    if(load) {
+      auto overridesList = nall::split(overrides, ";");
+      emulator->settingsOverridesList = overridesList;
+    }
     name = {base, "/Visible"};
     bind(boolean, name, emulator->configuration.visible);
     name = {base, "/Path"};
@@ -188,6 +237,24 @@ auto Settings::process(bool load) -> void {
       name.replace(" ", "-");
       bind(string, name, firmware.location);
     }
+    processBasic(load, {base, "/"}, emulator);
+    /*std::vector<string> padOverrides;
+    std::copy_if(emulator->settingsOverridesList.begin(), emulator->settingsOverridesList.end(),
+                 std::back_inserter(padOverrides), [] (string str) { return str.contains("VirtualPad"); });
+    for(auto padOverride : padOverrides) {
+      auto index = 1; //fix
+      auto overrideMapping = emulator->virtualMappingPorts[index].pad.inputs;
+      auto input = string{"Up"}; //fix
+      string name = {base, "VirtualPad", 1 + index, "/", string{input.name}.replace(" ", ".").replace("(", ".").replace(")", "")}, value;
+      if(load == 0) for(auto& assignment : overrideMapping.mapping->assignments) value.append(assignment, ";");
+      if(load == 0) value.trimRight(";", 1L);
+      bind(string, name, value);
+      if(load == 1) {
+        auto parts = nall::split(value, ";");
+        parts.resize(BindingLimit);
+        for(u32 binding : range(BindingLimit)) input.mapping->assignments[binding] = parts[binding];
+      }
+    }*/
   }
 
   #undef bind
@@ -204,55 +271,62 @@ auto SettingsWindow::initialize() -> void {
     hotkeySettings.setVisible(false);
   });
 
-  panelContainer.setPadding(5_sx, 5_sy);
-
-  panelList.append(ListViewItem().setText("Video").setIcon(Icon::Device::Display));
-  panelList.append(ListViewItem().setText("Audio").setIcon(Icon::Device::Speaker));
-  panelList.append(ListViewItem().setText("Input").setIcon(Icon::Device::Joypad));
-  panelList.append(ListViewItem().setText("Hotkeys").setIcon(Icon::Device::Keyboard));
-  panelList.append(ListViewItem().setText("Emulators").setIcon(Icon::Place::Server));
-  panelList.append(ListViewItem().setText("Options").setIcon(Icon::Action::Settings));
-  panelList.append(ListViewItem().setText("Firmware").setIcon(Icon::Emblem::Binary));
-  panelList.append(ListViewItem().setText("Paths").setIcon(Icon::Emblem::Folder));
-  panelList.append(ListViewItem().setText("Drivers").setIcon(Icon::Place::Settings));
-  panelList.append(ListViewItem().setText("Debug").setIcon(Icon::Device::Network));
-  panelList->setUsesSidebarStyle();
+  panelContainer.setPadding(20_sx, 20_sy);
+  
+#if defined(Hiro_Toolbar)
+  panelList.append(ToolbarItem().setText("General").setIcon(Icon::Action::Settings));
+  panelList.append(ToolbarItem().setText("Video").setIcon(Icon::Device::Display));
+  panelList.append(ToolbarItem().setText("Audio").setIcon(Icon::Device::Speaker));
+  panelList.append(ToolbarItem().setText("Input").setIcon(Icon::Device::Joypad));
+  panelList.append(ToolbarItem().setText("Hotkeys").setIcon(Icon::Device::Keyboard));
+  panelList.append(ToolbarItem().setText("Systems").setIcon(Icon::Place::Server));
+  panelList.append(ToolbarItem().setText("Firmware").setIcon(Icon::Emblem::Binary));
+  panelList.append(ToolbarItem().setText("Paths").setIcon(Icon::Emblem::Folder));
+  panelList.append(ToolbarItem().setText("Debug").setIcon(Icon::Device::Network));
+  panelList.setWindow(*this);
+#else
+  panelList.append(TabFrameItem().setText("General").setIcon(Icon::Action::Settings));
+  panelList.append(TabFrameItem().setText("Video").setIcon(Icon::Device::Display));
+  panelList.append(TabFrameItem().setText("Audio").setIcon(Icon::Device::Speaker));
+  panelList.append(TabFrameItem().setText("Input").setIcon(Icon::Device::Joypad));
+  panelList.append(TabFrameItem().setText("Hotkeys").setIcon(Icon::Device::Keyboard));
+  panelList.append(TabFrameItem().setText("Systems").setIcon(Icon::Place::Server));
+  panelList.append(TabFrameItem().setText("Firmware").setIcon(Icon::Emblem::Binary));
+  panelList.append(TabFrameItem().setText("Paths").setIcon(Icon::Emblem::Folder));
+  panelList.append(TabFrameItem().setText("Debug").setIcon(Icon::Device::Network));
+#endif
   panelList.onChange([&] { eventChange(); });
 
+  panelContainer.append(generalSettings, Size{~0, ~0});
   panelContainer.append(videoSettings, Size{~0, ~0});
   panelContainer.append(audioSettings, Size{~0, ~0});
   panelContainer.append(inputSettings, Size{~0, ~0});
   panelContainer.append(hotkeySettings, Size{~0, ~0});
   panelContainer.append(emulatorSettings, Size{~0, ~0});
-  panelContainer.append(optionSettings, Size{~0, ~0});
   panelContainer.append(firmwareSettings, Size{~0, ~0});
   panelContainer.append(pathSettings, Size{~0, ~0});
-  panelContainer.append(driverSettings, Size{~0, ~0});
   panelContainer.append(debugSettings, Size{~0, ~0});
-  panelContainer.append(homePanel, Size{~0, ~0});
 
+  generalSettings.construct();
   videoSettings.construct();
   audioSettings.construct();
   inputSettings.construct();
   hotkeySettings.construct();
   emulatorSettings.construct();
-  optionSettings.construct();
   firmwareSettings.construct();
   pathSettings.construct();
-  driverSettings.construct();
   debugSettings.construct();
-  homePanel.construct();
 
   setDismissable();
-  setTitle("Configuration");
-  setSize({700_sx, 425_sy});
-  setAlignment({0.0, 1.0});
-  setResizable(false);
-  
-  driverSettings.videoRefresh();
-  driverSettings.audioRefresh();
-  driverSettings.inputRefresh();
+  setTitle("Settings");
+  setSize({875_sx, 465_sy});
+  setAlignment({0.25, 0.25});
+  videoSettings.videoRefresh();
+  audioSettings.audioRefresh();
+  generalSettings.refresh();
+  inputSettings.inputRefresh();
   initialized = true;
+  //setResizable(false);
 }
 
 auto SettingsWindow::show(const string& panel) -> void {
@@ -270,32 +344,28 @@ auto SettingsWindow::show(const string& panel) -> void {
 }
 
 auto SettingsWindow::eventChange() -> void {
+  generalSettings.setVisible(false);
   videoSettings.setVisible(false);
   audioSettings.setVisible(false);
   inputSettings.setVisible(false);
   hotkeySettings.setVisible(false);
   emulatorSettings.setVisible(false);
-  optionSettings.setVisible(false);
   firmwareSettings.setVisible(false);
   pathSettings.setVisible(false);
-  driverSettings.setVisible(false);
   debugSettings.setVisible(false);
-  homePanel.setVisible(false);
 
   bool found = false;
   if(auto item = panelList.selected()) {
-    if(item.text() == "Video"    ) found = true, videoSettings.setVisible();
-    if(item.text() == "Audio"    ) found = true, audioSettings.setVisible();
-    if(item.text() == "Input"    ) found = true, inputSettings.setVisible();
-    if(item.text() == "Hotkeys"  ) found = true, hotkeySettings.setVisible();
-    if(item.text() == "Emulators") found = true, emulatorSettings.setVisible();
-    if(item.text() == "Options"  ) found = true, optionSettings.setVisible();
-    if(item.text() == "Firmware" ) found = true, firmwareSettings.setVisible();
-    if(item.text() == "Paths"    ) found = true, pathSettings.setVisible();
-    if(item.text() == "Drivers"  ) found = true, driverSettings.setVisible();
-    if(item.text() == "Debug"    ) found = true, debugSettings.setVisible();
+    if(item.text() == "General" ) found = true, generalSettings.setVisible(), *this->setSize(Size{sx(settingsWidth), 375_sy});
+    if(item.text() == "Video"   ) found = true, videoSettings.setVisible(), *this->setSize(Size{sx(settingsWidth), 495_sy});
+    if(item.text() == "Audio"   ) found = true, audioSettings.setVisible(), *this->setSize(Size{sx(settingsWidth), 290_sy});
+    if(item.text() == "Input"   ) found = true, inputSettings.setVisible(), *this->setSize(Size{sx(settingsWidth), 475_sy});
+    if(item.text() == "Hotkeys" ) found = true, hotkeySettings.setVisible(), *this->setSize(Size{sx(settingsWidth), 475_sy});
+    if(item.text() == "Systems" ) found = true, emulatorSettings.setVisible(), *this->setSize(Size{sx(settingsWidth), 475_sy});
+    if(item.text() == "Firmware") found = true, firmwareSettings.setVisible(), *this->setSize(Size{sx(settingsWidth), 475_sy});
+    if(item.text() == "Paths"   ) found = true, pathSettings.setVisible(), *this->setSize(Size{sx(settingsWidth), 350_sy});
+    if(item.text() == "Debug"   ) found = true, debugSettings.setVisible(), *this->setSize(Size{sx(settingsWidth), 180_sy});
   }
-  if(!found) homePanel.setVisible();
 
   panelContainer.resize();
 }

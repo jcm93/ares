@@ -85,6 +85,8 @@ Declare(TableViewColumn)
 Declare(TableViewItem)
 Declare(TableViewCell)
 Declare(TextEdit)
+Declare(Toolbar)
+Declare(ToolbarItem)
 Declare(TreeView)
 Declare(TreeViewItem)
 Declare(VerticalScrollBar)
@@ -199,6 +201,8 @@ enum class Sort : u32 { None, Ascending, Descending };
 #include "widget/table-view-item.hpp"
 #include "widget/table-view-cell.hpp"
 #include "widget/text-edit.hpp"
+#include "widget/toolbar.hpp"
+#include "widget/toolbar-item.hpp"
 #include "widget/tree-view.hpp"
 #include "widget/tree-view-item.hpp"
 #include "widget/vertical-scroll-bar.hpp"

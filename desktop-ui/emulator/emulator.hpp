@@ -1,3 +1,5 @@
+struct Settings;
+
 struct Emulator {
   //emulators.cpp
   static auto construct() -> void;
@@ -50,8 +52,11 @@ struct Emulator {
   std::shared_ptr<mia::Pak> gamepad;
   std::shared_ptr<mia::Pak> gb;
   std::vector<InputPort> ports;
+  std::vector<SystemVirtualPadMappingPort> virtualMappingPorts;
   std::vector<string> inputBlacklist;
   std::vector<string> portBlacklist;
+  Settings *settingsOverrides;
+  std::vector<string> settingsOverridesList = {};
 
   struct Configuration {
     bool visible = true;  //whether or not to show this emulator in the load menu
@@ -71,3 +76,48 @@ struct Emulator {
 
 extern std::vector<std::shared_ptr<Emulator>> emulators;
 extern std::shared_ptr<Emulator> emulator;
+
+#ifdef CORE_N64
+struct N64Settings: Markup::Node {
+  struct Video {
+    nall::string quality = "Native";
+    bool supersampling = false;
+    bool disableVideoInterfaceProcessing = false;
+    bool weaveDeinterlacing = true;
+  } video;
+
+  struct System {
+    bool expansionPak = true;
+    u8 controllerPakBankCount = 1;
+    nall::string controllerPakBankString = "32KiB (Default)";
+  } system;
+};
+#endif
+
+#ifdef CORE_GBA
+struct GBASettings: Markup::Node {
+  struct System {
+    bool player = true;
+  } system;
+};
+#endif
+
+#ifdef CORE_MD
+struct MDSettings: Markup::Node {
+  struct System {
+    bool tmss = true;
+  } system;
+};
+#endif
+
+#ifdef CORE_SFC
+struct SFCSettings: Markup::Node {
+  struct Paths {
+    nall::string gameBoy;
+    nall::string bsMemory;
+    nall::string sufamiTurbo;
+  } paths;
+};
+#endif
+
+

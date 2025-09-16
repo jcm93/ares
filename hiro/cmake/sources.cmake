@@ -144,6 +144,10 @@ target_sources(
     core/widget/table-view.hpp
     core/widget/text-edit.cpp
     core/widget/text-edit.hpp
+    core/widget/toolbar-item.cpp
+    core/widget/toolbar-item.hpp
+    core/widget/toolbar.cpp
+    core/widget/toolbar.hpp
     core/widget/tree-view-item.cpp
     core/widget/tree-view-item.hpp
     core/widget/tree-view.cpp
@@ -263,6 +267,10 @@ if(OS_MACOS)
       cocoa/widget/combo-button-item.hpp
       cocoa/widget/combo-button.cpp
       cocoa/widget/combo-button.hpp
+      cocoa/widget/combo-edit-item.cpp
+      cocoa/widget/combo-edit-item.hpp
+      cocoa/widget/combo-edit.cpp
+      cocoa/widget/combo-edit.hpp
       cocoa/widget/console.cpp
       cocoa/widget/console.hpp
       cocoa/widget/frame.cpp
@@ -287,6 +295,10 @@ if(OS_MACOS)
       cocoa/widget/tab-frame-item.hpp
       cocoa/widget/tab-frame.cpp
       cocoa/widget/tab-frame.hpp
+      cocoa/widget/toolbar-item.cpp
+      cocoa/widget/toolbar-item.hpp
+      cocoa/widget/toolbar.cpp
+      cocoa/widget/toolbar.hpp
       cocoa/widget/table-view-cell.cpp
       cocoa/widget/table-view-cell.hpp
       cocoa/widget/table-view-column.cpp
@@ -310,7 +322,8 @@ if(OS_MACOS)
       cocoa/widget/widget.cpp
       cocoa/widget/widget.hpp
   )
-elseif(OS_WINDOWS)
+endif()
+if(OS_MACOS)
   target_sources(
     hiro
     PRIVATE
@@ -390,6 +403,10 @@ elseif(OS_WINDOWS)
       windows/widget/combo-button-item.hpp
       windows/widget/combo-button.cpp
       windows/widget/combo-button.hpp
+      windows/widget/combo-edit-item.cpp
+      windows/widget/combo-edit-item.hpp
+      windows/widget/combo-edit.cpp
+      windows/widget/combo-edit.hpp
       windows/widget/frame.cpp
       windows/widget/frame.hpp
       windows/widget/hex-edit.cpp

@@ -15,6 +15,8 @@ target_link_libraries(
 
 get_target_property(hiro_SOURCES hiro SOURCES)
 
+target_compile_definitions(hiro PUBLIC HIRO_COCOA)
+
 set_source_files_properties(hiro ${hiro_SOURCES} PROPERTIES HEADER_FILE_ONLY TRUE)
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL Darwin)

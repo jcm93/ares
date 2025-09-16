@@ -10,6 +10,8 @@ set(hiro.resource windows/hiro.rc)
 
 get_target_property(hiro_SOURCES hiro SOURCES)
 
+target_compile_definitions(hiro PUBLIC HIRO_WINDOWS)
+
 target_sources(hiro PRIVATE cmake/os-windows.cmake)
 
 set_source_files_properties(hiro ${hiro_SOURCES} PROPERTIES HEADER_FILE_ONLY TRUE)

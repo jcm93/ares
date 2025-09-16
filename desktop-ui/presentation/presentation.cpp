@@ -132,8 +132,8 @@ Presentation::Presentation() {
   hotkeySettingsAction.setText("Hotkeys" ELLIPSIS).setIcon(Icon::Device::Keyboard).onActivate([&] {
     settingsWindow.show("Hotkeys");
   });
-  emulatorSettingsAction.setText("Emulators" ELLIPSIS).setIcon(Icon::Place::Server).onActivate([&] {
-    settingsWindow.show("Emulators");
+  emulatorSettingsAction.setText("Systems" ELLIPSIS).setIcon(Icon::Place::Server).onActivate([&] {
+    settingsWindow.show("Systems");
   });
   optionSettingsAction.setText("Options" ELLIPSIS).setIcon(Icon::Action::Settings).onActivate([&] {
     settingsWindow.show("Options");
@@ -297,7 +297,7 @@ Presentation::Presentation() {
   #if defined(PLATFORM_MACOS)
   Application::Cocoa::onAbout([&] { aboutAction.doActivate(); });
   Application::Cocoa::onActivate([&] { setFocused(); });
-  Application::Cocoa::onPreferences([&] { settingsWindow.show("Video"); });
+  Application::Cocoa::onPreferences([&] { settingsWindow.show("General"); });
   Application::Cocoa::onQuit([&] { doClose(); });
   #endif
 }
@@ -307,8 +307,8 @@ auto Presentation::resizeWindow() -> void {
   if(maximized()) return;
 
   u32 multiplier = settings.video.multiplier;
-  u32 viewportWidth = 320 * multiplier;
-  u32 viewportHeight = 240 * multiplier;
+  u32 viewportWidth = 320_sx * multiplier;
+  u32 viewportHeight = 240_sy * multiplier;
 
   if(emulator && !program.screens.empty()) {
     auto& node = program.screens.front();
@@ -347,7 +347,7 @@ auto Presentation::resizeWindow() -> void {
     setSize({viewportWidth, viewportHeight + statusHeight});
   }
 
-  setMinimumSize({160, 144 + statusHeight});
+  setMinimumSize({160_sx, 144_sy + statusHeight});
 }
 
 auto Presentation::loadEmulators() -> void {
@@ -475,7 +475,7 @@ auto Presentation::loadEmulators() -> void {
     item.setIcon(Icon::Action::Add);
     item.setText("Add Systems" ELLIPSIS);
     item.onActivate([&] {
-      settingsWindow.show("Emulators");
+      settingsWindow.show("Systems");
     });
   }
 

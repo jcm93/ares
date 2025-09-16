@@ -227,7 +227,7 @@ auto pWindow::setModal(bool modality) -> void {
 }
 
 auto pWindow::setResizable(bool resizable) -> void {
-  auto style = GetWindowLongPtr(hwnd, GWL_STYLE) & WS_VISIBLE;
+  auto style = GetWindowLongPtr(hwnd, GWL_STYLE) & WS_VISIBLE | ES_AUTOVSCROLL;
   SetWindowLongPtr(hwnd, GWL_STYLE, style | (state().resizable ? ResizableStyle : FixedStyle));
   setGeometry(state().geometry);
 }

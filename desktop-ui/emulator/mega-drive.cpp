@@ -95,7 +95,7 @@ auto MegaDrive::load() -> LoadResult {
     if(result != successful) return result;
   }
 
-  ares::MegaDrive::option("TMSS", settings.megadrive.tmss);
+  ares::MegaDrive::option("TMSS", settings.megaDrive->system.tmss);
 
   if(!ares::MegaDrive::load(root, {"[Sega] ", name, " (", region, ")"})) return otherError;
 
