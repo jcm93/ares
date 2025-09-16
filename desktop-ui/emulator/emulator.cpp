@@ -60,7 +60,6 @@ auto Emulator::region() -> string {
   return {};
 }
 
-
 auto Emulator::handleLoadResult(LoadResult result) -> void {
   string errorText;
 

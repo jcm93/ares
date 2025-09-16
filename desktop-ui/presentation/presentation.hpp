@@ -1,5 +1,5 @@
 struct Presentation : Window {
-  enum : u32 { StatusHeight = 24 };
+  u32 StatusHeight = 24_sy;
 
   Presentation();
   auto resizeWindow() -> void;
@@ -83,16 +83,16 @@ struct Presentation : Window {
   VerticalLayout layout{this};
     HorizontalLayout viewportLayout{&layout, Size{~0, ~0}, 0};
       Viewport viewport{&viewportLayout, Size{~0, ~0}, 0};
-      VerticalLayout iconLayout{&viewportLayout, Size{144, ~0}, 0};
-        Canvas iconSpacer{&iconLayout, Size{144, ~0}, 0};
-        HorizontalLayout iconHorizontal{&iconLayout, Size{144, 128}, 0};
-          Canvas iconCanvas{&iconHorizontal, Size{128, 128}, 0};
-          Canvas iconPadding{&iconHorizontal, Size{16, 128}, 0};
-        Canvas iconBottom{&iconLayout, Size{144, 10}, 0};
+      VerticalLayout iconLayout{&viewportLayout, Size{144_sx, ~0}, 0};
+        Canvas iconSpacer{&iconLayout, Size{144_sx, ~0}, 0};
+        HorizontalLayout iconHorizontal{&iconLayout, Size{144_sx, 128_sy}, 0};
+          Canvas iconCanvas{&iconHorizontal, Size{128_sx, 128_sy}, 0};
+          Canvas iconPadding{&iconHorizontal, Size{16_sx, 128_sy}, 0};
+        Canvas iconBottom{&iconLayout, Size{144_sx, 10_sy}, 0};
     HorizontalLayout statusLayout{&layout, Size{~0, StatusHeight}, 0};
       Label spacerLeft{&statusLayout, Size{8, ~0}, 0};
       Label statusLeft{&statusLayout, Size{~0, ~0}, 0};
-      Label statusRight{&statusLayout, Size{90, ~0}, 0};
+      Label statusRight{&statusLayout, Size{90_sx, ~0}, 0};
       Label spacerRight{&statusLayout, Size{8, ~0}, 0};
 };
 

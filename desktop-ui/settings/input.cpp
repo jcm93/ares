@@ -2,6 +2,31 @@ auto InputSettings::construct() -> void {
   setCollapsible();
   setVisible(false);
 
+  inputDriverList.onChange([&] {
+    if(inputDriverList.selected().text() != settings.input.driver) {
+      auto old = settings.video.driver;
+      settings.input.driver = inputDriverList.selected().text();
+      if (inputDriverUpdate()) {
+        settings.video.driver = old;
+        inputRefresh();
+      }
+    }
+  });
+  inputDriverLabel.setText("Driver:");
+  inputDefocusLabel.setText("When focus is lost:");
+  inputDefocusPause.setText("Pause emulation").onActivate([&] {
+    settings.input.defocus = "Pause";
+  });
+  inputDefocusBlock.setText("Block input").onActivate([&] {
+    settings.input.defocus = "Block";
+  });
+  inputDefocusAllow.setText("Allow input").onActivate([&] {
+    settings.input.defocus = "Allow";
+  });
+  if(settings.input.defocus == "Pause") inputDefocusPause.setChecked();
+  if(settings.input.defocus == "Block") inputDefocusBlock.setChecked();
+  if(settings.input.defocus == "Allow") inputDefocusAllow.setChecked();
+
   systemList.append(ComboButtonItem().setText("Virtual Gamepads"));
   for(auto& emulator : emulators) {
     systemList.append(ComboButtonItem().setText(emulator->name));
@@ -215,4 +240,24 @@ auto InputSettings::setVisible(bool visible) -> InputSettings& {
   if(visible == 0) activeMapping.reset(), assignLabel.setText(), settingsWindow.setDismissable(true);
   VerticalLayout::setVisible(visible);
   return *this;
+}
+
+auto InputSettings::inputRefresh() -> void {
+  inputDriverList.reset();
+  for(auto& driver : ruby::input.hasDrivers()) {
+    ComboButtonItem item{&inputDriverList};
+    item.setText(driver);
+    if(driver == ruby::input.driver()) item.setSelected();
+  }
+  VerticalLayout::resize();
+}
+
+auto InputSettings::inputDriverUpdate() -> bool {
+  if(emulator && settings.input.driver != "None" && MessageDialog(
+    "Warning: incompatible drivers may cause this software to crash.\n"
+    "Are you sure you want to change this driver while a game is loaded?"
+  ).setAlignment(settingsWindow).question() != "Yes") return false;
+  program.inputDriverUpdate();
+  inputRefresh();
+  return true;
 }

@@ -70,6 +70,7 @@
 #define Hiro_TabFrame
 #define Hiro_TableView
 #define Hiro_TextEdit
+#define Hiro_Toolbar
 #define Hiro_TreeView
 #define Hiro_VerticalScrollBar
 #define Hiro_VerticalSlider
@@ -77,8 +78,15 @@
 
 //platform-specific exclusions
 
-#if defined(HIRO_WINDOWS) || defined(HIRO_COCOA) || defined(HIRO_QT)
+#if defined(HIRO_WINDOWS) || defined(HIRO_QT) || defined(HIRO_GTK)
+  #undef Hiro_Toolbar
+#endif
+
+#if defined(HIRO_QT)
   #undef Hiro_ComboEdit
+#endif
+
+#if defined(HIRO_WINDOWS) || defined(HIRO_COCOA) || defined(HIRO_QT)
   #undef Hiro_Console
   #undef Hiro_IconView
   #undef Hiro_SourceEdit

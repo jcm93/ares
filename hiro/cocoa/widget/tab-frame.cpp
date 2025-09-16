@@ -5,6 +5,7 @@
 -(id) initWith:(hiro::mTabFrame&)tabFrameReference {
   if(self = [super initWithFrame:NSMakeRect(0, 0, 0, 0)]) {
     tabFrame = &tabFrameReference;
+    //[(NSTabViewController *)self setTabStyle:NSTabViewControllerTabStyleToolbar];
 
     [self setDelegate:self];
   }
@@ -35,7 +36,8 @@
     if(auto item = tabFrame->item(selection)) {
       if(item->state.icon) {
         u32 iconSize = hiro::pFont::size(tabFrame->font(true), " ").height();
-        sizeOfLabel.width += iconSize + 2;
+        u32 labelWidth = hiro::pFont::size(tabFrame->font(true), self.label.UTF8String).width();
+        sizeOfLabel.width += iconSize + labelWidth / 3;
       }
     }
   }
@@ -48,6 +50,7 @@
     if(auto item = tabFrame->item(selection)) {
       if(item->state.icon) {
         u32 iconSize = hiro::pFont::size(tabFrame->font(true), " ").height();
+        u32 labelWidth = hiro::pFont::size(tabFrame->font(true), self.label.UTF8String).width();
         NSImage* image = NSMakeImage(item->state.icon);
 
         [[NSGraphicsContext currentContext] saveGraphicsState];
@@ -69,6 +72,7 @@ namespace hiro {
 
 auto pTabFrame::construct() -> void {
   cocoaView = cocoaTabFrame = [[CocoaTabFrame alloc] initWith:self()];
+  
   pWidget::construct();
 
   setNavigation(state().navigation);

@@ -31,11 +31,14 @@ target_sources(
     settings/debug.cpp
     settings/drivers.cpp
     settings/emulators.cpp
+    settings/emulators.hpp
     settings/firmware.cpp
+    settings/general.cpp
     settings/home.cpp
     settings/hotkeys.cpp
     settings/input.cpp
-    settings/options.cpp
+    settings/overrides.cpp
+    settings/overrides.hpp
     settings/paths.cpp
     settings/settings.hpp
     settings/video.cpp

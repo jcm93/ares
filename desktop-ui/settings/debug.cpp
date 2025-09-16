@@ -2,7 +2,7 @@ auto DebugSettings::construct() -> void {
   setCollapsible();
   setVisible(false);
 
-  debugLabel.setText("GDB-Server").setFont(Font().setBold());
+  debugLabel.setText("GDB Server").setFont(Font().setBold());
   portLayout.setAlignment(1);
     portLabel.setText("Port");
 

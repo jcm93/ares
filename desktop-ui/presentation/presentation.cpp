@@ -294,7 +294,7 @@ Presentation::Presentation() {
   #if defined(PLATFORM_MACOS)
   Application::Cocoa::onAbout([&] { aboutAction.doActivate(); });
   Application::Cocoa::onActivate([&] { setFocused(); });
-  Application::Cocoa::onPreferences([&] { settingsWindow.show("Video"); });
+  Application::Cocoa::onPreferences([&] { settingsWindow.show("General"); });
   Application::Cocoa::onQuit([&] { doClose(); });
   #endif
 }
@@ -304,8 +304,8 @@ auto Presentation::resizeWindow() -> void {
   if(maximized()) return;
 
   u32 multiplier = settings.video.multiplier;
-  u32 viewportWidth = 320 * multiplier;
-  u32 viewportHeight = 240 * multiplier;
+  u32 viewportWidth = 320_sx * multiplier;
+  u32 viewportHeight = 240_sy * multiplier;
 
   if(emulator && !program.screens.empty()) {
     auto& node = program.screens.front();
@@ -344,7 +344,7 @@ auto Presentation::resizeWindow() -> void {
     setSize({viewportWidth, viewportHeight + statusHeight});
   }
 
-  setMinimumSize({160, 144 + statusHeight});
+  setMinimumSize({160_sx, 144_sy + statusHeight});
 }
 
 auto Presentation::loadEmulators() -> void {

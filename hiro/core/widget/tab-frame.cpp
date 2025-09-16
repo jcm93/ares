@@ -67,12 +67,12 @@ auto mTabFrame::onMove(const function<void (TabFrameItem, TabFrameItem)>& callba
 
 auto mTabFrame::remove(sTabFrameItem item) -> type& {
   auto offset = item->offset();
-  item->setParent();
   signal(remove, item);
   state.items.erase(state.items.begin() + item->offset());
   for(auto n : range(offset, itemCount())) {
     state.items[n]->adjustOffset(-1);
   }
+  item->setParent();
   return *this;
 }
 
