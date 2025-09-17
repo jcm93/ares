@@ -13,6 +13,9 @@ OverrideDialog::OverrideDialog() {
   layout.setPadding(5);
   acceptButton.setText("Accept").onActivate([&] { accept(); });
   cancelButton.setText("Cancel").onActivate([&] { cancel(); });
+  for(auto overrideSetting : overrides) {
+    settingSelector.append(ComboButtonItem().setText(overrideSetting.settingName));
+  }
 
   onClose([&] { cancel(); });
 

@@ -62,7 +62,9 @@ auto AudioSettings::construct() -> void {
   });
   audioFrequencyLabel.setText("Frequency:");
   audioFrequencyList.onChange([&] {
-    settings.audio.frequency = audioFrequencyList.selected().text().split(" ").first().natural();
+    auto text = audioFrequencyList.selected().text();
+    auto parts = nall::split(text, " ");
+    settings.audio.frequency = parts.front().natural();
     program.audioFrequencyUpdate();
     audioRefresh();
   });

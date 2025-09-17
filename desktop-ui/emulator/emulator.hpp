@@ -54,11 +54,8 @@ struct Emulator {
   std::vector<InputPort> ports;
   std::vector<string> inputBlacklist;
   std::vector<string> portBlacklist;
-  vector<InputPort> ports;
-  vector<string> inputBlacklist;
-  vector<string> portBlacklist;
   Settings *settingsOverrides;
-  vector<string> settingsOverridesList = {};
+  std::vector<string> settingsOverridesList = {};
 
   struct Configuration {
     bool visible = true;  //whether or not to show this emulator in the load menu

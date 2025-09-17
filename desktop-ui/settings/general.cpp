@@ -8,13 +8,13 @@ auto GeneralSettings::construct() -> void {
   systemOptionsTableLayout.column(0).setAlignment(1.0);
 
   rewindHint.setText("Rewind:");
-  rewind.setText("Allow you to reverse time via the rewind hotkey").setChecked(settings.general.rewind).onToggle([&] {
+  rewind.setText("Allow reversing time via the rewind hotkey").setChecked(settings.general.rewind).onToggle([&] {
     settings.general.rewind = rewind.checked();
     program.rewindReset();
   }).doToggle();
 
   runAheadHint.setText("Run-Ahead:");
-  runAhead.setText("Remove one frame of input lag, but double system requirements")
+  runAhead.setText("Remove one frame of input lag, with a significant performance cost")
     .setEnabled(co_serializable()).setChecked(settings.general.runAhead && co_serializable())
     .onToggle([&] {
     settings.general.runAhead = runAhead.checked() && co_serializable();
@@ -34,12 +34,12 @@ auto GeneralSettings::construct() -> void {
   });
 
   forceInterpreterHint.setText("Force Interpreter:");
-  forceInterpreter.setText("(Slow) Enable interpreter for cores that default to a recompiler")
+  forceInterpreter.setText("Use interpreters over recompilers by default (slow)")
     .setChecked(settings.general.forceInterpreter).onToggle([&] {
     settings.general.forceInterpreter = forceInterpreter.checked();
   });
 
-  syncLabel.setText("Synchronisation").setFont(Font().setBold());
+  syncLabel.setText("Synchronization").setFont(Font().setBold());
 
   syncAdjustmentLayout.setSize({2, 5}).setPadding(12_sx, 0);
   syncAdjustmentLayout.column(0).setAlignment(1.0);
@@ -53,7 +53,7 @@ auto GeneralSettings::construct() -> void {
   ComboButtonItem noneItem{&syncOptionList};
   audioItem.setText("Audio");
   videoItem.setText("Video");
-  dualItem.setText("Dual (VRR or high refresh rate)");
+  dualItem.setText("Hybrid");
   noneItem.setText("None");
 
   syncDescriptionHint.setFont(Font().setSize(7.0)).setForegroundColor(SystemColor::Sublabel);
@@ -86,7 +86,9 @@ auto GeneralSettings::construct() -> void {
 
   audioLatencyLabel.setText("Latency:");
   audioLatencyList.onChange([&] {
-    settings.audio.latency = audioLatencyList.selected().text().split(" ").first().natural();
+    auto text = audioLatencyList.selected().text();
+    auto parts = nall::split(text, " ");
+    settings.audio.latency = parts.front().natural();
     program.audioLatencyUpdate();
     audioSettings.audioRefresh();
   });

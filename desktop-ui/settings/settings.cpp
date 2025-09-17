@@ -45,11 +45,11 @@ auto Settings::processBasic(bool load, string prefix, nall::shared_pointer<Emula
     if(load) { \
       if(auto node = operator[]({prefix, path})) { \
         name = node.type(); \
-        if(prefix) emulator->settingsOverridesList.append(path); \
+        if(prefix) emulator->settingsOverridesList.push_back(path); \
       } \
     } else { \
       if(prefix) { \
-        if(emulator->settingsOverridesList.contains(path)) { \
+        if(std::find(emulator->settingsOverridesList.begin(), emulator->settingsOverridesList.end(), path) != emulator->settingsOverridesList.end()) { \
           operator()({prefix, path}).setValue(name); \
         } \
       } else { \
@@ -223,7 +223,7 @@ auto Settings::process(bool load) -> void {
     name = {base, "/Overrides"};
     bind(string, base, overrides);
     if(load) {
-      auto overridesList = overrides.split(";");
+      auto overridesList = nall::split(overrides, ";");
       emulator->settingsOverridesList = overridesList;
     }
     name = {base, "/Visible"};
