@@ -154,12 +154,6 @@ struct GeneralSettings: VerticalLayout {
       Label autoSaveMemoryHint{&systemOptionsTableLayout, Size{0, 20_sy}};
       CheckLabel autoSaveMemory{&systemOptionsTableLayout, Size{0, 20_sy}};
       //
-      Label homebrewModeHint{&systemOptionsTableLayout, Size{0, 20_sy}};
-      CheckLabel homebrewMode{&systemOptionsTableLayout, Size{0, 20_sy}};
-      //
-      Label forceInterpreterHint{&systemOptionsTableLayout, Size{0, 20_sy}};
-      CheckLabel forceInterpreter{&systemOptionsTableLayout, Size{0, 20_sy}};
-      //
       Label placeholderSystemOption{&systemOptionsTableLayout, Size{125, 20_sy}};
       Label placeholderSystemOption2{&systemOptionsTableLayout, Size{~0, 20_sy}};
 };
@@ -224,20 +218,11 @@ struct VideoSettings : VerticalLayout {
       Label colorBleedHint{&renderingOptionsTableLayout, Size{0, 0}};
       CheckLabel colorBleedOption{&renderingOptionsTableLayout, Size{0, 20_sy}};
       //
-      Label colorEmulationHint{&renderingOptionsTableLayout, Size{0, 0}};
-      CheckLabel colorEmulationOption{&renderingOptionsTableLayout, Size{0, 20_sy}};
-      //
-      Label deepBlackBoostHint{&renderingOptionsTableLayout, Size{0, 0}};
-      CheckLabel deepBlackBoostOption{&renderingOptionsTableLayout, Size{0, 20_sy}};
-      //
       Label interframeBlendingHint{&renderingOptionsTableLayout, Size{0, 0}};
       CheckLabel interframeBlendingOption{&renderingOptionsTableLayout, Size{0, 20_sy}};
       //
       Label overscanHint{&renderingOptionsTableLayout, Size{0, 0}};
       CheckLabel overscanOption{&renderingOptionsTableLayout, Size{0, 20_sy}};
-      //
-      Label pixelAccuracyHint{&renderingOptionsTableLayout, Size{0, 0}};
-      CheckLabel pixelAccuracyOption{&renderingOptionsTableLayout, Size{0, 20_sy}};
   //
 };
 

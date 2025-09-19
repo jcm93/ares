@@ -27,18 +27,6 @@ auto GeneralSettings::construct() -> void {
     settings.general.autoSaveMemory = autoSaveMemory.checked();
   });
 
-  homebrewModeHint.setText("Homebrew Mode:");
-  homebrewMode.setText("Activate core-specific features to help homebrew developers")
-    .setChecked(settings.general.homebrewMode).onToggle([&] {
-    settings.general.homebrewMode = homebrewMode.checked();
-  });
-
-  forceInterpreterHint.setText("Force Interpreter:");
-  forceInterpreter.setText("Use interpreters over recompilers by default (slow)")
-    .setChecked(settings.general.forceInterpreter).onToggle([&] {
-    settings.general.forceInterpreter = forceInterpreter.checked();
-  });
-
   syncLabel.setText("Synchronization").setFont(Font().setBold());
 
   syncAdjustmentLayout.setSize({2, 5}).setPadding(12_sx, 0);

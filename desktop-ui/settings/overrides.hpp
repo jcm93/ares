@@ -31,8 +31,6 @@ private:
   Override override;
 
   std::vector<Override> overrides = {
-    { .settingName = "Force Interpreter", .settingKey = "General/ForceInterpreter", .settingType = "boolean" },
-    { .settingName = "Homebrew Mode", .settingKey = "General/HomebrewMode", .settingType = "boolean" },
     { .settingName = "Video Backend", .settingKey = "Video/Driver", .settingType = "string", },
     //{ .settingName = "Monitor", .settingKey = "Video/Monitor", .settingType = "string", },
     //{ .settingName = "Video Format", .settingKey = "Video/Format", .settingType = "string", },

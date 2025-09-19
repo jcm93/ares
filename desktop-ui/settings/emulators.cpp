@@ -144,6 +144,20 @@ auto Mega32XMegaCD32XMegaCDMegaDriveSettings::construct() -> void {
   setCollapsible();
   megaDriveSettingsLabel.setText("Mega Drive Settings").setFont(Font().setBold());
 
+  homebrewLabel.setText("Homebrew Mode:");
+  homebrewCheck.setText("Activate core-specific features to help homebrew developers")
+    .setChecked(settings.general.homebrewMode).onToggle([&] {
+      //todo
+      settings.general.homebrewMode = homebrewCheck.checked();
+  });
+
+  forceInterpreterLabel.setText("Force Interpreter:");
+  forceInterpreterCheck.setText("Use interpreters over recompilers by default (slow)")
+    .setChecked(settings.general.forceInterpreter).onToggle([&] {
+      //todo
+      settings.general.forceInterpreter = forceInterpreterCheck.checked();
+  });
+
   megaDriveTmssOption.setText("TMSS Boot Rom").setChecked(settings.megaDrive->system.tmss).onToggle([&] {
     settings.megaDrive->system.tmss = megaDriveTmssOption.checked();
   });
@@ -159,6 +173,20 @@ auto N64SettingsLayout::construct() -> void {
   renderSettingsLabel.setText("N64 Render Settings").setFont(Font().setBold());
 
   renderQualityLayout.setPadding(12_sx, 0);
+
+  homebrewLabel.setText("Homebrew Mode:");
+  homebrewCheck.setText("Activate core-specific features to help homebrew developers")
+    .setChecked(settings.general.homebrewMode).onToggle([&] {
+      //todo
+      settings.general.homebrewMode = homebrewCheck.checked();
+  });
+
+  forceInterpreterLabel.setText("Force Interpreter:");
+  forceInterpreterCheck.setText("Use interpreters over recompilers by default (slow)")
+    .setChecked(settings.general.forceInterpreter).onToggle([&] {
+      //todo
+      settings.general.forceInterpreter = forceInterpreterCheck.checked();
+  });
 
   disableVideoInterfaceProcessingOption.setText("Disable Video Interface Processing").setChecked(settings.nintendo64->video.disableVideoInterfaceProcessing).onToggle([&] {
     settings.nintendo64->video.disableVideoInterfaceProcessing = disableVideoInterfaceProcessingOption.checked();

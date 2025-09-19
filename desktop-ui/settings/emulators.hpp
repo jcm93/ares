@@ -54,6 +54,10 @@ struct Mega32XMegaCD32XMegaCDMegaDriveSettings : VerticalLayout {
   auto eventChange() -> void;
   shared_pointer<Emulator> system;
   Label megaDriveSettingsLabel{this, Size{~0, 0}, 5};
+    Label forceInterpreterLabel{this, Size{~0, 0}};
+    CheckLabel forceInterpreterCheck{this, Size{0, 0}, 5};
+    Label homebrewLabel{this, Size{~0, 0}};
+    CheckLabel homebrewCheck{this, Size{0, 0}, 5};
     HorizontalLayout megaDriveTmssLayout{this, Size{~0, 0}, 5};
       CheckLabel megaDriveTmssOption{&megaDriveTmssLayout, Size{0, 0}, 5};
       Label megaDriveTmssHint{&megaDriveTmssLayout, Size{0, 0}};
@@ -87,7 +91,12 @@ struct NeoGeoSettings : VerticalLayout {
 struct N64SettingsLayout : VerticalLayout {
   auto construct() -> void;
   shared_pointer<Emulator> system;
+
   Label nintendo64SettingsLabel{this, Size{~0, 0}, 5};
+    Label forceInterpreterLabel{this, Size{~0, 0}};
+    CheckLabel forceInterpreterCheck{this, Size{0, 0}, 5};
+    Label homebrewLabel{this, Size{~0, 0}};
+    CheckLabel homebrewCheck{this, Size{0, 0}, 5};
     HorizontalLayout nintendo64ExpansionPakLayout{this, Size{~0, 0}, 5};
       CheckLabel nintendo64ExpansionPakOption{&nintendo64ExpansionPakLayout, Size{0, 0}, 5};
       Label nintendo64ExpansionPakHint{&nintendo64ExpansionPakLayout, Size{0, 0}};
