@@ -37,6 +37,8 @@ target_sources(
     settings/home.cpp
     settings/hotkeys.cpp
     settings/input.cpp
+    settings/input-systems.cpp
+    settings/input-systems.hpp
     settings/overrides.cpp
     settings/overrides.hpp
     settings/paths.cpp

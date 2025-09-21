@@ -6,7 +6,7 @@ auto EmulatorSettings::construct() -> void {
   emulatorSettingsContainer.setPadding(20_sx, 20_sy);
 
   emulatorTabFrame.append(TabFrameItem().setText("System Settings"));
-  emulatorTabFrame.append(TabFrameItem().setText("Overrides"));
+  emulatorTabFrame.append(TabFrameItem().setText("Input"));
   emulatorTabFrame.onChange([&] { eventChange(); });
 
   emulatorSettingsContainer.append(n64Settings, Size{~0, ~0});
@@ -122,10 +122,10 @@ auto EmulatorSettings::eventChange() -> void {
       if(name == "superGrafxSettings" ) found = true, superGrafxSettings.setVisible();
       if(name == "wonderSwanSettings" ) found = true, wonderSwanSettings.setVisible();
       if(name == "zxSpectrumSettings" ) found = true, zxSpectrumSettings.setVisible();
-    } else if(emulatorTabFrame.selected().text() == "Overrides") {
+    } else if(emulatorTabFrame.selected().text() == "Input") {
       overrideSettings.setVisible();
     }
-  } else if(emulatorTabFrame.selected().text() == "Overrides") {
+  } else if(emulatorTabFrame.selected().text() == "Input") {
     overrideSettings.setVisible();
   }
   emulatorSettingsContainer.resize();

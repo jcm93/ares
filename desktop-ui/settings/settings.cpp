@@ -4,6 +4,7 @@
 #include "video.cpp"
 #include "audio.cpp"
 #include "input.cpp"
+#include "input-systems.cpp"
 #include "hotkeys.cpp"
 #include "emulators.cpp"
 #include "firmware.cpp"

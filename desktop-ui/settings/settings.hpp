@@ -309,6 +309,8 @@ struct InputSettings : VerticalLayout {
   PopupMenu menu;
 };
 
+#include "input-systems.hpp"
+
 // MARK: Hotkeys
 
 struct HotkeySettings : VerticalLayout {
@@ -347,6 +349,7 @@ struct EmulatorSettings : VerticalLayout {
     VerticalLayout emulatorSettingsContainer{&layout, Size{~0, ~0}};
       TabFrame emulatorTabFrame{&emulatorSettingsContainer, Size{~0, 20_sy}};
 
+  SystemInputSettings systemInputSettings;
   OverrideSettings overrideSettings;
   ArcadeSettings arcadeSettings;
   A2600Settings a2600Settings;
