@@ -147,8 +147,9 @@ auto MCD::LD::load(string location) -> void {
   videoFramePrefetchThreadStarted.clear();
   videoFramePrefetchThreadShutdownRequested.clear();
   videoFramePrefetchThreadShutdownComplete.clear();
-  std::thread workerThread(std::bind(std::mem_fn(&MCD::LD::videoFramePrefetchThread), this));
-  workerThread.detach();
+  prefetchWorker = thread::create(std::bind_front(&MCD::LD::videoFramePrefetchThread, this));
+  prefetchWorker.setName("Mega-LD frame pre-fetcher");
+  prefetchWorker.detach();
   videoFramePrefetchThreadStarted.wait(false);
 }
 
@@ -2839,7 +2840,7 @@ auto MCD::LD::loadCurrentVideoFrameIntoBuffer() -> void {
   videoFramePrefetchPending.notify_all();
 }
 
-auto MCD::LD::videoFramePrefetchThread() -> void {
+auto MCD::LD::videoFramePrefetchThread(uintptr_t) -> void {
   // Trigger a notification that this worker thread has started
   videoFramePrefetchThreadStarted.test_and_set();
   videoFramePrefetchThreadStarted.notify_all();

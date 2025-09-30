@@ -147,8 +147,9 @@ auto PCD::LD::load(string location) -> void {
   videoFramePrefetchThreadStarted.clear();
   videoFramePrefetchThreadShutdownRequested.clear();
   videoFramePrefetchThreadShutdownComplete.clear();
-  std::thread workerThread(std::bind(std::mem_fn(&PCD::LD::videoFramePrefetchThread), this));
-  workerThread.detach();
+  prefetchWorker = thread::create(std::bind_front(&PCD::LD::videoFramePrefetchThread, this));
+  prefetchWorker.setName("LD-ROM² frame pre-fetcher");
+  prefetchWorker.detach();
   videoFramePrefetchThreadStarted.wait(false);
 }
 
@@ -2843,7 +2844,7 @@ auto PCD::LD::loadCurrentVideoFrameIntoBuffer() -> void {
   videoFramePrefetchPending.notify_all();
 }
 
-auto PCD::LD::videoFramePrefetchThread() -> void {
+auto PCD::LD::videoFramePrefetchThread(uintptr_t) -> void {
   // Trigger a notification that this worker thread has started
   videoFramePrefetchThreadStarted.test_and_set();
   videoFramePrefetchThreadStarted.notify_all();

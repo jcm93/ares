@@ -362,7 +362,7 @@ struct PCD : Thread {
     auto handleStopPointReached(s32 lba) -> void;
     auto updateCurrentVideoFrameNumber(s32 lba) -> void;
     auto loadCurrentVideoFrameIntoBuffer() -> void;
-    auto videoFramePrefetchThread() -> void;
+    auto videoFramePrefetchThread(uintptr_t) -> void;
     auto decodeBiphaseCodeFromScanline(int lineNo) -> u32;
     auto power() -> void;
     auto scanline(u32 vdpPixelBuffer[1128+48], u32 vcounter) -> void;
@@ -477,6 +477,7 @@ struct PCD : Thread {
     n8 selectedTrackInfo;
 
     // Prefetch thread state
+    thread prefetchWorker;
     std::atomic_flag videoFramePrefetchPending;
     std::atomic_flag videoFramePrefetchComplete;
     std::atomic_flag videoFramePrefetchThreadStarted;
