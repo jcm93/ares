@@ -11,7 +11,7 @@ struct SystemInputSettings : VerticalLayout {
   auto eventAssign(TableViewCell, string binding) -> void;
   auto eventAssign(TableViewCell) -> void;
   auto eventInput(shared_pointer<HID::Device>, u32 groupID, u32 inputID, s16 oldValue, s16 newValue) -> void;
-  auto setVisible(bool visible = true) -> InputSettings&;
+  auto setVisible(bool visible = true) -> SystemInputSettings&;
   auto inputRefresh() -> void;
   auto inputDriverUpdate() -> bool;
 

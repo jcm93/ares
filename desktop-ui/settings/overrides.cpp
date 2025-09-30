@@ -1,5 +1,6 @@
 
 auto OverrideSettings::construct() -> void {
+  setCollapsible();
   overrideTable.setHeadered();
   overrideTable.append(TableViewColumn().setText("Setting"));
   overrideTable.append(TableViewColumn().setText("Value"));

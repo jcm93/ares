@@ -237,6 +237,20 @@ auto Settings::process(bool load) -> void {
       bind(string, name, firmware.location);
     }
     processBasic(load, {base, "/"}, emulator);
+    /*std::vector<string> padOverrides;
+    std::copy_if(emulator->settingsOverridesList.begin(), emulator->settingsOverridesList.end(),
+                 std::back_inserter(padOverrides), [] (string str) { return str.contains("VirtualPad"); });
+    for(auto padOverride : padOverrides) {
+      string name = {base, "VirtualPad", 1 + index, "/", string{input.name}.replace(" ", ".").replace("(", ".").replace(")", "")}, value;
+      if(load == 0) for(auto& assignment : input.mapping->assignments) value.append(assignment, ";");
+      if(load == 0) value.trimRight(";", 1L);
+      bind(string, name, value);
+      if(load == 1) {
+        auto parts = nall::split(value, ";");
+        parts.resize(BindingLimit);
+        for(u32 binding : range(BindingLimit)) input.mapping->assignments[binding] = parts[binding];
+      }
+    }*/
   }
 
   #undef bind

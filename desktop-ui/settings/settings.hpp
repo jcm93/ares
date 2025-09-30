@@ -345,7 +345,7 @@ struct EmulatorSettings : VerticalLayout {
   auto eventChange() -> void;
 
   HorizontalLayout layout{this, Size{~0, ~0}};
-    TableView emulatorList{&layout, Size{200_sx, ~0}};
+    TableView emulatorList{&layout, Size{260_sx, ~0}};
     VerticalLayout emulatorSettingsContainer{&layout, Size{~0, ~0}};
       TabFrame emulatorTabFrame{&emulatorSettingsContainer, Size{~0, 20_sy}};
 
@@ -355,25 +355,40 @@ struct EmulatorSettings : VerticalLayout {
   A2600Settings a2600Settings;
   ColecoVisionSettings colecoVisionSettings;
   FamicomSettings famicomSettings;
+  FamicomDiskSystemSettings famicomDiskSystemSettings;
   GameBoyAdvanceSettings gameBoyAdvanceSettings;
-  GameBoyGameBoyColorSettings gameBoyGameBoyColorSettings;
+  GameBoySettings gameBoySettings;
+  GameBoyColorSettings gameBoyColorSettings;
   GameGearSettings gameGearSettings;
   MasterSystemSettings masterSystemSettings;
-  Mega32XMegaCD32XMegaCDMegaDriveSettings mega32XMegaCD32XMegaCDMegaDriveSettings;
+  MegaDriveSettings megaDriveSettings;
+  Mega32XSettings mega32XSettings;
+  MegaCDSettings megaCDSettings;
+  MegaCD32XSettings megaCD32XSettings;
+  MegaLDSettings megaLDSettings;
   MSXSettings msxSettings;
   MSX2Settings msx2Settings;
   MyVisionSettings myVisionSettings;
   NeoGeoSettings neoGeoSettings;
+  NeoGeoPocketSettings neoGeoPocketSettings;
+  NeoGeoPocketColorSettings neoGeoPocketColorSettings;
   N64SettingsLayout n64Settings;
+  N64DDSettingsLayout n64DDSettings;
   PCEngineSettings pcEngineSettings;
-  PlaystationSettings playstationSettings;
+  PCEngineCDSettings pcEngineCDSettings;
+  NECPACSettings necPACSettings;
+  PlayStationSettings playStationSettings;
   PocketChallengeV2Settings pocketChallengeV2Settings;
   SaturnSettings saturnSettings;
   SG1000Settings sg1000Settings;
+  SC3000Settings sc3000Settings;
   SuperFamicomSettings superFamicomSettings;
   SuperGrafxSettings superGrafxSettings;
+  SuperGrafxCDSettings superGrafxCDSettings;
   WonderSwanSettings wonderSwanSettings;
+  WonderSwanColorSettings wonderSwanColorSettings;
   ZXSpectrumSettings zxSpectrumSettings;
+  ZXSpectrum128Settings zxSpectrum128Settings;
 };
 
 // MARK: Firmware
