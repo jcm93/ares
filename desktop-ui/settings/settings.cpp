@@ -241,8 +241,11 @@ auto Settings::process(bool load) -> void {
     std::copy_if(emulator->settingsOverridesList.begin(), emulator->settingsOverridesList.end(),
                  std::back_inserter(padOverrides), [] (string str) { return str.contains("VirtualPad"); });
     for(auto padOverride : padOverrides) {
+      auto index = 1; //fix
+      auto overrideMapping = emulator->virtualMappingPorts[index].pad.inputs;
+      auto input = string{"Up"}; //fix
       string name = {base, "VirtualPad", 1 + index, "/", string{input.name}.replace(" ", ".").replace("(", ".").replace(")", "")}, value;
-      if(load == 0) for(auto& assignment : input.mapping->assignments) value.append(assignment, ";");
+      if(load == 0) for(auto& assignment : overrideMapping.mapping->assignments) value.append(assignment, ";");
       if(load == 0) value.trimRight(";", 1L);
       bind(string, name, value);
       if(load == 1) {
@@ -275,7 +278,7 @@ auto SettingsWindow::initialize() -> void {
   panelList.append(ToolbarItem().setText("Audio").setIcon(Icon::Device::Speaker));
   panelList.append(ToolbarItem().setText("Input").setIcon(Icon::Device::Joypad));
   panelList.append(ToolbarItem().setText("Hotkeys").setIcon(Icon::Device::Keyboard));
-  panelList.append(ToolbarItem().setText("Emulators").setIcon(Icon::Place::Server));
+  panelList.append(ToolbarItem().setText("Systems").setIcon(Icon::Place::Server));
   panelList.append(ToolbarItem().setText("Firmware").setIcon(Icon::Emblem::Binary));
   panelList.append(ToolbarItem().setText("Paths").setIcon(Icon::Emblem::Folder));
   panelList.append(ToolbarItem().setText("Debug").setIcon(Icon::Device::Network));
@@ -286,7 +289,7 @@ auto SettingsWindow::initialize() -> void {
   panelList.append(TabFrameItem().setText("Audio").setIcon(Icon::Device::Speaker));
   panelList.append(TabFrameItem().setText("Input").setIcon(Icon::Device::Joypad));
   panelList.append(TabFrameItem().setText("Hotkeys").setIcon(Icon::Device::Keyboard));
-  panelList.append(TabFrameItem().setText("Emulators").setIcon(Icon::Place::Server));
+  panelList.append(TabFrameItem().setText("Systems").setIcon(Icon::Place::Server));
   panelList.append(TabFrameItem().setText("Firmware").setIcon(Icon::Emblem::Binary));
   panelList.append(TabFrameItem().setText("Paths").setIcon(Icon::Emblem::Folder));
   panelList.append(TabFrameItem().setText("Debug").setIcon(Icon::Device::Network));
@@ -355,15 +358,15 @@ auto SettingsWindow::eventChange() -> void {
 
   bool found = false;
   if(auto item = panelList.selected()) {
-    if(item.text() == "General"  ) found = true, generalSettings.setVisible(), *this->setSize(Size{sx(settingsWidth), 375_sy});
-    if(item.text() == "Video"    ) found = true, videoSettings.setVisible(), *this->setSize(Size{sx(settingsWidth), 495_sy});
-    if(item.text() == "Audio"    ) found = true, audioSettings.setVisible(), *this->setSize(Size{sx(settingsWidth), 290_sy});
-    if(item.text() == "Input"    ) found = true, inputSettings.setVisible(), *this->setSize(Size{sx(settingsWidth), 475_sy});
-    if(item.text() == "Hotkeys"  ) found = true, hotkeySettings.setVisible(), *this->setSize(Size{sx(settingsWidth), 475_sy});
-    if(item.text() == "Emulators") found = true, emulatorSettings.setVisible(), *this->setSize(Size{sx(settingsWidth), 475_sy});
-    if(item.text() == "Firmware" ) found = true, firmwareSettings.setVisible(), *this->setSize(Size{sx(settingsWidth), 475_sy});
-    if(item.text() == "Paths"    ) found = true, pathSettings.setVisible(), *this->setSize(Size{sx(settingsWidth), 350_sy});
-    if(item.text() == "Debug"    ) found = true, debugSettings.setVisible(), *this->setSize(Size{sx(settingsWidth), 180_sy});
+    if(item.text() == "General" ) found = true, generalSettings.setVisible(), *this->setSize(Size{sx(settingsWidth), 375_sy});
+    if(item.text() == "Video"   ) found = true, videoSettings.setVisible(), *this->setSize(Size{sx(settingsWidth), 495_sy});
+    if(item.text() == "Audio"   ) found = true, audioSettings.setVisible(), *this->setSize(Size{sx(settingsWidth), 290_sy});
+    if(item.text() == "Input"   ) found = true, inputSettings.setVisible(), *this->setSize(Size{sx(settingsWidth), 475_sy});
+    if(item.text() == "Hotkeys" ) found = true, hotkeySettings.setVisible(), *this->setSize(Size{sx(settingsWidth), 475_sy});
+    if(item.text() == "Systems" ) found = true, emulatorSettings.setVisible(), *this->setSize(Size{sx(settingsWidth), 475_sy});
+    if(item.text() == "Firmware") found = true, firmwareSettings.setVisible(), *this->setSize(Size{sx(settingsWidth), 475_sy});
+    if(item.text() == "Paths"   ) found = true, pathSettings.setVisible(), *this->setSize(Size{sx(settingsWidth), 350_sy});
+    if(item.text() == "Debug"   ) found = true, debugSettings.setVisible(), *this->setSize(Size{sx(settingsWidth), 180_sy});
   }
   if(!found) homePanel.setVisible();
 

@@ -25,9 +25,9 @@ auto load(Node::System& node, string name) -> bool {
 auto option(string name, string value) -> bool {
   #if defined(VULKAN)
   if(name == "Enable GPU acceleration") vulkan.enable = value.boolean();
-  if(name == "Quality" && value == "SD" ) vulkan.internalUpscale = 1;
-  if(name == "Quality" && value == "HD" ) vulkan.internalUpscale = 2;
-  if(name == "Quality" && value == "UHD") vulkan.internalUpscale = 4;
+  if(name == "Quality" && value == "Native" ) vulkan.internalUpscale = 1;
+  if(name == "Quality" && value == "2x Native" ) vulkan.internalUpscale = 2;
+  if(name == "Quality" && value == "4x Native") vulkan.internalUpscale = 4;
   if(name == "Supersampling") vulkan.supersampleScanout = value.boolean();
   if(name == "Disable Video Interface Processing") vulkan.disableVideoInterfaceProcessing = value.boolean();
   if(name == "Weave Deinterlacing") vulkan.weaveDeinterlacing = value.boolean();

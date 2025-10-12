@@ -52,6 +52,7 @@ struct Emulator {
   shared_pointer<mia::Pak> gamepad;
   shared_pointer<mia::Pak> gb;
   std::vector<InputPort> ports;
+  std::vector<SystemVirtualPadMappingPort> virtualMappingPorts;
   std::vector<string> inputBlacklist;
   std::vector<string> portBlacklist;
   Settings *settingsOverrides;
@@ -79,7 +80,7 @@ extern shared_pointer<Emulator> emulator;
 #ifdef CORE_N64
 struct N64Settings: Markup::Node {
   struct Video {
-    nall::string quality = "SD";
+    nall::string quality = "Native";
     bool supersampling = false;
     bool disableVideoInterfaceProcessing = false;
     bool weaveDeinterlacing = true;

@@ -56,7 +56,7 @@ auto VideoSettings::construct() -> void {
       }
     }
   });
-  videoDriverLabel.setText("Driver:");
+  videoDriverLabel.setText("Backend:");
   videoMonitorLabel.setText("Fullscreen monitor:");
   videoMonitorList.onChange([&] {
     settings.video.monitor = videoMonitorList.selected().text();

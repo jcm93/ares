@@ -270,13 +270,14 @@ auto Mega32XSettings::construct(shared_pointer<Emulator> emulator) -> void {
 auto N64SettingsLayout::construct(shared_pointer<Emulator> emulator) -> void {
   setCollapsible();
   
-  renderSettingsLabel.setText("N64 Render Settings").setFont(Font().setBold());
+  renderSettingsLabel.setText("Rendering Settings").setFont(Font().setBold());
 
-  nintendo64SettingsLayout.setSize({2, 10});
+  nintendo64SettingsLayout.setSize({2, 7}); // padding
   nintendo64SettingsLayout.setPadding(12_sx, 0);
   nintendo64SettingsLayout.column(0).setAlignment(1.0);
-
-  renderQualityLayout.setPadding(12_sx, 0);
+  nintendo64RenderSettingsLayout.setSize({2, 5});
+  nintendo64RenderSettingsLayout.setPadding(12_sx, 0);
+  nintendo64RenderSettingsLayout.column(0).setAlignment(1.0);
 
   homebrewLabel.setText("Homebrew Mode:");
   homebrewCheck.setText("Activate core-specific features to help homebrew developers")
@@ -285,63 +286,72 @@ auto N64SettingsLayout::construct(shared_pointer<Emulator> emulator) -> void {
       settings.general.homebrewMode = homebrewCheck.checked();
   });
 
-  forceInterpreterLabel.setText("Force Interpreter:");
-  forceInterpreterCheck.setText("Use interpreters over recompilers by default (slow)")
+  forceInterpreterLabel.setText("Interpreter:");
+  forceInterpreterCheck.setText("Use interpreter instead of recompiler (slow)")
     .setChecked(settings.general.forceInterpreter).onToggle([&] {
       //todo
       settings.general.forceInterpreter = forceInterpreterCheck.checked();
   });
 
-  disableVideoInterfaceProcessingOption.setText("Disable Video Interface Processing").setChecked(settings.nintendo64->video.disableVideoInterfaceProcessing).onToggle([&] {
-    settings.nintendo64->video.disableVideoInterfaceProcessing = disableVideoInterfaceProcessingOption.checked();
+  disableVideoInterfaceProcessingLabel.setText("Disable VI Processing:");
+  disableVideoInterfaceProcessingCheck.setText("Render image from VRAM directly, bypassing the Video Interface").setChecked(settings.nintendo64->video.disableVideoInterfaceProcessing).onToggle([&] {
+    settings.nintendo64->video.disableVideoInterfaceProcessing = disableVideoInterfaceProcessingCheck.checked();
     if(emulator) emulator->setBoolean("Disable Video Interface Processing", settings.nintendo64->video.disableVideoInterfaceProcessing);
   });
-  disableVideoInterfaceProcessingLayout.setAlignment(1).setPadding(12_sx, 0);
-  disableVideoInterfaceProcessingHint.setText("Disables Video Interface post processing to render image from VRAM directly").setFont(Font().setSize(7.0)).setForegroundColor(SystemColor::Sublabel);
 
-  weaveDeinterlacingOption.setText("Weave Deinterlacing").setChecked(settings.nintendo64->video.weaveDeinterlacing).onToggle([&] {
-    settings.nintendo64->video.weaveDeinterlacing = weaveDeinterlacingOption.checked();
+  weaveDeinterlacingLabel.setText("Weave Deinterlacing:");
+  weaveDeinterlacingCheck.setText("Doubles the perceived vertical resolution; incompatible with supersampling").setChecked(settings.nintendo64->video.weaveDeinterlacing).onToggle([&] {
+    settings.nintendo64->video.weaveDeinterlacing = weaveDeinterlacingCheck.checked();
     if(emulator) emulator->setBoolean("(Experimental) Double the perceived vertical resolution; disabled when supersampling is used", settings.nintendo64->video.weaveDeinterlacing);
-    if(weaveDeinterlacingOption.checked() == true) {
-      renderSupersamplingOption.setChecked(false).setEnabled(false);
+    if(weaveDeinterlacingCheck.checked() == true) {
+      renderSupersamplingCheck.setChecked(false).setEnabled(false);
       settings.nintendo64->video.supersampling = false;
     } else {
-      if(settings.nintendo64->video.quality != "SD") renderSupersamplingOption.setEnabled(true);
+      if(settings.nintendo64->video.quality != "Native") renderSupersamplingCheck.setEnabled(true);
     }
   });
-  weaveDeinterlacingLayout.setAlignment(1).setPadding(12_sx, 0);
-  weaveDeinterlacingHint.setText("Doubles the perceived vertical resolution; incompatible with supersampling").setFont(Font().setSize(7.0)).setForegroundColor(SystemColor::Sublabel);
+  renderQualityLabel.setText("Render resolution:");
+  ComboButtonItem renderQualityNative{&renderQualityOption};
+  renderQualityNative.setText("Native");
+  ComboButtonItem renderQuality2xNative{&renderQualityOption};
+  renderQuality2xNative.setText("2x Native");
+  ComboButtonItem renderQuality4xNative{&renderQualityOption};
+  renderQuality4xNative.setText("4x Native");
+  renderQualityOption.onChange([&] {
+    auto idx = renderQualityOption.selected();
+    auto value = idx.text();
+    if (value != settings.nintendo64->video.quality) {
+      settings.nintendo64->video.quality = value;
 
-  renderQualitySD.setText("SD Quality").onActivate([&] {
-    settings.nintendo64->video.quality = "SD";
-    renderSupersamplingOption.setChecked(false).setEnabled(false);
-    settings.nintendo64->video.supersampling = false;
-    weaveDeinterlacingOption.setEnabled(true);
+      if (value == "Native") {
+        settings.nintendo64->video.quality = "Native";
+        renderSupersamplingCheck.setChecked(false).setEnabled(false);
+        settings.nintendo64->video.supersampling = false;
+        weaveDeinterlacingCheck.setEnabled(true);
+      } else if (value == "2x Native") {
+        settings.nintendo64->video.quality = "2x Native";
+        if(weaveDeinterlacingCheck.checked() == false) renderSupersamplingCheck.setChecked(settings.nintendo64->video.supersampling).setEnabled(true);
+      } else if (value == "4x Native") {
+        settings.nintendo64->video.quality = "4x Native";
+        if(weaveDeinterlacingCheck.checked() == false) renderSupersamplingCheck.setChecked(settings.nintendo64->video.supersampling).setEnabled(true);
+      }
+    }
   });
-  renderQualityHD.setText("HD Quality").onActivate([&] {
-    settings.nintendo64->video.quality = "HD";
-    if(weaveDeinterlacingOption.checked() == false) renderSupersamplingOption.setChecked(settings.nintendo64->video.supersampling).setEnabled(true);
-  });
-  renderQualityUHD.setText("UHD Quality").onActivate([&] {
-    settings.nintendo64->video.quality = "UHD";
-    if(weaveDeinterlacingOption.checked() == false) renderSupersamplingOption.setChecked(settings.nintendo64->video.supersampling).setEnabled(true);
-  });
-  if(settings.nintendo64->video.quality == "SD") renderQualitySD.setChecked();
-  if(settings.nintendo64->video.quality == "HD") renderQualityHD.setChecked();
-  if(settings.nintendo64->video.quality == "UHD") renderQualityUHD.setChecked();
-  renderSupersamplingOption.setText("Supersampling").setChecked(settings.nintendo64->video.supersampling && settings.nintendo64->video.quality != "SD").setEnabled(settings.nintendo64->video.quality != "SD").onToggle([&] {
-    settings.nintendo64->video.supersampling = renderSupersamplingOption.checked();
-    if(renderSupersamplingOption.checked() == true) {
-      weaveDeinterlacingOption.setEnabled(false).setChecked(false);
+  if(settings.nintendo64->video.quality == "Native") renderQualityNative.setSelected();
+  if(settings.nintendo64->video.quality == "2x Native") renderQuality2xNative.setSelected();
+  if(settings.nintendo64->video.quality == "4x Native") renderQuality4xNative.setSelected();
+  renderSupersamplingLabel.setText("Supersampling:");
+  renderSupersamplingCheck.setText("Scale 2x and 4x resolutions back down to native").setChecked(settings.nintendo64->video.supersampling && settings.nintendo64->video.quality != "Native").setEnabled(settings.nintendo64->video.quality != "Native").onToggle([&] {
+    settings.nintendo64->video.supersampling = renderSupersamplingCheck.checked();
+    if(renderSupersamplingCheck.checked() == true) {
+      weaveDeinterlacingCheck.setEnabled(false).setChecked(false);
       settings.nintendo64->video.weaveDeinterlacing = false;
     } else {
-      weaveDeinterlacingOption.setEnabled(true);
+      weaveDeinterlacingCheck.setEnabled(true);
     }
   });
-  renderSupersamplingLayout.setAlignment(1).setPadding(12_sx, 0);
-  renderSupersamplingHint.setText("Scales HD and UHD resolutions back down to SD").setFont(Font().setSize(7.0)).setForegroundColor(SystemColor::Sublabel);
-  renderSettingsLayout.setPadding(12_sx, 0);
-  renderSettingsHint.setText("Note: render settings changes require a game reload to take effect").setFont(Font().setSize(7.0)).setForegroundColor(SystemColor::Sublabel);
+  //wipe settings
+  renderSettingsHint.setText("Note: Rendering settings changes require a system reload to take effect").setFont(Font().setSize(7.0)).setForegroundColor(SystemColor::Sublabel);
 
   #if !defined(VULKAN)
   //hide Vulkan-specific options if Vulkan is not available
@@ -353,12 +363,12 @@ auto N64SettingsLayout::construct(shared_pointer<Emulator> emulator) -> void {
   weaveDeinterlacingLayout.setCollapsible(true).setVisible(false);
   #endif
   
-  nintendo64SettingsLabel.setText("Nintendo 64 Settings").setFont(Font().setBold());
+  nintendo64SettingsLabel.setText("").setFont(Font().setBold());
 
   expansionPakCheck.setText("Enable the 4MB Expansion Pak").setChecked(settings.nintendo64->system.expansionPak).onToggle([&] {
     settings.nintendo64->system.expansionPak = expansionPakCheck.checked();
   });
-  expansionPakLabel.setText("Expansion Pak");
+  expansionPakLabel.setText("Expansion Pak:");
 
   for (auto& opt : array<string[4]>{"32KiB (Default)", "128KiB (Datel 1Meg)", "512KiB (Datel 4Meg)", "1984KiB (Maximum)"}) {
     ComboButtonItem item{&controllerPakBankOption};
@@ -395,7 +405,6 @@ auto N64SettingsLayout::construct(shared_pointer<Emulator> emulator) -> void {
     }
   });
   controllerPakBankLabel.setText("Controller Pak Size:");
-  controllerPakBankHint.setText("Sets the size of a newly created Controller Pak's available memory").setFont(Font().setSize(7.0)).setForegroundColor(SystemColor::Sublabel);
 }
 
 auto ArcadeSettings::construct(shared_pointer<Emulator> emulator) -> void {setCollapsible();}

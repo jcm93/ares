@@ -53,14 +53,14 @@ auto AudioSettings::construct() -> void {
       }
     }
   });
-  audioDriverLabel.setText("Driver:");
+  audioDriverLabel.setText("Backend:");
   audioDeviceLabel.setText("Output device:");
   audioDeviceList.onChange([&] {
     settings.audio.device = audioDeviceList.selected().text();
     program.audioDeviceUpdate();
     audioRefresh();
   });
-  audioFrequencyLabel.setText("Frequency:");
+  audioFrequencyLabel.setText("Sample rate:");
   audioFrequencyList.onChange([&] {
     auto text = audioFrequencyList.selected().text();
     auto parts = nall::split(text, " ");

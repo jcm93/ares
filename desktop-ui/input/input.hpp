@@ -195,6 +195,65 @@ struct VirtualPort {
   VirtualMouse mouse;
 };
 
+struct SystemVirtualPadMapping : InputDevice {
+
+  InputNode up {InputNode::Type::Digital,  "up"};
+  InputNode down = {InputNode::Type::Digital,  "down"};
+  InputNode left = {InputNode::Type::Digital,  "left"};
+  InputNode right = {InputNode::Type::Digital,  "right"};
+  InputNode select = {InputNode::Type::Digital,  "select"};
+  InputNode start = {InputNode::Type::Digital,  "start"};
+  InputNode south = {InputNode::Type::Digital,  "south"};
+  InputNode east = {InputNode::Type::Digital,  "east"};
+  InputNode west = {InputNode::Type::Digital,  "west"};
+  InputNode north = {InputNode::Type::Digital,  "north"};
+  InputNode l_bumper = {InputNode::Type::Digital,  "l_bumper"};
+  InputNode r_bumper = {InputNode::Type::Digital,  "r_bumper"};
+  InputNode l_trigger = {InputNode::Type::Analog,  "l_trigger"};
+  InputNode r_trigger = {InputNode::Type::Analog,  "r_trigger"};
+  InputNode lstick_click = {InputNode::Type::Digital,  "lstick_click"};
+  InputNode rstick_click = {InputNode::Type::Digital,  "rstick_click"};
+  InputNode lstick_up = {InputNode::Type::Analog,  "lstick_up"};
+  InputNode lstick_down = {InputNode::Type::Analog,  "lstick_down"};
+  InputNode lstick_left = {InputNode::Type::Analog,  "lstick_left"};
+  InputNode lstick_right = {InputNode::Type::Analog,  "lstick_right"};
+  InputNode rstick_up = {InputNode::Type::Analog,  "rstick_up"};
+  InputNode rstick_down = {InputNode::Type::Analog,  "rstick_down"};
+  InputNode rstick_left = {InputNode::Type::Analog,  "rstick_left"};
+  InputNode rstick_right = {InputNode::Type::Analog,  "rstick_right"};
+  InputNode rumble = {InputNode::Type::Rumble,  "rumble"};
+  InputNode one = {InputNode::Type::Digital,  "one"};
+  InputNode two = {InputNode::Type::Digital,  "two"};
+  InputNode three = {InputNode::Type::Digital,  "three"};
+  InputNode four = {InputNode::Type::Digital,  "four"};
+  InputNode five = {InputNode::Type::Digital,  "five"};
+  InputNode six = {InputNode::Type::Digital,  "six"};
+  InputNode seven = {InputNode::Type::Digital,  "seven"};
+  InputNode eight = {InputNode::Type::Digital,  "eight"};
+  InputNode nine = {InputNode::Type::Digital,  "nine"};
+  InputNode zero = {InputNode::Type::Digital,  "zero"};
+  InputNode star = {InputNode::Type::Digital,  "star"};
+  InputNode clear = {InputNode::Type::Digital,  "clear"};
+  InputNode pound = {InputNode::Type::Digital,  "pound"};
+  InputNode point = {InputNode::Type::Digital,  "point"};
+  InputNode end = {InputNode::Type::Digital,  "end"};
+};
+
+struct SystemVirtualMouseMapping : InputDevice {
+
+  InputNode x;
+  InputNode y;
+  InputNode left;
+  InputNode middle;
+  InputNode right;
+  InputNode extra;
+};
+
+struct SystemVirtualPadMappingPort {
+  SystemVirtualPadMapping pad;
+  SystemVirtualMouseMapping mouse;
+};
+
 struct InputManager {
   auto create() -> void;
   auto bind() -> void;

@@ -144,8 +144,8 @@ struct N64SettingsLayout : VerticalLayout {
   shared_pointer<Emulator> system;
 
   TableLayout nintendo64SettingsLayout{this, Size{~0, 0}};
-    Label placeholder{&nintendo64SettingsLayout, Size{sx((settingsWidth / 2) - 400), 0}};
-    Label nintendo64SettingsLabel{&nintendo64SettingsLayout, Size{0, 25_sy}};
+    Label nintendo64SettingsLabel{&nintendo64SettingsLayout, Size{0, 0}};
+    Label placeholder{&nintendo64SettingsLayout, Size{0, 0}};
 
     Label forceInterpreterLabel{&nintendo64SettingsLayout, Size{0, 0}};
     CheckLabel forceInterpreterCheck{&nintendo64SettingsLayout, Size{0, 0}};
@@ -159,27 +159,23 @@ struct N64SettingsLayout : VerticalLayout {
     Label controllerPakBankLabel{&nintendo64SettingsLayout, Size{0, 0}};
     ComboButton controllerPakBankOption{&nintendo64SettingsLayout, Size{0, 0}};
 
-    Label placeholder2{&nintendo64SettingsLayout, Size{sx((settingsWidth / 2) - 400), 0}};
-    Label controllerPakBankHint{&nintendo64SettingsLayout, Size{0, 25_sy}};
+  Label renderSettingsLabel{this, Size{0, 20_sy}, 10_sy};
+  TableLayout nintendo64RenderSettingsLayout{this, Size{~0, 0}};
 
-    Label placeholder2{&nintendo64SettingsLayout, Size{sx((settingsWidth / 2) - 400), 0}};
-    Label renderSettingsLabel{this, Size{~0, 0}, 5};
+    Label disableVideoInterfaceProcessingLabel{&nintendo64RenderSettingsLayout, Size{0, 0}};
+    CheckLabel disableVideoInterfaceProcessingCheck{&nintendo64RenderSettingsLayout, Size{0, 0}};
 
-    CheckLabel disableVideoInterfaceProcessingOption{&disableVideoInterfaceProcessingLayout, Size{0, 0}, 5};
-    Label disableVideoInterfaceProcessingHint{&disableVideoInterfaceProcessingLayout, Size{0, 0}};
+    Label weaveDeinterlacingLabel{&nintendo64RenderSettingsLayout, Size{0, 0}};
+    CheckLabel weaveDeinterlacingCheck{&nintendo64RenderSettingsLayout, Size{0, 0}};
 
-    CheckLabel weaveDeinterlacingOption{&weaveDeinterlacingLayout, Size{0, 0}, 5};
-    Label weaveDeinterlacingHint{&weaveDeinterlacingLayout, Size{0, 0}};
-  HorizontalLayout renderQualityLayout{this, Size{~0, 0}, 5};
-    RadioLabel renderQualitySD{&renderQualityLayout, Size{0, 0}};
-    RadioLabel renderQualityHD{&renderQualityLayout, Size{0, 0}};
-    RadioLabel renderQualityUHD{&renderQualityLayout, Size{0, 0}};
-    Group renderQualityGroup{&renderQualitySD, &renderQualityHD, &renderQualityUHD};
-  HorizontalLayout renderSupersamplingLayout{this, Size{~0, 0}, 5};
-    CheckLabel renderSupersamplingOption{&renderSupersamplingLayout, Size{0, 0}, 5};
-    Label renderSupersamplingHint{&renderSupersamplingLayout, Size{0, 0}};
-  HorizontalLayout renderSettingsLayout{this, Size{~0, 0}};
-      Label renderSettingsHint{&renderSettingsLayout, Size{0, 0}};
+    Label renderQualityLabel{&nintendo64RenderSettingsLayout, Size{0, 0}};
+    ComboButton renderQualityOption{&nintendo64RenderSettingsLayout, Size{0, 0}};
+
+    Label renderSupersamplingLabel{&nintendo64RenderSettingsLayout, Size{0, 0}};
+    CheckLabel renderSupersamplingCheck{&nintendo64RenderSettingsLayout, Size{0, 0}};
+
+    Label placeholder2{&nintendo64RenderSettingsLayout, Size{0, 0}};
+    Label renderSettingsHint{&nintendo64RenderSettingsLayout, Size{0, 0}};
 };
 
 // MARK: N64DD Settings

@@ -129,8 +129,8 @@ Presentation::Presentation() {
   hotkeySettingsAction.setText("Hotkeys" ELLIPSIS).setIcon(Icon::Device::Keyboard).onActivate([&] {
     settingsWindow.show("Hotkeys");
   });
-  emulatorSettingsAction.setText("Emulators" ELLIPSIS).setIcon(Icon::Place::Server).onActivate([&] {
-    settingsWindow.show("Emulators");
+  emulatorSettingsAction.setText("Systems" ELLIPSIS).setIcon(Icon::Place::Server).onActivate([&] {
+    settingsWindow.show("Systems");
   });
   optionSettingsAction.setText("Options" ELLIPSIS).setIcon(Icon::Action::Settings).onActivate([&] {
     settingsWindow.show("Options");
@@ -472,7 +472,7 @@ auto Presentation::loadEmulators() -> void {
     item.setIcon(Icon::Action::Add);
     item.setText("Add Systems" ELLIPSIS);
     item.onActivate([&] {
-      settingsWindow.show("Emulators");
+      settingsWindow.show("Systems");
     });
   }
 
