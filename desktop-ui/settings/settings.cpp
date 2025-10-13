@@ -305,7 +305,6 @@ auto SettingsWindow::initialize() -> void {
   panelContainer.append(firmwareSettings, Size{~0, ~0});
   panelContainer.append(pathSettings, Size{~0, ~0});
   panelContainer.append(debugSettings, Size{~0, ~0});
-  panelContainer.append(homePanel, Size{~0, ~0});
 
   generalSettings.construct();
   videoSettings.construct();
@@ -316,7 +315,6 @@ auto SettingsWindow::initialize() -> void {
   firmwareSettings.construct();
   pathSettings.construct();
   debugSettings.construct();
-  homePanel.construct();
 
   setDismissable();
   setTitle("Settings");
@@ -354,7 +352,6 @@ auto SettingsWindow::eventChange() -> void {
   firmwareSettings.setVisible(false);
   pathSettings.setVisible(false);
   debugSettings.setVisible(false);
-  homePanel.setVisible(false);
 
   bool found = false;
   if(auto item = panelList.selected()) {
@@ -368,7 +365,6 @@ auto SettingsWindow::eventChange() -> void {
     if(item.text() == "Paths"   ) found = true, pathSettings.setVisible(), *this->setSize(Size{sx(settingsWidth), 350_sy});
     if(item.text() == "Debug"   ) found = true, debugSettings.setVisible(), *this->setSize(Size{sx(settingsWidth), 180_sy});
   }
-  if(!found) homePanel.setVisible();
 
   panelContainer.resize();
 }

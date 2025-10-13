@@ -190,7 +190,7 @@ struct VideoSettings : VerticalLayout {
 #endif
 #if !defined(PLATFORM_MACOS)
     Label videoExclusiveToggleName{&videoDriverLayout, Size{0, 20_sy}};
-    CheckLabel videoExclusiveToggle{&videoToggleLayout, Size{0, 0}};
+    CheckLabel videoExclusiveToggle{&videoDriverLayout, Size{0, 0}};
 #endif
 
 
@@ -215,14 +215,17 @@ struct VideoSettings : VerticalLayout {
       Canvas placeholderFour{&renderingOptionsTableLayout, Size{sx((settingsWidth / 2) - 138), 0}};
       Label emulatorSettingsLabel{&renderingOptionsTableLayout, Size{~0, 25_sy}};
 
-      Label colorBleedHint{&renderingOptionsTableLayout, Size{0, 0}};
-      CheckLabel colorBleedOption{&renderingOptionsTableLayout, Size{0, 20_sy}};
+      Canvas placeholderFive{&renderingOptionsTableLayout, Size{sx((settingsWidth / 2) - 138), 0}};
+      Label renderingOptionsHint{&renderingOptionsTableLayout, Size{~0, 15_sy}};
       //
       Label interframeBlendingHint{&renderingOptionsTableLayout, Size{0, 0}};
       CheckLabel interframeBlendingOption{&renderingOptionsTableLayout, Size{0, 20_sy}};
       //
       Label overscanHint{&renderingOptionsTableLayout, Size{0, 0}};
       CheckLabel overscanOption{&renderingOptionsTableLayout, Size{0, 20_sy}};
+      //
+      Label pixelAccuracyHint{&renderingOptionsTableLayout, Size{0, 0}};
+      CheckLabel pixelAccuracyOption{&renderingOptionsTableLayout, Size{0, 20_sy}};
   //
 };
 
@@ -335,6 +338,20 @@ struct HotkeySettings : VerticalLayout {
   Timer timer;
 };
 
+// MARK: Home
+
+struct HomePanel : VerticalLayout {
+  auto construct() -> void;
+
+  VerticalLayout homeVertical{this, Size{~0, ~0}};
+    Canvas spacer{&homeVertical, Size{~0, ~0}};
+    HorizontalLayout homeHorizontal{&homeVertical, Size{~0, ~0}};
+      Canvas spacer2{&homeHorizontal, Size{~0, ~0}};
+      Canvas canvas{&homeHorizontal, Size{128_sx, 128_sy}};
+      Canvas spacer3{&homeHorizontal, Size{~0, ~0}};
+    Canvas spacer4{&homeVertical, Size{~0, ~0}};
+};
+
 // MARK: Emulators
 
 #include "overrides.hpp"
@@ -389,6 +406,7 @@ struct EmulatorSettings : VerticalLayout {
   WonderSwanColorSettings wonderSwanColorSettings;
   ZXSpectrumSettings zxSpectrumSettings;
   ZXSpectrum128Settings zxSpectrum128Settings;
+  HomePanel homePanel;
 };
 
 // MARK: Firmware
@@ -459,30 +477,21 @@ struct DebugSettings : VerticalLayout {
   auto infoRefresh() -> void;
   auto serverRefresh() -> void;
 
-  Label debugLabel{this, Size{~0, 0}, 5};
+  TableLayout debugServerTableLayout{this, Size{~0, 0}};
+      Label debugLabel{&debugServerTableLayout, Size{0, 0}};
+      CheckLabel debugOption{&debugServerTableLayout, Size{0, 0}};
 
-  HorizontalLayout portLayout{this, Size{~0, 0}};
-    Label portLabel{&portLayout, Size{48_sx, 20_sy}};
-    LineEdit port{&portLayout, Size{~0, 0}};
-    Label portHint{&portLayout, Size{~0, 0}};
+      Label portLabel{&debugServerTableLayout, Size{0, 0}};
+      LineEdit port{&debugServerTableLayout, Size{100_sx, 0}};
 
-  HorizontalLayout ipv4Layout{this, Size{~0, 0}};
-    Label ipv4Label{&ipv4Layout, Size{48_sx, 20_sy}};
-    CheckLabel ipv4{&ipv4Layout, Size{~0, 0}};
-
-  HorizontalLayout enabledLayout{this, Size{~0, 0}};
-    Label enabledLabel{&enabledLayout, Size{48_sx, 20_sy}};
-    CheckLabel enabled{&enabledLayout, Size{~0, 0}};
-
-  Label connectInfo{this, Size{~0, 30_sy}, 5};
-};
-
-// MARK: Home
-
-struct HomePanel : VerticalLayout {
-  auto construct() -> void;
-
-  Canvas canvas{this, Size{~0, ~0}};
+      Canvas placeholderTwo{&debugServerTableLayout, Size{sx((settingsWidth / 2) - 175), 0}};
+      Label portHint{&debugServerTableLayout, Size{0, 0}};
+      //
+      Label ipv4Label{&debugServerTableLayout, Size{0, 0}};
+      CheckLabel ipv4{&debugServerTableLayout, Size{~0, 0}};
+      //
+      Canvas placeholderThree{&debugServerTableLayout, Size{sx((settingsWidth / 2) - 175), 0}};
+      Label connectInfo{&debugServerTableLayout, Size{0, 0}};
 };
 
 // MARK: Settings Window
@@ -507,7 +516,6 @@ struct SettingsWindow : Window {
       FirmwareSettings firmwareSettings;
       PathSettings pathSettings;
       DebugSettings debugSettings;
-      HomePanel homePanel;
   
   bool initialized = false;
   

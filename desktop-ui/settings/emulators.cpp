@@ -15,6 +15,9 @@ auto EmulatorSettings::construct() -> void {
   emulatorList.append(TableViewColumn().setText("Manufacturer").setAlignment(1.0));
   emulatorList.setHeadered();
 
+  homePanel.construct();
+  emulatorSettingsContainer.append(homePanel, Size{~0, ~0});
+
   for(auto& emulator : emulators) {
     auto name = emulator->name;
     if(name == "Arcade" ) {
@@ -144,6 +147,7 @@ auto EmulatorSettings::construct() -> void {
 }
 
 auto EmulatorSettings::eventChange() -> void {
+  homePanel.setVisible(false);
   overrideSettings.setVisible(false);
   arcadeSettings.setVisible(false);
   a2600Settings.setVisible(false);
@@ -186,6 +190,7 @@ auto EmulatorSettings::eventChange() -> void {
   bool found = false;
   auto item = emulatorList.selected();
   if(auto emulator = item.attribute<shared_pointer<Emulator>>("emulator")) {
+    emulatorTabFrame.setVisible();
     if(emulatorTabFrame.selected().text() == "System Settings") {
       auto name = emulator->name;
       if(name == "Arcade") found = true, arcadeSettings.setVisible(true);
@@ -225,11 +230,15 @@ auto EmulatorSettings::eventChange() -> void {
       if(name == "PlayStation") found = true, playStationSettings.setVisible(true);
       if(name == "ZX Spectrum") found = true, zxSpectrumSettings.setVisible(true);
       if(name == "ZX Spectrum 128") found = true, zxSpectrum128Settings.setVisible(true);
-    } else if(emulatorTabFrame.selected().text() == "Input") {
+    } else if(emulatorTabFrame.selected().text() == "Input" && found == true) {
       overrideSettings.setVisible();
     }
-  } else if(emulatorTabFrame.selected().text() == "Input") {
+  } else if(emulatorTabFrame.selected().text() == "Input" && found == true) {
     overrideSettings.setVisible();
+  } else {
+    emulatorTabFrame.setCollapsible();
+    emulatorTabFrame.setVisible(false);
+    homePanel.setVisible();
   }
   emulatorSettingsContainer.resize();
 }
@@ -259,8 +268,11 @@ auto Mega32XSettings::construct(shared_pointer<Emulator> emulator) -> void {
   forceInterpreterLabel.setText("Force Interpreter:");
   forceInterpreterCheck.setText("Use interpreter instead of recompiler (slow)")
     .setChecked(settings.general.forceInterpreter).onToggle([&] {
-      //todo
-      settings.general.forceInterpreter = forceInterpreterCheck.checked();
+      auto list = system->settingsOverridesList;
+      if(std::find(list.begin(), list.end(), string{"Force Interpreter"}) == list.end()) {
+        system->settingsOverridesList.push_back(string{"Force Interpreter"});
+      }
+      system->settingsOverrides->general.forceInterpreter = forceInterpreterCheck.checked();
     });
 }
 
@@ -435,7 +447,18 @@ auto PocketChallengeV2Settings::construct(shared_pointer<Emulator> emulator) -> 
 auto SaturnSettings::construct(shared_pointer<Emulator> emulator) -> void {setCollapsible();}
 auto SG1000Settings::construct(shared_pointer<Emulator> emulator) -> void {setCollapsible();}
 auto SC3000Settings::construct(shared_pointer<Emulator> emulator) -> void {setCollapsible();}
-auto SuperFamicomSettings::construct(shared_pointer<Emulator> emulator) -> void {setCollapsible();}
+
+// MARK: SFC settings
+auto SuperFamicomSettings::construct(shared_pointer<Emulator> emulator) -> void {
+  setCollapsible();
+  colorBleedHint.setText("Color Bleed:");
+  colorBleedOption.setText("Blur adjacent pixels for translucency effects").setChecked(settings.video.colorBleed).onToggle([&] {
+    settings.video.colorBleed = colorBleedOption.checked();
+    if(emulator) emulator->setColorBleed(settings.video.colorBleed);
+  });
+  sfcRenderSettingsLayout.setSize({2, 2});
+}
+
 auto SuperGrafxSettings::construct(shared_pointer<Emulator> emulator) -> void {setCollapsible();}
 auto SuperGrafxCDSettings::construct(shared_pointer<Emulator> emulator) -> void {setCollapsible();}
 auto WonderSwanSettings::construct(shared_pointer<Emulator> emulator) -> void {setCollapsible();}

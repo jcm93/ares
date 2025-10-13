@@ -1,8 +1,8 @@
 
 auto GeneralSettings::construct() -> void {
   setCollapsible();
-  commonSettingsLabel.setText("System Options").setFont(Font().setBold());
-  commonSettingsHint.setText("These options may be overridden for particular systems in Emulators settings.").setFont(Font().setSize(7.0)).setForegroundColor(SystemColor::Sublabel);
+  commonSettingsLabel.setText("System Settings").setFont(Font().setBold());
+  commonSettingsHint.setText("More settings for specific cores are available in Systems settings.").setFont(Font().setSize(7.0)).setForegroundColor(SystemColor::Sublabel);
 
   systemOptionsTableLayout.setSize({2, 7}).setPadding(12_sx, 0);
   systemOptionsTableLayout.column(0).setAlignment(1.0);

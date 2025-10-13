@@ -236,6 +236,13 @@ struct SC3000Settings : VerticalLayout {
 struct SuperFamicomSettings : VerticalLayout {
   auto construct(shared_pointer<Emulator>) -> void;
   shared_pointer<Emulator> system;
+
+  TableLayout sfcRenderSettingsLayout{this, Size{~0, 0}};
+    Label pixelAccuracyHint{&sfcRenderSettingsLayout, Size{0, 0}};
+    CheckLabel pixelAccuracyOption{&sfcRenderSettingsLayout, Size{0, 20_sy}};
+    //
+    Label colorBleedHint{&sfcRenderSettingsLayout, Size{0, 0}};
+    CheckLabel colorBleedOption{&sfcRenderSettingsLayout, Size{0, 20_sy}};
 };
 
 // MARK: SuperGrafx Settings

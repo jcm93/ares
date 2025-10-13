@@ -77,7 +77,7 @@ auto VideoSettings::construct() -> void {
 #endif
 #if defined(PLATFORM_MACOS)
   videoColorSpaceToggleName.setText("Force sRGB:");
-  videoColorSpaceToggle.setText("Render the final texture output in the sRGB color space").onToggle([&] {
+  videoColorSpaceToggle.setText("Present the final texture output in the sRGB color space").onToggle([&] {
     settings.video.forceSRGB = videoColorSpaceToggle.checked();
     ruby::video.setForceSRGB(settings.video.forceSRGB);
   });
@@ -87,7 +87,7 @@ auto VideoSettings::construct() -> void {
     ruby::video.setThreadedRenderer(settings.video.threadedRenderer);
   });
   videoNativeFullScreenToggleName.setText("Use native fullscreen:");
-  videoNativeFullScreenToggle.setText("Disable to render around camera housing, or for use with bezel shaders.").onToggle([&] {
+  videoNativeFullScreenToggle.setText("Disable to render fullscreen as a borderless window").onToggle([&] {
     settings.video.nativeFullScreen = videoNativeFullScreenToggle.checked();
     ruby::video.setNativeFullScreen(settings.video.nativeFullScreen);
     videoRefresh();
@@ -133,37 +133,17 @@ auto VideoSettings::construct() -> void {
   renderingOptionsTableLayout.setSize({2, 4}).setPadding(12_sx, 0);
   renderingOptionsTableLayout.column(0).setAlignment(1.0);
 
-  emulatorSettingsLabel.setText("Rendering Options").setFont(Font().setBold());
-  colorBleedHint.setText("Color Bleed:");
-  colorBleedOption.setText("Blur adjacent pixels for translucency effects").setChecked(settings.video.colorBleed).onToggle([&] {
-    settings.video.colorBleed = colorBleedOption.checked();
-    if(emulator) emulator->setColorBleed(settings.video.colorBleed);
-  });
-  /*colorEmulationHint.setText("Color Emulation:");
-  colorEmulationOption.setText("Match colors to how they look on real hardware").setChecked(settings.video.colorEmulation).onToggle([&] {
-    settings.video.colorEmulation = colorEmulationOption.checked();
-    if(emulator) emulator->setBoolean("Color Emulation", settings.video.colorEmulation);
-  });
-  deepBlackBoostHint.setText("Deep Black Boost:");
-  deepBlackBoostOption.setText("Apply a gamma ramp to crush black levels (SNES/SFC)").setChecked(settings.video.deepBlackBoost).onToggle([&] {
-    settings.video.deepBlackBoost = deepBlackBoostOption.checked();
-    if(emulator) emulator->setBoolean("Deep Black Boost", settings.video.deepBlackBoost);
-  });*/
+  emulatorSettingsLabel.setText("Rendering Settings").setFont(Font().setBold());
+  renderingOptionsHint.setText("Rendering settings for specific cores are available in Systems settings.").setFont(Font().setSize(7.0)).setForegroundColor(SystemColor::Sublabel);;
   interframeBlendingHint.setText("Interframe Blending:");
-  interframeBlendingOption.setText("Emulate LCD translucency effects, but increase motion blur").setChecked(settings.video.interframeBlending).onToggle([&] {
+  interframeBlendingOption.setText("Emulate LCD translucency effects, increasing motion blur").setChecked(settings.video.interframeBlending).onToggle([&] {
     settings.video.interframeBlending = interframeBlendingOption.checked();
     if(emulator) emulator->setBoolean("Interframe Blending", settings.video.interframeBlending);
   });
   overscanHint.setText("Overscan:");
-  overscanOption.setText("Display the full frame without cropping 'undesirable' borders").setChecked(settings.video.overscan).onToggle([&] {
+  overscanOption.setText("Output entire frames without cropping 'undesirable' borders").setChecked(settings.video.overscan).onToggle([&] {
     settings.video.overscan = overscanOption.checked();
     if(emulator) emulator->setOverscan(settings.video.overscan);
   });
-  /*pixelAccuracyHint.setText("Pixel Accuracy Mode:");
-  pixelAccuracyOption.setText("Use pixel-accurate emulation where available").setChecked(settings.video.pixelAccuracy).onToggle([&] {
-    settings.video.pixelAccuracy = pixelAccuracyOption.checked();
-    if(emulator) emulator->setBoolean("Pixel Accuracy", settings.video.pixelAccuracy);
-  });*/
-
   
 }

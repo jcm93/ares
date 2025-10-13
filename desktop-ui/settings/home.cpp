@@ -23,8 +23,5 @@ auto HomePanel::construct() -> void {
       data += icon2x.stride();
     }
   }
-    
-  icon.scale(sx(icon.width() * 0.75), sy(icon.height() * 0.75));
-  icon2x.scale(sx(icon2x.width() * 0.75), sy(icon2x.height() * 0.75));
   canvas.setIcon(multiFactorImage(icon, icon2x));
 }
