@@ -179,6 +179,9 @@ private:
       self.masterVoice->DestroyVoice();
       self.masterVoice = nullptr;
     }
+#if defined(PLATFORM_WINDOWS)
+  timeEndPeriod(1);
+#endif
   }
 
   auto write(const u32* audioData, u32 bytes) -> void {

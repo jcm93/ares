@@ -118,6 +118,9 @@ private:
     waveOutClose(handle);
     handle = nullptr;
     headers.clear();
+#if defined(PLATFORM_WINDOWS)
+  timeEndPeriod(1);
+#endif
   }
 
   HWAVEOUT handle = nullptr;

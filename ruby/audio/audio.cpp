@@ -215,6 +215,10 @@ auto Audio::create(string driver) -> bool {
 
   if(!self.instance) self.instance = std::make_unique<AudioDriver>(*this);
 
+#if defined(PLATFORM_WINDOWS)
+    timeBeginPeriod(1);
+#endif
+
   return self.instance->create();
 }
 

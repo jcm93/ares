@@ -323,6 +323,9 @@ private:
     if(self.audioDevice) self.audioDevice->Release(), self.audioDevice = nullptr;
     if(self.eventHandle) CloseHandle(self.eventHandle), self.eventHandle = nullptr;
     if(self.taskHandle) AvRevertMmThreadCharacteristics(self.taskHandle), self.taskHandle = nullptr;
+#if defined(PLATFORM_WINDOWS)
+  timeEndPeriod(1);
+#endif
   }
 
   auto write() -> void {

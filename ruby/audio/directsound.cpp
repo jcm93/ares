@@ -141,6 +141,9 @@ private:
     if(_secondary) { _secondary->Stop(); _secondary->Release(); _secondary = nullptr; }
     if(_primary) { _primary->Stop(); _primary->Release(); _primary = nullptr; }
     if(_interface) { _interface->Release(); _interface = nullptr; }
+#if defined(PLATFORM_WINDOWS)
+  timeEndPeriod(1);
+#endif
   }
 
   bool _ready = false;
