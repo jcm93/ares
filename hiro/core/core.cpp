@@ -60,6 +60,7 @@ namespace hiro {
   #include "status-bar.cpp"
   #include "menu-bar.cpp"
   #include "popup-menu.cpp"
+  #include "updater.cpp"
 
   #include "action/action.cpp"
   #include "action/menu.cpp"

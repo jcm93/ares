@@ -19,6 +19,7 @@ set(
   finders/FindAO.cmake
   finders/FindOSS.cmake
   finders/FindPulseAudio.cmake
+  finders/FindSparkle.cmake
   finders/Findudev.cmake
   finders/Findusbhid.cmake
   macos/dependencies.cmake

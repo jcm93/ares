@@ -25,6 +25,8 @@ struct Application {
   static auto setToolTips(bool toolTips = true) -> void;
   static auto toolTips() -> bool;
   static auto unscale(f32 value) -> f32;
+  static auto checkForUpdates() -> void;
+  static auto onCheckForUpdates(const std::function<void ()>& callback = {}) -> void;
 
   struct Cocoa {
     static auto doAbout() -> void;
@@ -48,8 +50,10 @@ struct Application {
     Locale locale;
     s32 modal = 0;
     string name;
+    sUpdater updater;
     std::function<void ()> onMain;
     std::function<void (const string& path)> onOpenFile;
+    std::function<void ()> onCheckForUpdates;
     bool quit = false;
     f32 scale = 1.0;
     bool screenSaver = true;

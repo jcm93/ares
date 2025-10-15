@@ -135,6 +135,14 @@ struct Timer : sTimer {
 };
 #endif
 
+#if defined(Hiro_Updater)
+struct Updater : sUpdater {
+  DeclareSharedObject(Updater)
+
+  auto checkForUpdates() { return self().checkForUpdates(); }
+};
+#endif
+
 #if defined(Hiro_Action)
 struct Action : sAction {
   DeclareSharedAction(Action)

@@ -57,4 +57,5 @@
 #include "widget/vertical-slider.cpp"
 #include "widget/viewport.cpp"
 
+#include "updater.cpp"
 #include "application.cpp"

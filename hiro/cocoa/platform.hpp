@@ -17,6 +17,7 @@
 #include "group.hpp"
 
 #include "timer.hpp"
+#include "updater.hpp"
 #include "window.hpp"
 #include "status-bar.hpp"
 #include "menu-bar.hpp"

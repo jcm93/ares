@@ -24,8 +24,12 @@
 	<string>@CMAKE_OSX_DEPLOYMENT_TARGET@</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>@ARES_LEGAL_COPYRIGHT@</string>
-	<key>CFBundleShortVersionString</key>
-	<string>@ARES_VERSION_CANONICAL@</string>
+  <key>CFBundleVersion</key>
+  <string>@ARES_VERSION_CANONICAL@</string>
+  <key>SUFeedURL</key>
+  <string>https://raw.githubusercontent.com/jcm93/ares/refs/heads/autoupdate/desktop-ui/resource/appcast.xml</string>
+  <key>SUPublicEDKey</key>
+  <string>cAG85M3NOSHWeQ8UooLAX1dVxzTdAj7UpXpbw3shDNI=</string>
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>

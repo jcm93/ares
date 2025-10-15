@@ -64,6 +64,8 @@ target_sources(
     core/text-cursor.hpp
     core/timer.cpp
     core/timer.hpp
+    core/updater.cpp
+    core/updater.hpp
     core/window.cpp
     core/window.hpp
 )
@@ -225,6 +227,8 @@ if(OS_MACOS)
       cocoa/status-bar.hpp
       cocoa/timer.cpp
       cocoa/timer.hpp
+      cocoa/updater.cpp
+      cocoa/updater.hpp
       cocoa/utility.cpp
       cocoa/window.cpp
       cocoa/window.hpp
@@ -353,6 +357,8 @@ elseif(OS_WINDOWS)
       windows/timer.hpp
       windows/tool-tip.cpp
       windows/tool-tip.hpp
+      windows/updater.cpp
+      windows/updater.hpp
       windows/utility.cpp
       windows/window.cpp
       windows/window.hpp

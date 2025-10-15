@@ -44,6 +44,7 @@ struct Keyboard;
 Declare(Object)
 Declare(Group)
 Declare(Timer)
+Declare(Updater)
 Declare(Window)
 Declare(StatusBar)
 Declare(MenuBar)
@@ -160,6 +161,7 @@ enum class Sort : u32 { None, Ascending, Descending };
 #include "status-bar.hpp"
 #include "menu-bar.hpp"
 #include "popup-menu.hpp"
+#include "updater.hpp"
 
 #include "action/action.hpp"
 #include "action/menu.hpp"

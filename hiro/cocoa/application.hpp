@@ -10,6 +10,7 @@
 -(void) menuAbout;
 -(void) menuPreferences;
 -(void) menuQuit;
+-(void) checkForUpdates;
 -(NSApplicationTerminateReply) applicationShouldTerminate:(NSApplication*)sender;
 -(BOOL) applicationShouldHandleReopen:(NSApplication*)application hasVisibleWindows:(BOOL)flag;
 -(void) run:(NSTimer*)timer;

@@ -22,6 +22,13 @@
     [rootMenu addItem:item];
     [rootMenu addItem:[NSMenuItem separatorItem]];
 
+#if defined(HIRO_SPARKLE)
+    item = [[NSMenuItem alloc] initWithTitle:[NSString stringWithFormat:@"Check for Updates…"] action:@selector(checkForUpdates) keyEquivalent:@""];
+    [item setTarget:self];
+    [rootMenu addItem:item];
+    [rootMenu addItem:[NSMenuItem separatorItem]];
+#endif
+
     item = [[NSMenuItem alloc] initWithTitle:@"Preferences…" action:@selector(menuPreferences) keyEquivalent:@""];
     [item setTarget:self];
     item.keyEquivalentModifierMask = NSEventModifierFlagCommand;
@@ -127,6 +134,7 @@
 @end
 
 CocoaDelegate* cocoaDelegate = nullptr;
+CocoaUpdater* cocoaUpdater = nullptr;
 NSTimer* applicationTimer = nullptr;
 
 namespace hiro {
@@ -209,8 +217,10 @@ auto pApplication::initialize() -> void {
   @autoreleasepool {
     [NSApplication sharedApplication];
     cocoaDelegate = [[CocoaDelegate alloc] init];
+    cocoaUpdater = [[CocoaUpdater alloc] initWith:*Application::state().updater];
     [NSApp setDelegate:cocoaDelegate];
     [cocoaDelegate constructMenu];
+    [cocoaUpdater checkForUpdates];
   }
 }
 

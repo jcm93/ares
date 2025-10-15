@@ -102,8 +102,11 @@ auto Application::unscale(f32 value) -> f32 {
   return value * (1.0 / state().scale);
 }
 
-//Cocoa
-//=====
+auto Application::checkForUpdates() -> void {
+  if(state().onCheckForUpdates) state().onCheckForUpdates();
+}
+
+// MARK: Cocoa
 
 auto Application::Cocoa::doAbout() -> void {
   if(state().cocoa.onAbout) return state().cocoa.onAbout();
@@ -137,8 +140,11 @@ auto Application::Cocoa::onQuit(const std::function<void ()>& callback) -> void 
   state().cocoa.onQuit = callback;
 }
 
-//Internal
-//========
+auto Application::onCheckForUpdates(const std::function<void ()>& callback) -> void {
+  state().onCheckForUpdates = callback;
+}
+
+// MARK: Internal
 
 auto Application::initialize() -> void {
   if(!state().initialized) {

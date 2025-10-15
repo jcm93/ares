@@ -44,6 +44,10 @@ auto mObject::abstract() const -> bool {
   if(dynamic_cast<const mTimer*>(this)) return false;
   #endif
 
+  #if defined(Hiro_Updater)
+  if(dynamic_cast<const mUpdater*>(this)) return false;
+  #endif
+
   #if defined(Hiro_Window)
   if(dynamic_cast<const mWindow*>(this)) return false;
   #endif

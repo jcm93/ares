@@ -4,6 +4,13 @@ target_enable_feature(hiro "Cocoa UI backend")
 target_compile_definitions(hiro PUBLIC HIRO_COCOA)
 set(HIRO_BACKEND "Cocoa" PARENT_SCOPE)
 
+find_package(Sparkle)
+if(Sparkle_FOUND)
+  target_link_libraries(hiro PRIVATE "$<LINK_LIBRARY:FRAMEWORK,Sparkle::Sparkle>")
+  target_enable_feature(hiro "Application auto-updates via Sparkle")
+  target_compile_definitions(hiro PUBLIC Hiro_Updater)
+endif()
+
 target_link_libraries(
   hiro
   PRIVATE
