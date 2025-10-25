@@ -19,7 +19,7 @@ function(_check_dependencies_macos)
   _check_dependencies()
 
   execute_process(
-    COMMAND "xattr" -r -d com.apple.quarantine "${dependencies_dir}/${destination}"
+    COMMAND "xattr" -r -s -d com.apple.quarantine "${dependencies_dir}/${destination}"
     RESULT_VARIABLE result
     COMMAND_ERROR_IS_FATAL ANY
   )

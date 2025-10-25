@@ -5,6 +5,8 @@ include_guard(GLOBAL)
 option(ARES_SKIP_DEPS "Do not fetch prebuilt dependencies" OFF)
 mark_as_advanced(ARES_SKIP_DEPS)
 
+option(ARES_DEBUG_DEPENDENCIES "Populate debugger initialization files for precompiled dependency debugging" OFF)
+
 # _check_dependencies: Fetch and extract pre-built ares build dependencies
 function(_check_dependencies)
   file(READ "${CMAKE_CURRENT_SOURCE_DIR}/deps.json" deps)
@@ -88,4 +90,19 @@ function(_check_dependencies)
   list(REMOVE_DUPLICATES CMAKE_PREFIX_PATH)
 
   set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} CACHE PATH "CMake prefix search path" FORCE)
+
+  if(ARES_DEBUG_DEPENDENCIES)
+    set(ARES_DEPS_SOURCE_MAPPINGS "")
+    foreach(prefix IN LISTS CMAKE_PREFIX_PATH)
+      if(EXISTS ${prefix}/sourcemap)
+        file(READ "${prefix}/sourcemap" ARES_DEPS_BUILD_PREFIX)
+        string(STRIP ${ARES_DEPS_BUILD_PREFIX} ARES_DEPS_BUILD_PREFIX_STRIPPED)
+        string(APPEND ARES_DEPS_SOURCE_MAPPINGS "${ARES_DEPS_BUILD_PREFIX_STRIPPED} ${prefix}/src ")
+      endif()
+    endforeach()
+    if(NOT "${ARES_DEPS_SOURCE_MAPPINGS}" STREQUAL "")
+      configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake/common/resources/ares.lldbinit.in" .lldbinit @ONLY)
+      configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake/common/resources/ares.gdbinit.in" .gdbinit @ONLY)
+    endif()
+  endif()
 endfunction()
