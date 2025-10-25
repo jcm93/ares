@@ -16,10 +16,12 @@ set(
   finders/FindMoltenVK.cmake
   finders/FindSDL.cmake
   finders/FindGTK.cmake
+  finders/FindKosmicKrisp.cmake
   finders/FindAO.cmake
   finders/FindOSS.cmake
   finders/FindPulseAudio.cmake
   finders/Findudev.cmake
+  finders/FindVulkan.cmake
   finders/Findusbhid.cmake
   macos/dependencies.cmake
   macos/compilerconfig.cmake

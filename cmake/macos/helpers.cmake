@@ -82,13 +82,22 @@ function(_bundle_dependencies target)
 
   set(library_paths)
   set(bundled_targets)
+  set(resource_paths)
   file(GLOB sdk_library_paths /Applications/Xcode*.app)
   set(system_library_path "/usr/lib/")
+
+  message(AUTHOR_WARNING "found dependencies ${found_dependencies} for ${target}")
 
   foreach(library IN LISTS found_dependencies)
     get_target_property(library_type ${library} TYPE)
     get_target_property(is_framework ${library} FRAMEWORK)
     get_target_property(is_imported ${library} IMPORTED)
+    get_target_property(req_resource ${library} RESOURCE)
+
+    if(req_resource)
+      list(APPEND resource_paths ${req_resource})
+      continue()
+    endif()
 
     if(is_imported)
       get_target_property(imported_location ${library} LOCATION)
@@ -138,6 +147,10 @@ function(_bundle_dependencies target)
   endforeach()
 
   list(REMOVE_DUPLICATES library_paths)
+  list(REMOVE_DUPLICATES resource_paths)
+
+  message(AUTHOR_WARNING "resource paths are ${resource_paths}")
+  # message(AUTHOR_WARNING "library paths are ${library_paths}")
 
   if(UNUSED)
     # One of these would be nice, but we cannot install IMPORTed targets (librashader, SDL, MoltenVK). We
@@ -157,6 +170,17 @@ function(_bundle_dependencies target)
       LIBRARY DESTINATION "$<TARGET_BUNDLE_CONTENT_DIR:${target}>/Frameworks"
       FRAMEWORK DESTINATION "$<TARGET_BUNDLE_CONTENT_DIR:${target}>/Frameworks"
       BUNDLE DESTINATION "."
+    )
+  endif()
+
+  get_target_property(IS_BUNDLE ${target} MACOSX_BUNDLE)
+  if(IS_BUNDLE)
+    add_custom_command(
+      TARGET ${target}
+      POST_BUILD
+      COMMAND ditto ${resource_paths} "$<TARGET_BUNDLE_CONTENT_DIR:${target}>/Resources/vulkan/"
+      COMMENT "Copying resource files into app bundle"
+      VERBATIM
     )
   endif()
 

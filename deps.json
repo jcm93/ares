@@ -1,14 +1,14 @@
 {
     "dependencies": {
         "prebuilt": {
-            "version": "source-debug",
+            "version": "vk-loader-test",
             "baseUrl": "https://github.com/jcm93/ares-deps-2/releases/download",
             "label": "Pre-Built ares-deps",
             "hashes": {
-                "linux-universal": "964b9a79132f48ad663593c7d97ffdaef47c5ddc10b351560416971ebeb0e433",
-                "macos-universal": "626b7f33095004fd3c5ca50b9d988d05cba9be8df90baba2321ca48d4804beb0",
-                "windows-arm64": "fda121d292c0282d1e8c0ac5771a98fb3ccd5fbe13e121fd0089eebb04f9aa27",
-                "windows-x64": "589e68b41913fed6bdbd202d2971afdd8b92ca5f2ecca8ab8d6e14b375d03ff4"
+                "linux-universal": "5dee014709f6a2b836e41e74cbf05dccc387d7be15e2630354911fa4039d35d6",
+                "macos-universal": "89545a2511656143ba1d98719e67898ad55431b031c106cdba8fce3e3a3d239d",
+                "windows-arm64": "37502be5617647d0635d64d5916aaf11d21e1f871aea814a9f9531fd0b034583",
+                "windows-x64": "e72f193bd0a162a1ee1df40fd2c97413e796186ae8fa092a5d47e3537e4cac28"
             }
         }
     },
