@@ -11,6 +11,7 @@ pushd build
 xcodebuild -configuration RelWithDebInfo \
             DEBUG_INFORMATION_FORMAT="dwarf-with-dsym" \
             -parallelizeTargets \
+            -jobs 3 \
             2>&1 | xcbeautify --renderer github-actions
 
 popd
